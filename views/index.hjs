@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap.min.css' />
+    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/bower_components/underscore/underscore-min.js"></script>
+    <style>
+    	#encoding-image, #recognition-image, #recall-image{
+    		width: 512px;
+    		height: 512px;
+    		object-fit:contain;
+    		overflow: hidden;
+    		border: none;
+    		outline: none;
+    	}
+    </style>
+    <script type="text/javascript">
+    	var  INTRO = 0, INT_ENC = 1, ENCODE=2, ENC_REC=3, RECOGNIZE = 4, REC_REC=5, RECALL = 6, DEBRIEF = 7;
+    	var ENCODE_TIME = 10;
+    	var RECOG_INTERVAL = 2;
+    	var IMAGE_SIZE = 0;
+    	var FIXATE_TIME = 0.5;
+
+    	var stage = INTRO;
+    	var images = null;
+    	var base_url = "/images/db/";
+    	var combinedImgSet = null;
+    	var correctImgSet  = [];
+
+		/**
+		 *  
+		 *  gup(name) :: retrieves URL parameters if provided
+		 *
+		 *  Prepares the page for MTurk on load.
+		 *  1. looks for a form element with id="mturk_form", and sets its METHOD / ACTION
+		 *    1a. All that the task page needs to do is submit the form element when ready
+		 *  2. disables form elements if HIT hasn't been accepted
+		 *
+		 **/
+		// selector used by jquery to identify your form
+		var formSelector = "#mturk-form";
+
+		// function for getting URL parameters
+		function gup(name) {
+		  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+		  var regexS = "[\\?&]"+name+"=([^&#]*)";
+		  var regex = new RegExp(regexS);
+		  var results = regex.exec(window.location.href);
+		  if(results == null)
+		    return "";
+		  else return unescape(results[1]);
+		}
+
+
+    	$(document).ready(function(){
+    		Initialize();// turkify this web page
+    		$("#encoding").hide();
+    		$("#recognition").hide();
+    		$("#recall").hide();
+    		$("#int-enc").hide();
+    		$("#enc-rec").hide();
+    		$("#rec-rec").hide();
+    		$("#debrief").hide();
+
+    		$.getJSON('/images', function(res){
+    			console.log(res);
+    			images = res;
+    			combinedImgSet = _.shuffle(_.union(images.targets, images.fillers));
+
+    			//preload all images?
+    			for (var i in images.targets){
+    				new Image().src = base_url+images.targets[i].url;
+    			}
+    			for (var i in images.fillers){
+    				new Image().src = base_url+images.fillers[i].url;
+    			}
+
+    			IMAGE_SIZE = images.targets.length;
+    			ChangeStage(INTRO);
+    		});
+
+    		$(".next-btn").click(function(){
+    			ChangeStage(stage+1);
+    		})
+    		$(document).keydown(function(e){
+    			if(e.keyCode == 32)	e.preventDefault(); //disable spacebar scrolling
+    			OnKeyPress(e.keyCode);
+			});
+
+			$("#submit-btn").click(SubmitForm);
+
+    	});
+    	//
+    	//// ** Turkify the web page by modifying the mturk-form
+    	//
+    	function Initialize(){
+			// is assigntmentId is a URL parameter
+			console.log(gup("assignmentId"));
+			console.log(gup("turkSubmitTo"));
+			if((aid = gup("assignmentId"))!="" && $(formSelector).length>0) {
+
+				// If the HIT hasn't been accepted yet, disabled the form fields.
+				if(aid == "ASSIGNMENT_ID_NOT_AVAILABLE") {
+			    	$('input,textarea,select').attr("DISABLED", "disabled");
+				}
+
+				// Add a new hidden input element with name="assignmentId" that
+				// with assignmentId as its value.
+				var aid_input = $("<input type='hidden' name='assignmentId' value='" + aid + "'>").appendTo($(formSelector));
+
+				// Make sure the submit form's method is POST
+				$(formSelector).attr('method', 'POST');
+
+				// Set the Action of the form to the provided "turkSubmitTo" field
+
+				if((submit_url=gup("turkSubmitTo"))!="") {
+				  	$(formSelector).attr('action', submit_url + '/mturk/externalSubmit');
+				}
+			}    		
+    	}
+
+    	//
+    	//// ** Submit turk-form
+    	//
+    	function SubmitForm(){
+    		
+    		//generating answer data (name-value pairs)
+    		//1. the number of target images
+    		$("<input type='hidden' name='targetNumber' value='" + images.targets.length + "'>").appendTo($(formSelector));
+    		//2. the number of correctly recognized images
+    		$("<input type='hidden' name='correctNumber' value='" + correctImgSet.length + "'>").appendTo($(formSelector));
+
+    		// submit the form to the mturk site
+    		console.log("submit mturk-form...");
+    		console.log("assignmentId: " + $("#mturk-form input[name=assignmentId]").val());
+    		console.log("targetNumber: " + $("#mturk-form input[name=targetNumber]").val());
+    		console.log("correctNumber: " + $("#mturk-form input[name=correctNumber]").val());
+    		$(formSelector).submit();
+
+    	}
+    	function OnKeyPress(keyCode){
+			if(keyCode == 32){
+
+			   	// user has pressed space
+			   	if (stage==INTRO || stage==INT_ENC || stage==ENC_REC || stage==REC_REC){
+			   		ChangeStage(stage+1);
+			   		return;
+			   	}
+			   	if (stage==RECOGNIZE){
+			   		var id = $("#recognition-image").data("id");
+			   		if (id!=""){
+			   			var found = _.find(images.targets, function(obj){
+			   				return obj._id==id;
+			   			})
+			   			if (found!=null){
+			   				correctImgSet.push(found);
+			   				$("#recognition-correct").text("Correct!");
+			   			}else{
+			   				$("#recognition-correct").text("Incorrect!");
+			   			}
+			   		}
+			   		return;
+			   	}
+			   	if (stage==RECALL){
+			   		//
+			   	}
+			}    		
+    	}
+    	function ChangeStage(newStage){
+    		stage = newStage;
+    		switch(stage){
+    			case INTRO:
+    				console.log("INTRO");
+    			break;
+    			case INT_ENC:
+    				console.log("INT_ENC");
+    				$("#intro").hide();
+    				$("#int-enc").show();
+    			break;
+    			case ENCODE:
+    				console.log("ENCODE");
+    				$("#int-enc").hide();
+    				SetupEncodeStage();
+    			break;
+    			case ENC_REC:
+    				console.log("ENC_REC");
+    				$("#encoding").hide();
+    				$("#enc-rec").show();
+    			break;
+    			case RECOGNIZE:
+    				console.log("RECOGNIZE");
+    				$("#enc-rec").hide();
+    				SetupRecognizeStage();
+    			break;
+    			case REC_REC:
+    				console.log("REC_REC");
+    				$("#recognition").hide();
+    				$("#rec-rec").show();
+    			break;
+    			case RECALL:
+    				console.log("RECALL");
+    				$("#rec-rec").hide();
+    				SetupRecallStage();
+    			break;
+    			case DEBRIEF:
+    				console.log("DEBRIEF");
+    				$("#recall").hide();
+    				$("#debrief").show();
+    		}
+
+    	}
+    	function SetupEncodeStage(){
+    		$("#encoding").show();
+			var countDown = ENCODE_TIME;
+			var imgCount  = IMAGE_SIZE;
+			var imgIndex  = 0;
+			//set the first image
+			console.log( base_url + images.targets[imgIndex].url);
+			$("#encoding-image").attr("src", base_url + images.targets[imgIndex].url);
+			$("#encoding-countdown").text(countDown +" sec");
+			var elapsed = 0.0;
+			var encodeTimer = setInterval(function(){
+				elapsed+=0.5;
+
+				//update countdown timer
+				if (elapsed%1==0){
+			     	countDown -= 1;
+			     	$("#encoding-countdown").text(countDown +" sec");
+				}
+
+				//clear image
+				if (elapsed==ENCODE_TIME){
+					$("#encoding-image").width(0).height(0);
+					$("#encoding-image").attr("src", "");	
+					$("#encoding-countdown").text("");
+				}
+				//change image
+				if (elapsed==(ENCODE_TIME+FIXATE_TIME)){
+					countDown = ENCODE_TIME; 
+					imgCount -= 1;
+					imgIndex += 1;			
+					elapsed = 0.0;	     	
+
+					if (imgCount==0){//move on to next stage						
+						clearTimeout(encodeTimer);
+						ChangeStage(stage+1);
+						return;
+					}
+					//change image
+					$("#encoding-image").width(512).height(512);
+					$("#encoding-image").attr("src", base_url + images.targets[imgIndex].url);
+					$("#encoding-countdown").text(countDown +" sec");					
+				}
+			}, 500);  		
+    	}
+    	function SetupRecognizeStage(){
+    		$("#recognition").show();
+    		var imgIndex 	= 0;
+    		var countDown 	= RECOG_INTERVAL;
+    		var imgCount  	= combinedImgSet.length;//IMAGE_SIZE*2;
+    		var elapsed 	= 0.0;
+
+    		//show first target image
+    		$("#recognition-image").attr("src", base_url + combinedImgSet[imgIndex].url);
+    		$("#recognition-image").data("id", combinedImgSet[imgIndex]._id);
+    		$("#recognition-countdown").text(countDown +" sec");
+    		var recogTimer = setInterval(function(){
+    			elapsed+=0.5;
+
+				//update countdown timer
+				if (elapsed%1==0){
+			     	countDown -= 1;
+			     	$("#recognition-countdown").text(countDown +" sec");
+				}
+
+				//clear image
+				if (elapsed==RECOG_INTERVAL){
+					$("#recognition-image").width(0).height(0);
+					$("#recognition-image").attr("src", "");	
+					$("#recognition-image").data("id", "");
+					$("#recognition-countdown").text("");
+					$("#recognition-correct").text("");
+				}
+
+				//change image
+    			if (elapsed==(RECOG_INTERVAL+FIXATE_TIME)){
+    				countDown 	= RECOG_INTERVAL;
+    				imgCount	-= 1; 
+    				imgIndex	+= 1;
+    				elapsed		= 0.0;
+
+    				if (imgCount==0){//move on to next stage
+						clearTimeout(recogTimer);
+						ChangeStage(stage+1);
+						return;
+    				}
+    				$("#recognition-image").width(512).height(512);
+    				$("#recognition-image").attr("src", base_url + combinedImgSet[imgIndex].url);
+    				$("#recognition-image").data("id", combinedImgSet[imgIndex]._id);
+    				$("#recognition-countdown").text(countDown +" sec");	
+    				$("#recognition-correct").text("");
+    			}
+    		}, 500);
+
+
+    	}
+
+    	function SetupRecallStage(){
+    		$("#recall").show();
+    		var imgIndex 	= 0;
+    		var imgCount  	= correctImgSet.length;
+    		if (imgCount==0){
+    			alert("no images were correctly recognized!!");
+    			ChangeStage(stage+1);
+    			return;
+    		}
+   			//show first target image
+    		$("#recall-image").attr("src", base_url + correctImgSet[imgIndex].url);
+    		$("#recall-image").data("id", correctImgSet[imgIndex]._id);    		
+    		$("#recall-next-btn").click(function(){
+
+    			//save the description 
+    			var id = $("#recall-image").data("id");
+    			var img = _.find(images.targets, function(obj){
+			   				return obj._id==id;
+			   			});
+    			var desc = $("#recall-vis-desc").val();
+    			$.post("/desc",
+                {
+                    imgId 	: img._id,
+                    imgUrl	: img.url,
+                    imgDesc : desc
+                },function(res){
+	                if (res.code>0){
+	                    alert("Something went wrong. Unable to save the description.")
+	                    return;
+	                }
+            	});
+    			
+    			//save description
+    			console.log(id+":"+desc);
+    			correctImgSet[imgIndex].desc = desc;
+
+    			//change the image
+    			imgCount-=1;
+    			imgIndex+=1;
+    			
+    			if (imgCount==0){//if all images are described 
+    				ChangeStage(stage+1);
+    				return;
+    			}
+
+    			$("#recall-image").attr("src", base_url + correctImgSet[imgIndex].url);
+    			$("#recall-image").data("id", correctImgSet[imgIndex]._id);  
+    			$("#recall-vis-desc").val("");
+    		});
+
+    	}
+    </script>
+  </head>
+  <body>
+  	
+  	<div class="container">
+  		<div class="row">
+  			<div class="col-md-offset-1 col-md-10">		    	
+		    	<div id="intro">
+					<h1>Memorability Experiment</h1>
+					<div class="row">
+						<div class="col-md-8">
+							<p class="text-justify">
+								Welcome! You are about to take a memorability experiment for visualization images.<br><br>
+								The experiment is designed to measure how much information you can retrive from working memory, after having seen a visualization image.<br><br>					
+
+								Whenever you are ready, click the button below, or press spacebar, to go to the next page.<br><br>
+								* It may also not work properly on older versions of Internet Explorer (IE9+ required).	
+							</p>
+						</div>	
+						<div class="col-md-4">	
+							<img src="/images/teaser.png">
+						</div>		
+					</div>
+					<button type="button" class="next-btn btn btn-primary btn-lg btn-block">
+				  		<span class="glyphicon glyphicon-play"></span> Start
+					</button>
+				</div>
+
+
+				<div id="int-enc">
+					<h2>First Stage</h2>
+					<div class="row">
+						<div class="col-md-8">
+							<p class="text-justify">
+								In the first stage, you will be presented with series of visualizations and given 10 seconds to memorize information in each visualization.<br><br>					
+
+								Whenever you are ready, click the button below, or press spacebar, to go to the next page.<br><br>
+							</p>
+						</div>	
+						<div class="col-md-4">	
+							<!--<img src="/images/teaser.png" class="img-responsive img-rounded">-->
+						</div>	
+					</div>
+					<button type="button" class="next-btn btn btn-primary btn-lg btn-block">
+				  		<span class="glyphicon glyphicon-play"></span> Start
+					</button>						
+				</div>
+
+
+
+				<div id="encoding">
+					<div class="page-header">
+			  			<h3>
+			  				<span id="encoding-countdown"></span>
+			  			</h3>
+					</div>
+					
+					<img id="encoding-image" src="">
+				</div>
+
+
+				<div id="enc-rec">
+					<h2>Second Stage</h2>
+					<div class="row">
+						<div class="col-md-8">
+							<p class="text-justify">
+								In the next stage, you will be given series of visualizations and asked whenther each visualization was present in the previous stage.<br><br>					
+
+								Whenever you are ready, click the button below, or press spacebar, to go to the next page.<br><br>
+							</p>
+						</div>	
+						<div class="col-md-4">	
+							<!--<img src="/images/teaser.png" class="img-responsive img-rounded">-->
+						</div>	
+					</div>
+					<button type="button" class="next-btn btn btn-primary btn-lg btn-block">
+				  		<span class="glyphicon glyphicon-play"></span> Start
+					</button>
+				</div>
+
+
+
+				<div id="recognition">
+					<div class="page-header">
+			  			<h3>
+			  				<span id="recognition-countdown"></span>
+			  				<span id="recognition-correct"></span>
+			  			</h3>
+					</div>
+					<p> Press 'spacebar' if you remember the following visualization!</p>
+					<img id="recognition-image" src="">	
+				</div>
+
+
+
+				<div id="rec-rec">
+					<h2>Third Stage</h2>
+					<div class="row">
+						<div class="col-md-8">
+							<p class="text-justify">
+								In the next stage, you will be given blurred visualizations that were correctly recognized in the previous stage, and will be asked to describe each visualization in your own words.<br><br>					
+
+								Whenever you are ready, click the button below, or press spacebar, to go to the next page.<br><br>
+							</p>
+						</div>	
+						<div class="col-md-4">	
+							<!--<img src="/images/teaser.png" class="img-responsive img-rounded">-->
+						</div>	
+					</div>
+					<button type="button" class="next-btn btn btn-primary btn-lg btn-block">
+				  		<span class="glyphicon glyphicon-play"></span> Start
+					</button>						
+				</div>
+
+
+				<div id="recall">
+					<div class="page-header">
+			  			<h3>
+			  				<span id="recall-countdown"></span>
+			  				<span id="recall-remaining"></span>
+			  			</h3>
+					</div>
+					<div class="row">
+						<div class="col-md-8">
+							<img id="recall-image" src="" class="img-responsive img-rounded">	
+						</div>	
+						<div class="col-md-4">
+							<form role="form">
+								<div class="form-group">
+								    <label for="recall-vis-desc">Describe the visualization you recognized</label>
+								    <textarea id="recall-vis-desc" class="form-control" rows="15" placeholder="">
+									</textarea>
+							  	</div>	
+							</form>
+							<button id="recall-next-btn" type="button" class="btn btn-success btn-lg btn-block">
+						  		<span class="glyphicon glyphicon-play"></span> Next
+							</button>	
+						</div>	
+					</div>
+									
+				</div>
+
+
+				<div id="debrief">
+					<h2>Completed!</h2>
+					<div class="row">
+						<div class="col-md-12">
+							<p class="text-justify">
+								Thank you so much!. We will evaluate your work and hopefully approve it!<br><br>
+							</p>
+						</div>	
+						<!--<div class="col-md-4">	
+							<img src="/images/teaser.png" class="img-responsive img-rounded">
+						</div>-->
+					</div>
+					<form id="mturk-form">
+						<button id="submit-btn" type="button" class="btn btn-primary btn-lg btn-block">
+					  		<span class="glyphicon glyphicon-time"></span> Submit
+						</button>
+					</form>				
+				</div>
+			
+			</div>
+		</div>
+	</div>
+  </body>
+</html>
