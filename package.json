@@ -17,6 +17,7 @@
     "socket.io": "*",
     "serve-favicon": "*",
     "supervisor": "*",
-    "underscore": "*"
+    "underscore": "*",
+    "request": "*"
   }
 }
