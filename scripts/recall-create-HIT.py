@@ -5,7 +5,7 @@ import os, pymongo, sys
 ######  AMT CONFIGURATION PARAMETRS  ######
 
 SANDBOX = True  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
-HIT_URL = "https://54.69.103.85:4001/bubble"  # Provide the URL that you want workers to sent sent to complete you task
+HIT_URL = "https://54.69.103.85:4001/recall"  # Provide the URL that you want workers to sent sent to complete you task
 
 NUMBER_OF_HITS = 5  # Number of different HITs posted for this task
 NUMBER_OF_ASSIGNMENTS = 20  # Number of tasks that DIFFERENT workers will be able to take for each HIT
@@ -16,9 +16,9 @@ APPROVAL_DELAY = 60*60*24*7  # How long after the task is completed will the wor
 
 
 # HIT title (as it will appear on the public listing)
-TITLE = 'Bubble Study'
+TITLE = 'Visualization Recall Study'
 # Description of the HIT that workers will see when deciding to accept it or not
-DESCRIPTION = 'Describe a visualization image!'
+DESCRIPTION = 'See a visualization image and describe it!'
 # Search terms for the HIT posting
 KEYWORDS = ['Image', 'Visualization', 'Describe']
 
@@ -30,8 +30,7 @@ AWS_SECRET_KEY = ''
 # Your Amazon Web Services IAM User Name (private)
 
 ######  BUBBLE CONFIGURATION PARAMETRS  ######
-BASE_URI = "/images/bubble-db/targets/"
-BASE_URI_BLUR = "/images/bubble-db/targets_blurred/"
+BASE_URI = "/images/recall-db/"
 #######################################
 
 
@@ -64,22 +63,15 @@ def create_hits(keyfile):
 
 	# collect target image filenames
 	targets = []
-	for root, dirs, files in os.walk("../public/images/bubble-db/targets"):		
+	for root, dirs, files in os.walk("../public/images/recall-db/"):		
 		for file in files:		
 			if file.startswith('.'):
 				continue
 			targets.append(file)
 
-	targets_blurred = []
-	for root, dirs, files in os.walk("../public/images/bubble-db/targets_blurred"):		
-		for file in files:		
-			if file.startswith('.'):
-				continue
-			targets_blurred.append(file)
-
 	# open db connection
 	client 	= pymongo.MongoClient('localhost', 27017)
-	db 		= client.bubblestudy
+	db 		= client.recallstudy
 	images	= db.images
 
 	#remove existing documents
@@ -93,7 +85,7 @@ def create_hits(keyfile):
 	count 	= 0
 	for i in range(len(targets)):
 		count +=1
-		images.insert({"hit_id": hitID, "img_url": BASE_URI+targets[i], "blur_img_url": BASE_URI_BLUR+targets_blurred[i]}) # insert an image into the db with HIT ID assigned
+		images.insert({"hit_id": hitID, "img_url": BASE_URI+targets[i] }) # insert an image into the db with HIT ID assigned
 		if count>=hitSize:
 			count   = 0
 			hitIdx += 1
@@ -107,4 +99,3 @@ def create_hits(keyfile):
     
 if __name__ == "__main__":
 	create_hits(sys.argv[1])
-

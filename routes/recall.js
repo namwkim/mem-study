@@ -8,10 +8,10 @@ var router  = express.Router();
 
 router.get('/', function(req, res) {
 	console.log(req.params);
-  	res.render('bubble', { title: 'Bubble Experiment' });
+  	res.render('recall', { title: 'Visualization Recall Study' });
 });
 router.get('/images', function(req, res){
-	var db = req.bubbledb;
+	var db = req.recalldb;
 	var hitId = req.body.hitId;
 	db.collection('images').find().toArray(function(err, result){
         if (err) {
@@ -24,10 +24,7 @@ router.get('/images', function(req, res){
             // target images
             var targets = _.take(_.map(images, function(img){ return img.img_url; }), 3);
 
-            // filler images
-            var blurred = _.take(_.map(images, function(img){ return img.blur_img_url; }), 3);
-
-            res.json({ targets: targets, blurred: blurred});
+            res.json({ targets: targets });
         }
 	});
 });
@@ -58,16 +55,9 @@ router.post('/recaptcha', function(req, res){
                 }
             }
         });
-
-/*
-    simple_recaptcha(privateKey, ip, challenge, response, function(err) {
-        if (err) res.send({code: 1, message:err.message});
-        res.send({code: 0, message:"verified!"});
-    });
-*/
 });
 router.post('/log', function(req, res){
-	var db 		= req.bubbledb;
+	var db 		= req.recalldb;
 	var newLog	= {};
 	newLog.hitId 		= req.body.hitId;
 	newLog.assignmentId = req.body.assignmentId;

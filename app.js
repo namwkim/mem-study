@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var routes          = require('./routes/index');
 var bubbleRouter    = require('./routes/bubble');
+var recallRouter    = require('./routes/recall');
 //var users = require('./routes/users');
 
 var app = express();
@@ -15,6 +16,7 @@ var app = express();
 var mongo = require('mongoskin');
 var db = mongo.db("mongodb://localhost:27017/mem_study", {native_parser: true});
 var bubbledb = mongo.db("mongodb://localhost:27017/bubblestudy", {native_parser: true});
+var recalldb = mongo.db("mongodb://localhost:27017/recallstudy", {native_parser: true});
 
 
 // view engine setup
@@ -35,11 +37,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(function(req, res, next){
     req.db = db;
     req.bubbledb = bubbledb;
+    req.recalldb = recalldb;
     next();
 });
 
 app.use('/', routes);
 app.use('/bubble', bubbleRouter);
+app.use('/recall', recallRouter);
 //app.use('/users', users);
 
 /// catch 404 and forward to error handler

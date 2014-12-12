@@ -2,7 +2,7 @@
 <html>
   	<head>
 	    <title>{{ title }}</title>
-	    <link rel='stylesheet' href='/stylesheets/bubble.css' />
+	    <!--<link rel='stylesheet' href='/stylesheets/study.css' />-->
 	    <link rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap.min.css' />
 
 	    <script src="/javascripts/turkify.js"></script>
@@ -12,23 +12,24 @@
 	    <script src="/bower_components/bootbox/bootbox.js"></script>
 	    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 	    <script type="text/javascript">
-	    	var INTRO = 0, CONSENT = 1, MENU = 2, BUBBLE = 3, DEBRIEF = 4;
+	    	var INTRO = 0, CONSENT = 1, MENU = 2, STUDY = 3, DEBRIEF = 4;
 	    	var MIN_DESC = 150, IMG_WIDTH = 500, IMG_HEIGHT=500;
 	    	var stage = INTRO;
 	    	var formSelector = "#mturk-form";
 	    	var images = null;
 	    	var realImages = null;
 	    	var practiceImages = null;
-    		var base_url = "/images/bubble-db/";
+    		var base_url = "/images/recall-db/";
     		var logs = null;
     		var isPractice = false;
+    		var showImage  = true;
 
     		var curIdx = 0;
     		var curImg = null;
     		var curBlurImg = null;
 
     		var assignmentId, hitId, workerId;
-    		var clickCount = 0, totalClickCount = 0, charCount = 0;
+    		var charCount = 0;
 
 	    	$(document).ready(function(){
 	    		Initialize();
@@ -36,7 +37,7 @@
 			function Initialize(){
 				$("#consent").hide();
 				$("#menu").hide();
-				$("#bubble").hide();
+				$("#study").hide();
 				$("#debrief").hide();
 
 				// set up AMT form								
@@ -57,18 +58,15 @@
 
 
 				//load target images
-	    		$.getJSON('/bubble/images', function(res){
+	    		$.getJSON('/recall/images', function(res){
 					console.log(res);
 					realImages = res;
 				});
 
 				//load practice images
-				practiceImages = { targets:[], blurred:[] };
-				practiceImages.targets.push(base_url+"bubble-practice-1.jpg");
-				practiceImages.targets.push(base_url+"bubble-practice-2.jpg");
-
-				practiceImages.blurred.push(base_url+"bubble-practice-1-blurred.jpg");
-				practiceImages.blurred.push(base_url+"bubble-practice-2-blurred.jpg");
+				practiceImages = { targets:[] };
+				practiceImages.targets.push(base_url+"study-practice-1.jpg");
+				practiceImages.targets.push(base_url+"study-practice-2.jpg");
 
 				//Set up callback functions
 				$(document).keydown(OnKeyPress);
@@ -76,7 +74,7 @@
 				$(".next-btn").click(function(){
     				ChangeStage(stage+1);
     			});
-    			$("#bubble-next-btn").click(NextImage);
+    			$("#study-next-btn").click(SetupImage);
     			$("#submit-btn").click(SubmitForm);
 
     			$('#intro-start-button').click(ConfirmRecaptcha);
@@ -85,15 +83,15 @@
     			$('#practice-btn').click(StartPractice);
     			$('#skip-btn').click(StartExperiment);
 
-    			$('#bubble-vis-desc').keyup(function(){
-    				$('#char-count').text($('#bubble-vis-desc').val().length);
-    			})
+    			$('#study-vis-desc').keyup(function(){
+    				$('#char-count').text($('#study-vis-desc').val().length);
+    			})    			
 
 			}
 			function ConfirmRecaptcha(){
 				//check reCAPTCHA
 				//console.log(grecaptcha.getResponse());
-				$.post('/bubble/recaptcha', {
+				$.post('/recall/recaptcha', {
 					recaptcha_response: grecaptcha.getResponse()
 				},function(res){
 					console.log(res);
@@ -124,97 +122,93 @@
 				images 		= practiceImages;
 				LogAction("practice", null);
 				isPractice 	= true;
-				curIdx 		= clickCount = totalClickCount =0;				
+				showImage 	= true;
+				curIdx 		= 0;				
 				ChangeStage(stage+1);
 			}
 			function StartExperiment(){
 				console.log("StartExperiment");				
 				images 		= realImages;
 				isPractice 	= false;
-				curIdx 		= clickCount = totalClickCount = 0;
+				showImage 	= true;
+				curIdx 		= 0;
 				LogAction("experiment", null);
 				ChangeStage(stage+1);
 			}
-			function SetupImage(idx){
-				// reset click count
-				clickCount = 0;
-				$("#click-count").text(clickCount);
-				$("#char-count").text(0);
-
-				//clear text area
-				$("#bubble-vis-desc").val("");
-
-				curImg = new Image();
-				curImg.onload = function() {
-					curBlurImg = new Image();
-					curBlurImg.onload = function(){
-						// draw blurred image first
-						var canvas = $("#canvas");
-						canvas.off('click');
-						canvas.on('click', OnClickDrawMask);
-						var ctx = canvas[0].getContext('2d');
-						ctx.clearRect(0, 0, canvas.width(), canvas.height())
-						ctx.drawImage(curBlurImg,0,0, IMG_WIDTH, IMG_HEIGHT);
+			function SetupImage(){
+				// after describing an image, verify it.
+				if (curIdx!=0 && showImage){
+					// if the description is less than minumum, can't approve
+					var desc = $("#study-vis-desc").val();
+					if (desc.length<MIN_DESC){
+						bootbox.alert("The description should be more than 150 characters!")
+						return;
 					}
-					curBlurImg.src = images.blurred[idx];
+					//save the description
+					LogAction("explain", {image:images.targets[curIdx], desc: desc});	
 				}
-				curImg.src = images.targets[idx];
-			}
-			function OnClickDrawMask(e){
-				var canvas = $("#canvas");
-				var ctx = canvas[0].getContext('2d');
-
-				ctx.save();
-
-				var rect = canvas[0].getBoundingClientRect();
-
-			    var x = e.clientX - rect.left;
-			    var y = e.clientY - rect.top;
-			    
-			    console.log("x, y = " + x + ", " + y);
-
-			    ctx.beginPath();
-		        ctx.arc(x, y, 25, 0, 6.28, false); //draw the circle
-		        ctx.clip();
-		        ctx.drawImage(curImg, 0, 0, IMG_WIDTH, IMG_HEIGHT);
-
-		        ctx.restore();
-
-		        //log click actio
-		        data = {
-		        	center_x: x,
-		        	center_y: y,
-		        	radius: 25
-		        }
-		        LogAction("click", data);
-		        clickCount++;
-		        $("#click-count").text(clickCount);
-		        totalClickCount++;
-			}
-			function NextImage(){		
-				// if the description is less than minumum, can't approve
-				var desc = $("#bubble-vis-desc").val();
-				if (desc.length<MIN_DESC){
-					bootbox.alert("The description should be more than 150 characters!")
-					return;
-				}
-				//log description
-				LogAction("explain", {image:images.targets[curIdx], desc: desc});		
-				console.log('clickCount = ' + clickCount);
-				//increase image index
-				curIdx++;
-				if (curIdx<images.targets.length){					
-					//setup a new image
-					SetupImage(curIdx);
-				}else{
-					//all images are used, move on to the next stage
+				//all images are used, move on to the next stage
+				if (curIdx>=images.targets.length){										
 					if (isPractice!=true)
-						ChangeStage(stage+1);
+						return ChangeStage(stage+1);
 					else
-						ChangeStage(stage-1);
+						return ChangeStage(stage-1);
 				}
-				
+
+				if (showImage){
+					console.log("Show an Image!");
+					showImage = false;						
+
+					// reset char count
+					$("#char-count").text(0);
+					//clear text area
+					$("#study-vis-desc").val("");
+
+					//setup a new image
+					var curImg = new Image();
+					curImg.onload = function() {
+						var canvas = $("#canvas");
+						var ctx = canvas[0].getContext('2d');
+						ctx.clearRect(0, 0, canvas.width(), canvas.height());	//clear canvas
+						ctx.drawImage(curImg,0,0, IMG_WIDTH, IMG_HEIGHT);	//draw image
+					}
+					curImg.src = images.targets[curIdx];
+					$("#describe-form").hide();
+					//$("#canvas").show();
+
+					setTimeout(function(){
+						console.log("Timeout!")
+						SetupImage();// disappear the image
+					}, 10000)
+				}else{//describe the previous image
+					console.log("Describe the Image!");
+					showImage = true;
+					
+					var canvas = $("#canvas");
+					var ctx = canvas[0].getContext('2d');
+					ctx.clearRect(0, 0, canvas.width(), canvas.height());	//clear canvas
+					ctx.strokeStyle = "#d3d7cf";
+					ctx.rect(0,0,canvas.width(), canvas.height());
+					ctx.stroke();
+
+					ctx.beginPath();
+					ctx.moveTo(0,0);
+					ctx.lineTo(canvas.width(), canvas.height());
+					ctx.stroke();
+
+					ctx.beginPath();
+					ctx.moveTo(canvas.width(),0);
+					ctx.lineTo(0,canvas.height());
+					ctx.stroke();
+					//$("#canvas").hide();
+					$("#describe-form").show();
+
+
+					//next image
+					curIdx++;
+				}
 			}
+
 			function OnKeyPress(e){
 				// if(e.keyCode == 32){
 				// 	e.preventDefault(); //disable spacebar scrolling
@@ -237,15 +231,15 @@
 	    				$("#consent").show();
 	    			break;
 	    			case MENU:
-    					// log start study
-		    			LogAction("start", null);
+	    				// log start study
+    					LogAction("start", null);
 	    				console.log("MENU");
 	    				$("#menu").show();
     				break;
-	    			case BUBBLE:
-	    				console.log("BUBBLE");
-	    				$("#bubble").show();
-	    				SetupImage(curIdx);
+	    			case STUDY:
+	    				console.log("STUDY");
+	    				$("#study").show();
+	    				SetupImage();
 	    			break;
 	    			case DEBRIEF:
 	    				console.log("DEBRIEF");
@@ -259,7 +253,7 @@
 	    			case INTRO: 	$("#intro").hide(); 	break;
 	    			case CONSENT:	$("#consent").hide();	break;
 	    			case MENU:		$("#menu").hide();		break;
-	    			case BUBBLE: 	$("#bubble").hide();	break;
+	    			case STUDY: 	$("#study").hide();		break;
 	    			case DEBRIEF: 	$("#debrief").hide(); 	break;
 	    		}
 	    	}
@@ -272,7 +266,8 @@
 	    			action: action,
 	    			data: data
 	    		};
-	    		$.post("/bubble/log", log, function(res){
+	    		console.log(log);
+	    		$.post("/recall/log", log, function(res){
 	    			if (res.code!=0){
 	    				bootbox.alert("Failed to log a worker action!");
 	    			}
@@ -284,10 +279,8 @@
 	   			
 	    		// 1. Target Image Count
 	    		$("<input type='hidden' name='imageCount' value='" + images.targets.length + "'>").appendTo($(formSelector));
-	    		// 2. Total Click Count
-	    		$("<input type='hidden' name='clickCount' value='" + totalClickCount + "'>").appendTo($(formSelector));
-	    		// 3. Avg Click Count
-	    		$("<input type='hidden' name='avgClickCount' value='" + (totalClickCount/images.targets.length) + "'>").appendTo($(formSelector));
+				// 2. Last Describtion
+	    		$("<input type='hidden' name='imageDesc' value='" + $("#study-vis-desc").val() + "'>").appendTo($(formSelector));
 
 	    		var gender 	= $("input:radio[name=gender]:checked").val();
 	    		var age 	= $("input:radio[name=ageGroup]:checked").val();
@@ -301,13 +294,12 @@
 	    		if ($("#ethnicEastInd").prop('checked'))	ethnic += "/" + $("#ethnicEastInd").val();
 	    		if ($("#ethnicNative").prop('checked'))		ethnic += "/" + $("#ethnicNative").val();
 	    		if ($("#ethnicOther").prop('checked'))		ethnic += "/" + $("#ethnicOther").val();
-				var feedback = $("#survey-feedback").val();
+	    		var feedback = $("#survey-feedback").val();
 
 	    		// // submit the form to the mturk site
 	    		console.log("Submiting mturk-form...");
 	    		console.log("imageCount: "+images.targets.length);
-	    		console.log('totalClickCount = ' + totalClickCount);
-	   			console.log('avgClickCount = ' + (totalClickCount/images.targets.length) );
+	    		console.log("imageDesc: "+$("#study-vis-desc").val());	    		
 
 	   			console.log(gender);
 	   			console.log(age);
@@ -320,7 +312,6 @@
 	   				ethnic: ethnic,
 	   				feedback: feedback
 	   			});
-
 	    		// console.log("assignmentId: " + $("#mturk-form input[name=assignmentId]").val());
 	    		// console.log("targetNumber: " + $("#mturk-form input[name=targetNumber]").val());
 	    		// console.log("correctNumber: " + $("#mturk-form input[name=correctNumber]").val());
@@ -334,11 +325,11 @@
 		    	<div id="intro">					
 					<div class="row">
 						<div class="col-md-12">
-							<h2>Bubble Study</h2>
+							<h2>Visualization Recall Study</h2>
 							<p class="text-justify">
-								Welcome! In this short study, you will be given a series of visualization images and asked to describe the images in as much detail as possible. Each image is heavily blurred so that you can only see a rough outline of the image. However, you can click to reveal small, circular areas of the image ("bubbles") to inspect the full details. We will approve your work based on the description you provided, and will also refer to the number of clicks on each image.
+								Welcome! In this short study, you will be given a series of visualization images and asked to describe the images in as much detail as possible. Each image disappears after being presented for 10 seconds. You then need to describe what you remember about the image. We will approve your work based on the description you provided.
 							</p><br>
-							<img class="center-block thumbnail" height="350" src="/images/bubble-db/study_overview.png">
+							<img class="center-block thumbnail" height="350" src="/images/recall-db/study_overview.png">
 							<br>
 							
 							<div class="g-recaptcha" align="center" data-sitekey="6Lc4B_8SAAAAAMicUMBTqf16BHC5xLSlrrX2YVYB" ></div>
@@ -356,11 +347,12 @@
 							<h2>STATEMENT OF INFORMED CONSENT</h2>
 							<p class="text-justify">								
 								<br>								
-								<strong>Purpose of research:</strong> I am studying the memorability of data visualizations and information graphics. The elements of each image, such as type of graph and layout, are of interest in determining what components may aid memorability. This study focuses on the impact that visual elements have on visualization recognition and memorability. 
+								<strong>Purpose of research:</strong> I am studying the memorability of data visualizations and information graphics. The elements of each image, such as type of graph and layout, are of interest in determining what components may aid recall. This study focuses on the impact that visual elements have on visualization recall. 
 								<br><br>
-								<strong>What your participation in this study will involve:</strong>
-								Reading a summary of relevant background information.
-								Seeing a visualization image and describing the image.
+								<strong>What your participation in this study will involve:</strong><br>
+								Reading a summary of relevant background information.<br>
+								Seeing a sequence of visualization images, where each image is presented for 10 seconds and disappears.<br>
+								Writing a text description of what participant recalls about the image.
 								<br><br>
 								<strong>Time required:</strong> Participation will take approximately 5 minutes.
 								<br><br>
@@ -436,16 +428,16 @@
 				<div id="menu">					
 					<div class="row">
 						<div class="col-md-12">
-							<h2>Bubble Study Instruction</h2>
+							<h2>Visualization Recall Study Instruction</h2>
 							<p class="text-justify">
 								Welcome again! You may try the practice, or skip right on to the study. The real study will be just like the practice except more images. 
 								<br><br>
 								You will be paid <strong>$0.40</strong> for participating in this study which is expected to last about <strong>5 minutes</strong>.
 								<br><br>
-								You will be given <strong>5 visualization images</strong> and asked to <strong>describe the images</strong> in as much detail as possible (minimum 150 characters). Each image is <strong>heavily blurred</strong> so that you can only see a rough outline of the image. However, you can <strong>click to reveal</strong> small, circular areas of the image ("bubbles") to inspect the full details.							
+								You will be given <strong>5 visualization images</strong> and asked to <strong>describe the images</strong> in as much detail as possible (minimum 150 characters). Each image disappears after being <strong>presented for 10 seconds</strong>. You then need to <strong>describe what you remember</strong> about the image. We will approve your work based on the description you provided.
 							</p>
 							<br>
-							<img class="center-block thumbnail" height="350" src="/images/bubble-db/study_overview.png">
+							<img class="center-block thumbnail" height="350" src="/images/recall-db/study_overview.png">
 							<br>
 							<div class="btn-group btn-group-lg" style="width:100%" role="group" aria-label="...">
 								<button id="practice-btn" type="button" style="width:50%" class="btn btn-primary">
@@ -459,24 +451,23 @@
 						</div>
 					</div>
 				</div>
-				<div id="bubble">	
-					<h2>Click and Describe the Image.</h2>				
+				<div id="study">	
+					<h2 id="study-title"></h2>				
 					<div class="row">
 						<div class="col-md-6">							
 							<canvas id="canvas" width="500" height="500"></canvas>
 						</div>
 						<div class="col-md-4">
-							<form role="form">
+							<form id="describe-form" role="form">
 								<div class="form-group">									
-								    <label for="bubble-vis-desc">
-								    	<span class="badge"><span id="click-count">0</span> clicks</span>
+								    <label for="study-vis-desc">
 								    	<span class="badge"><span id="char-count">0</span> characters</span></label>
-								    <textarea id="bubble-vis-desc" name="desc" class="form-control" rows="20" placeholder="Describe the image in as much as possible..."></textarea>
-							  	</div>	
+								    <textarea id="study-vis-desc" name="desc" class="form-control" rows="20" placeholder="Describe what you remember about the image you saw before..."></textarea>
+							  	</div>								
+								<button id="study-next-btn" type="button" class="btn btn-success btn-lg btn-block">
+							  		<span class="glyphicon glyphicon-play"></span> Next
+								</button>
 							</form>
-							<button id="bubble-next-btn" type="button" class="btn btn-success btn-lg btn-block">
-						  		<span class="glyphicon glyphicon-play"></span> Next
-							</button>
 						</div>
 					</div>
 				</div>	
