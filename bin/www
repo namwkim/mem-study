@@ -15,9 +15,9 @@ var https_options = {
 
 // app.set('port', process.env.PORT || 8888);
 //console.log(app)
-//var server = http.createServer(app).listen(4000);
-//console.log('Express http server listening on port ' + server.address().port);
-var server = https.createServer(https_options, app).listen(4001);
+var server = http.createServer(app).listen(4000);
+console.log('Express http server listening on port ' + server.address().port);
+server = https.createServer(https_options, app).listen(4001);
 console.log
 console.log('Express https server listening on port ' + server.address().port);
 

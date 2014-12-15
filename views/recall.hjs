@@ -12,7 +12,7 @@
 	    <script src="/bower_components/bootbox/bootbox.js"></script>
 	    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 	    <script type="text/javascript">
-	    	var INTRO = 0, CONSENT = 1, MENU = 2, STUDY = 3, DEBRIEF = 4;
+	    	var INTRO = 0, CONSENT = 1, PRAC_INST = 2, REAL_INST = 3, STUDY = 4, DEBRIEF = 5;
 	    	var MIN_DESC = 150, IMG_WIDTH = 500, IMG_HEIGHT=500;
 	    	var stage = INTRO;
 	    	var formSelector = "#mturk-form";
@@ -36,7 +36,8 @@
 			});
 			function Initialize(){
 				$("#consent").hide();
-				$("#menu").hide();
+				$("#prac-inst").hide();
+				$("#real-inst").hide();
 				$("#study").hide();
 				$("#debrief").hide();
 
@@ -67,6 +68,7 @@
 				practiceImages = { targets:[] };
 				practiceImages.targets.push(base_url+"study-practice-1.jpg");
 				practiceImages.targets.push(base_url+"study-practice-2.jpg");
+				practiceImages.targets = _.first(_.shuffle(practiceImages.targets), 2); //randomly pick 2 items from a set of practice images.	
 
 				//Set up callback functions
 				$(document).keydown(OnKeyPress);
@@ -81,7 +83,7 @@
     			$('#consent-btn').click(ConsentForm);
 
     			$('#practice-btn').click(StartPractice);
-    			$('#skip-btn').click(StartExperiment);
+    			$('#real-btn').click(StartExperiment);
 
     			$('#study-vis-desc').keyup(function(){
     				$('#char-count').text($('#study-vis-desc').val().length);
@@ -118,13 +120,13 @@
 				}
 			}
 			function StartPractice(){
-				console.log("StartPractice");				
+				console.log("StartPractice");	
 				images 		= practiceImages;
-				LogAction("practice", null);
 				isPractice 	= true;
 				showImage 	= true;
-				curIdx 		= 0;				
-				ChangeStage(stage+1);
+				curIdx 		= 0;	
+				LogAction("start-practice", null);			
+				ChangeStage(STUDY);
 			}
 			function StartExperiment(){
 				console.log("StartExperiment");				
@@ -132,8 +134,8 @@
 				isPractice 	= false;
 				showImage 	= true;
 				curIdx 		= 0;
-				LogAction("experiment", null);
-				ChangeStage(stage+1);
+				LogAction("start-realstudy", null);
+				ChangeStage(STUDY);
 			}
 			function SetupImage(){
 				// after describing an image, verify it.
@@ -145,14 +147,15 @@
 						return;
 					}
 					//save the description
-					LogAction("explain", {image:images.targets[curIdx], desc: desc});	
+					LogAction("explain", {is_practice: isPractice, image:images.targets[curIdx-1], desc: desc});	
+
 				}
 				//all images are used, move on to the next stage
 				if (curIdx>=images.targets.length){										
-					if (isPractice!=true)
-						return ChangeStage(stage+1);
+					if (isPractice==true)
+						return ChangeStage(REAL_INST);
 					else
-						return ChangeStage(stage-1);
+						return ChangeStage(DEBRIEF);
 				}
 
 				if (showImage){
@@ -173,6 +176,7 @@
 						ctx.drawImage(curImg,0,0, IMG_WIDTH, IMG_HEIGHT);	//draw image
 					}
 					curImg.src = images.targets[curIdx];
+					$("#canvas").show();
 					$("#describe-form").hide();
 					//$("#canvas").show();
 
@@ -200,12 +204,11 @@
 					ctx.moveTo(canvas.width(),0);
 					ctx.lineTo(0,canvas.height());
 					ctx.stroke();
-					//$("#canvas").hide();
+					$("#canvas").hide();
 					$("#describe-form").show();
 
-
 					//next image
-					curIdx++;
+					curIdx++;					
 				}
 			}
 
@@ -224,17 +227,23 @@
 	    		stage = newStage;
 	    		switch(stage){
 	    			case INTRO:
+	    				LogAction("introduction", null);
 	    				console.log("INTRO");
 	    			break;
 	    			case CONSENT:
+	    				LogAction("consent-form", null);
 	    				console.log("CONSENT");
 	    				$("#consent").show();
 	    			break;
-	    			case MENU:
-	    				// log start study
-    					LogAction("start", null);
-	    				console.log("MENU");
-	    				$("#menu").show();
+	    			case PRAC_INST:
+    					LogAction("practice-instruction", null);
+	    				console.log("PRAC_INST");
+	    				$("#prac-inst").show();
+    				break;
+	    			case REAL_INST:
+    					LogAction("realstudy-instruction", null);
+	    				console.log("REAL_INST");
+	    				$("#real-inst").show();
     				break;
 	    			case STUDY:
 	    				console.log("STUDY");
@@ -252,14 +261,15 @@
 	    		switch(prevStage){
 	    			case INTRO: 	$("#intro").hide(); 	break;
 	    			case CONSENT:	$("#consent").hide();	break;
-	    			case MENU:		$("#menu").hide();		break;
+	    			case PRAC_INST:	$("#prac-inst").hide();	break;
+	    			case REAL_INST:	$("#real-inst").hide();	break;
 	    			case STUDY: 	$("#study").hide();		break;
 	    			case DEBRIEF: 	$("#debrief").hide(); 	break;
 	    		}
 	    	}
 	    	function LogAction(action, data){
-	    		if (isPractice==true) return;
 	    		var log = { 
+	    			timestamp: $.now(),
 	    			hitId: hitId,
 	    			assignmentId: assignmentId,
 	    			workerId: workerId,
@@ -327,7 +337,9 @@
 						<div class="col-md-12">
 							<h2>Visualization Recall Study</h2>
 							<p class="text-justify">
-								Welcome! In this short study, you will be given a series of visualization images and asked to describe the images in as much detail as possible. Each image disappears after being presented for 10 seconds. You then need to describe what you remember about the image. We will approve your work based on the description you provided.
+								In this HIT you will be presented with a series of images containing graphs and diagrams, and asked to describe the images in as much detail as possible.
+								<br><br>
+								The HIT should take about 5 minutes to complete.
 							</p><br>
 							<img class="center-block thumbnail" height="350" src="/images/recall-db/study_overview.png">
 							<br>
@@ -425,39 +437,52 @@
 						</div>
 					</div>
 				</div>	
-				<div id="menu">					
+				<div id="prac-inst">					
 					<div class="row">
 						<div class="col-md-12">
 							<h2>Visualization Recall Study Instruction</h2>
 							<p class="text-justify">
-								Welcome again! You may try the practice, or skip right on to the study. The real study will be just like the practice except more images. 
+								Welcome!  In this HIT you will be presented with a series of images containing graphs and diagrams.  
 								<br><br>
-								You will be paid <strong>$0.40</strong> for participating in this study which is expected to last about <strong>5 minutes</strong>.
+								You will see each image for 10 seconds, and will then be asked to describe the images in as much detail as possible.  
 								<br><br>
-								You will be given <strong>5 visualization images</strong> and asked to <strong>describe the images</strong> in as much detail as possible (minimum 150 characters). Each image disappears after being <strong>presented for 10 seconds</strong>. You then need to <strong>describe what you remember</strong> about the image. We will approve your work based on the description you provided.
+								We will only approve work for payment that has successfully been completed.
+								<br><br>
+								We will start with some practice images.  Please <strong>click the "Practice" button</strong> below when you are ready to begin.	
 							</p>
 							<br>
 							<img class="center-block thumbnail" height="350" src="/images/recall-db/study_overview.png">
 							<br>
-							<div class="btn-group btn-group-lg" style="width:100%" role="group" aria-label="...">
-								<button id="practice-btn" type="button" style="width:50%" class="btn btn-primary">
-							  		<span class="glyphicon glyphicon-pencil"></span> Start Practice
-								</button>
-								<button id="skip-btn" type="button" style="width:50%" class="btn btn-success">
-							  		<span class="glyphicon glyphicon-play"></span> Start Study
-								</button>
-							</div>
-							
+							<button id="practice-btn" type="button" class="btn btn-primary btn-lg btn-block">
+						  		<span class="glyphicon glyphicon-pencil"></span> Practice
+							</button>
 						</div>
 					</div>
 				</div>
+				<div id="real-inst">					
+					<div class="row">
+						<div class="col-md-12">
+							<h2>Visualization Recall Study Instruction</h2>
+							<p class="text-justify">
+								Great job! Now you will start the real study. The real study will be just like the practice you just did, except a bit longer. 	
+								<br><br>
+								Please <strong>click the "Start" button</strong> below when you are ready to begin.					
+							</p>
+							<br>
+							<img class="center-block thumbnail" height="350" src="/images/recall-db/study_overview.png">
+							<br>													
+							<button id="real-btn" type="button" class="btn btn-success btn-lg btn-block">
+						  		<span class="glyphicon glyphicon-play"></span> Start
+							</button>							
+						</div>
+					</div>
+				</div>				
 				<div id="study">	
 					<h2 id="study-title"></h2>				
 					<div class="row">
-						<div class="col-md-6">							
-							<canvas id="canvas" width="500" height="500"></canvas>
-						</div>
-						<div class="col-md-4">
+						<div class="col-md-6 col-md-offset-3">							
+							<canvas id="canvas" width="500" height="500"></canvas>					
+						
 							<form id="describe-form" role="form">
 								<div class="form-group">									
 								    <label for="study-vis-desc">
@@ -469,6 +494,7 @@
 								</button>
 							</form>
 						</div>
+						
 					</div>
 				</div>	
 				<div id="debrief">
@@ -476,7 +502,7 @@
 					<div class="row">
 						<div class="col-md-12">
 							<p class="text-justify">
-								Thanks for your participation! Upon our confirming your completion of the study, payment will be deposited in your Amazon Payments account.<br><br>
+								Thank you for your participation! Upon our confirmation of your successful task completion, payment will be deposited into your Amazon Payments account.<br><br>
 							</p>
 							<div class="panel panel-default">
   								<div class="panel-body">

@@ -69,6 +69,7 @@ router.post('/recaptcha', function(req, res){
 router.post('/log', function(req, res){
 	var db 		= req.bubbledb;
 	var newLog	= {};
+    newLog.timestamp    = req.body.timestamp;
 	newLog.hitId 		= req.body.hitId;
 	newLog.assignmentId = req.body.assignmentId;
 	newLog.workerId 	= req.body.workerId;
