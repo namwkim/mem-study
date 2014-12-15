@@ -31,7 +31,7 @@ router.get('/images', function(req, res){
 router.post('/recaptcha', function(req, res){
     
     var postData = {
-        secret :'6Lc4B_8SAAAAALzTevL05JYiED5zHfiLaHNE2KwJ',
+        secret :'6LcvMf8SAAAAANwRhpM0Mt7JH46AqFDwnfMzMiHg',
         ip : req.ip,
         response : req.body.recaptcha_response
     };
