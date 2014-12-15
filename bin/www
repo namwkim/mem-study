@@ -7,7 +7,7 @@ var https = require('https');
 var http = require('http');
 // ssl certificates
 var key = fs.readFileSync('./bin/key.pem');
-var cert = fs.readFileSync('./bin/public.pem');
+var cert = fs.readFileSync('./bin/comodo.pem');
 var https_options = {
     key: key,
     cert: cert
