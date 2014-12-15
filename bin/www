@@ -6,8 +6,8 @@ var fs = require('fs');
 var https = require('https');
 var http = require('http');
 // ssl certificates
-var key = fs.readFileSync('./bin/mem-study-private-key.pem');
-var cert = fs.readFileSync('./bin/mem-study-public-cert.pem');
+var key = fs.readFileSync('./bin/key.pem');
+var cert = fs.readFileSync('./bin/public.pem');
 var https_options = {
     key: key,
     cert: cert
