@@ -49,6 +49,7 @@
 				console.log(workerId);
 				if (assignmentId=="ASSIGNMENT_ID_NOT_AVAILABLE"){//preview mode
 					$('#intro-start-button').hide();//do not allow a worker to proceed
+					$('#recaptcha').hide();
 				}else if (assignmentId=="" || hitId=="" || workerId==""){	// invalid access
 					bootbox.alert("You must visit this website through Amazon Mechanical Turk!");
 					$("#intro").hide();
@@ -360,7 +361,7 @@
 							<img class="center-block thumbnail" height="350" src="/images/bubble-db/study_overview.png">
 							<br>
 							
-							<div class="g-recaptcha" align="center" data-sitekey="6LcvMf8SAAAAAOAE34JZH6i7v_8lOrSD38mPkuGG" ></div>
+							<div id="recaptcha" class="g-recaptcha" align="center" data-sitekey="6LcvMf8SAAAAAOAE34JZH6i7v_8lOrSD38mPkuGG" ></div>
 							<br>
 							<button id="intro-start-button" type="button" class="btn btn-success btn-lg btn-block">
 					  			<span class="glyphicon glyphicon-play"></span> Start
