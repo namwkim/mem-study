@@ -7,7 +7,7 @@ var https = require('https');
 var http = require('http');
 // ssl certificates
 var key = fs.readFileSync('./bin/key.pem');
-var cert = fs.readFileSync('./bin/comodo.pem');
+var cert = fs.readFileSync('./bin/starssl.pem');
 var https_options = {
     key: key,
     cert: cert
@@ -18,7 +18,6 @@ var https_options = {
 var server = http.createServer(app).listen(4000);
 console.log('Express http server listening on port ' + server.address().port);
 server = https.createServer(https_options, app).listen(4001);
-console.log
 console.log('Express https server listening on port ' + server.address().port);
 
 // var server = app.listen(app.get('port'), function() {
