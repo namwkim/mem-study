@@ -192,6 +192,7 @@
 					var canvas = $("#canvas");
 					var ctx = canvas[0].getContext('2d');
 					ctx.clearRect(0, 0, canvas.width(), canvas.height());	//clear canvas
+					/*
 					ctx.strokeStyle = "#d3d7cf";
 					ctx.rect(0,0,canvas.width(), canvas.height());
 					ctx.stroke();
@@ -205,6 +206,7 @@
 					ctx.moveTo(canvas.width(),0);
 					ctx.lineTo(0,canvas.height());
 					ctx.stroke();
+					*/
 					$("#canvas").hide();
 					$("#describe-form").show();
 

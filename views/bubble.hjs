@@ -2,18 +2,20 @@
 <html>
   	<head>
 	    <title>{{ title }}</title>
-	    <link rel='stylesheet' href='/stylesheets/bubble.css' />
 	    <link rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap.min.css' />
+	    <link rel='stylesheet' href='/bower_components/bootstro/bootstro.min.css' />
+	    <link rel='stylesheet' href='/stylesheets/bubble.css'/>
 
 	    <script src="/javascripts/turkify.js"></script>
 	    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
 	    <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+	    <script src="/bower_components/bootstro/bootstro.min.js"></script>
 	    <script src="/bower_components/underscore/underscore-min.js"></script>
 	    <script src="/bower_components/bootbox/bootbox.js"></script>
 	    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 	    <script type="text/javascript">
 	    	var INTRO = 0, CONSENT = 1, PRAC_INST = 2, REAL_INST = 3, STUDY = 4, DEBRIEF = 5;
-	    	var MIN_DESC = 150, IMG_WIDTH = 500, IMG_HEIGHT=500;
+	    	var MIN_DESC = 150;// IMG_WIDTH = 700, IMG_HEIGHT=700;
 	    	var stage = INTRO;
 	    	var formSelector = "#mturk-form";
 	    	var images = null;
@@ -66,15 +68,15 @@
 
 				//load practice images
 				practiceImages = { targets:[], blurred:[] };
-				practiceImages.targets.push(base_url+"bubble-practice-1.jpg");
-				practiceImages.targets.push(base_url+"bubble-practice-2.jpg");
+				practiceImages.targets.push(base_url+"bubble-practice-1.png");
+				//practiceImages.targets.push(base_url+"bubble-practice-2.jpg");
 				
-				practiceImages.blurred.push(base_url+"bubble-practice-1-blurred.jpg");
-				practiceImages.blurred.push(base_url+"bubble-practice-2-blurred.jpg");
-
+				practiceImages.blurred.push(base_url+"bubble-practice-1-blurred.png");
+				//practiceImages.blurred.push(base_url+"bubble-practice-2-blurred.jpg");
+				/*
 				randomized = _.take(_.shuffle(_.zip(practiceImages.targets, practiceImages.blurred)),2);
 				practiceImages.targets = _.map(randomized, function(arr){ return arr[0]; });
-				practiceImages.blurred = _.map(randomized, function(arr){ return arr[1]; });
+				practiceImages.blurred = _.map(randomized, function(arr){ return arr[1]; });*/
 				console.log(practiceImages);
 
 				//Set up callback functions
@@ -95,6 +97,18 @@
     			$('#bubble-vis-desc').keyup(function(){
     				$('#char-count').text($('#bubble-vis-desc').val().length);
     			})
+
+    			//bootstro initialization (tutorial)
+    			$('#canvas').addClass("bootstro")
+	                .attr("data-bootstro-title", "Click Image")
+	                .attr("data-bootstro-content", "Click to reveal small, circular areas of the image to inspect the full details.")
+	                .attr("data-bootstro-placement", "right")
+	                .attr("data-bootstro-step", 0)
+                $('#describe-form').addClass("bootstro")
+	                .attr("data-bootstro-title", "Describe Image")
+	                .attr("data-bootstro-content", "Describe the image in as much detail as possible (minimum 150 characters).")
+	                .attr("data-bootstro-placement", "left")
+	                .attr("data-bootstro-step", 1)
 
 			}
 			function ConfirmRecaptcha(){
@@ -121,7 +135,10 @@
 				var third 	= $("input:radio[name=radioThird]:checked").val();
 
 				if (first == "no" || second == "no" || third == "no"){
-					bootbox.alert("Sorry, You  are not allowed to participate in this study.");
+					bootbox.alert("Sorry, You are not allowed to participate in this study.", function(){
+						$("#submit-btn").trigger("click", [true]);
+					});
+					
 				}else{
 					ChangeStage(stage+1);
 				}
@@ -133,6 +150,13 @@
 				curIdx 		= clickCount = totalClickCount =0;	
 				LogAction("start-practice", null);			
 				ChangeStage(STUDY);
+
+				//start tutorial instruction
+				$("#tutorial-msg").show();
+				bootstro.start(".bootstro",{
+					nextButtonText: "Next »",
+					prevButtonText: "Prev »"
+				});
 			}
 			function StartExperiment(){
 				console.log("StartExperiment");				
@@ -141,6 +165,8 @@
 				curIdx 		= clickCount = totalClickCount = 0;
 				LogAction("start-experiment", null);
 				ChangeStage(STUDY);
+
+				$("#tutorial-msg").hide();
 			}
 			function SetupImage(idx){
 				// reset click count
@@ -154,18 +180,34 @@
 				curImg = new Image();
 				curImg.onload = function() {
 					curBlurImg = new Image();
-					curBlurImg.onload = function(){
+					curBlurImg.onload = function(){						
 						// draw blurred image first
 						var canvas = $("#canvas");
 						canvas.off('click');
-						canvas.on('click', OnClickDrawMask);
+						canvas.on('click', {width:this.width, height:this.height}, OnClickDrawMask);
 						var ctx = canvas[0].getContext('2d');
-						ctx.clearRect(0, 0, canvas.width(), canvas.height())
-						ctx.drawImage(curBlurImg,0,0, IMG_WIDTH, IMG_HEIGHT);
+						ctx.clearRect(0, 0, canvas.width(), canvas.height());
+						var newSize = CalcNewImageSize(this.width, this.height, canvas.width(), canvas.height());
+						ctx.drawImage(curBlurImg,0,0, newSize.width, newSize.height);
 					}
 					curBlurImg.src = images.blurred[idx];
 				}
 				curImg.src = images.targets[idx];
+			}
+			function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {				
+				var newWidth 	= imgWidth;	
+				var newHeight	= imgHeight;		
+				if (newWidth>canvasWidth){
+					newWidth 	= canvasWidth;
+					var wratio 	= canvasWidth/imgWidth;
+					newHeight 	= wratio*newHeight;
+				}
+				if (newHeight>canvasHeight){
+					newHeight 	= canvasHeight;
+					var hratio 	= canvasHeight/imgHeight;
+					newWidth 	= hratio*newWidth;
+				}
+				return {width: newWidth, height: newHeight};
 			}
 			function OnClickDrawMask(e){
 				var canvas = $("#canvas");
@@ -180,13 +222,15 @@
 			    
 			    console.log("x, y = " + x + ", " + y);
 			    //reset previous cicle
-			    ctx.drawImage(curBlurImg, 0, 0, IMG_WIDTH, IMG_HEIGHT);
+			    var newSize = CalcNewImageSize(e.data.width, e.data.height, canvas.width(), canvas.height());
+			    console.log(newSize);
+			    ctx.drawImage(curBlurImg,0,0, newSize.width, newSize.height);
 
 			    //draw the circle
 			    ctx.beginPath();
 		        ctx.arc(x, y, 25, 0, 6.28, false); 
 		        ctx.clip();
-		        ctx.drawImage(curImg, 0, 0, IMG_WIDTH, IMG_HEIGHT);
+		        ctx.drawImage(curImg,0,0, newSize.width, newSize.height);
 
 		        ctx.restore();
 
@@ -297,7 +341,12 @@
 	    		});
 
 	    	}
-	    	function SubmitForm () {
+	    	function SubmitForm (e, notQualified) {
+	    		if (notQualified==true){//failed to pass the consent form
+	    			$("<input type='hidden' name='consentForm' value='notQualified'>");
+	    			$(formSelector).submit();	
+	    			return;
+	    		}
 	   			//generating answer data (name-value pairs)
 	   			
 	    		// 1. Target Image Count
@@ -319,6 +368,8 @@
 	    		if ($("#ethnicEastInd").prop('checked'))	ethnic += "/" + $("#ethnicEastInd").val();
 	    		if ($("#ethnicNative").prop('checked'))		ethnic += "/" + $("#ethnicNative").val();
 	    		if ($("#ethnicOther").prop('checked'))		ethnic += "/" + $("#ethnicOther").val();
+	    		if ($("#ethnicNotToSay").prop('checked'))	ethnic += "/" + $("#ethnicNotToSay").val();
+	    		
 				var feedback = $("#survey-feedback").val();
 
 	    		// // submit the form to the mturk site
@@ -358,7 +409,7 @@
 								<br><br>
 								The HIT should take about 5 minutes to complete.
 							</p><br>
-							<img class="center-block thumbnail" height="350" src="/images/bubble-db/study_overview.png">
+							<img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/bubble-db/study_overview.png">
 							<br>
 							
 							<div id="recaptcha" class="g-recaptcha" align="center" data-sitekey="6LcvMf8SAAAAAOAE34JZH6i7v_8lOrSD38mPkuGG" ></div>
@@ -462,21 +513,17 @@
 								<br><br>
 								<!--You will be paid <strong>$0.40</strong> for participating in this study which is expected to last about <strong>5 minutes</strong>.
 								<br><br>-->
-								For each image, you will be asked to <strong>describe the image</strong> in as much detail as possible (minimum 150 characters). 
+								For each image, you will be asked to <strong>describe the image</strong> in as much detail as possible (minimum 150 characters). The image is <strong>heavily blurred</strong> so that you can only see a rough outline of the image. However, you can <strong>click to reveal</strong> small, circular areas of the image ("bubbles") to inspect the full details.
 								<br><br>
-								The image is <strong>heavily blurred</strong> so that you can only see a rough outline of the image. 
+								We will only pay for successfully completed work.
 								<br><br>
-								However, you can <strong>click to reveal</strong> small, circular areas of the image ("bubbles") to inspect the full details.
-								<br><br>
-								We will only approve work for payment that has successfully been completed.
-								<br><br>
-								We will start with some practice images.  Please <strong>click the "Practice" button</strong> below when you are ready to begin.					
+								We will start with a tutorial. Please <strong>click the button</strong> below when you are ready to begin.					
 							</p>
 							<br>
-							<img class="center-block thumbnail" height="350" src="/images/bubble-db/study_overview.png">
+							<img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/bubble-db/study_overview.png">
 							<br>
-							<button id="practice-btn" type="button" class="btn btn-primary btn-lg btn-block">
-						  		<span class="glyphicon glyphicon-pencil"></span> Practice
+							<button id="practice-btn" type="button" class="btn btn-success btn-lg btn-block">
+						  		<span class="glyphicon glyphicon-play"></span> Continue
 							</button>
 						</div>
 					</div>
@@ -489,7 +536,7 @@
 							<p class="text-justify">
 								Great job! Now you will start the real study. The real study will be just like the practice you just did, except a bit longer.			
 								<br><br>
-								Please <strong>click the "Start" button</strong> below when you are ready to begin.							
+								Please <strong>click the "Start" button</strong> below when you are ready to begin.						
 							</p>
 							<br>
 							<img class="center-block thumbnail" height="350" src="/images/bubble-db/study_overview.png">
@@ -501,13 +548,13 @@
 					</div>
 				</div>
 				<div id="bubble">	
-					<h2>Click and Describe the Image.</h2>				
+					<h2>Click and Describe the Image. <span id="tutorial-msg" class="label label-info">Tutorial</span></h2>		
 					<div class="row">
-						<div class="col-md-6">							
-							<canvas id="canvas" width="500" height="500"></canvas>
+						<div class="col-md-8">							
+							<canvas id="canvas" width="600" height="600"></canvas>
 						</div>
 						<div class="col-md-4">
-							<form role="form">
+							<form id="describe-form" role="form">
 								<div class="form-group">									
 								    <label for="bubble-vis-desc">
 								    	<span class="badge"><span id="click-count">0</span> clicks</span>
@@ -547,6 +594,9 @@
 													</label>
 													<label class="radio-inline">
 													  <input type="radio" name="gender" id="genderFemale" value="male"> Male
+													</label>
+													<label class="radio-inline">
+													  <input type="radio" name="gender" id="genderOther" value="other"> Prefer not to say
 													</label>
 												</td>
 											</tr>
@@ -611,6 +661,9 @@
 														</label>
 														<label class="checkbox-inline">
 														  	<input type="checkbox" id="ethnicOther" value="Other"> Other
+														</label>
+														<label class="checkbox-inline">
+														  	<input type="checkbox" id="ethnicNotToSay" value="NotToSay"> Prefer not to say
 														</label>
 													</div>																																						
 												</td>
