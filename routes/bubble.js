@@ -13,6 +13,7 @@ router.get('/', function(req, res) {
 router.get('/images', function(req, res){
 	var db = req.bubbledb;
 	var hitId = req.body.hitId;
+    console.log(hitId);
 	db.collection('images').find({hit_id: hitId}).toArray(function(err, result){
         if (err) {
             return console.log(new Date(), 'error in loading images', err);
