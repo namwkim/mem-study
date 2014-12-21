@@ -10,7 +10,7 @@ router.get('/', function(req, res) {
 	console.log(req.params);
   	res.render('bubble', { title: 'Bubble Experiment' });
 });
-router.get('/images', function(req, res){
+router.post('/images', function(req, res){
 	var db = req.bubbledb;
 	var hitId = req.body.hitId;
     console.log(hitId);
