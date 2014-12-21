@@ -52,6 +52,7 @@
 				if (assignmentId=="ASSIGNMENT_ID_NOT_AVAILABLE"){//preview mode
 					$('#intro-start-button').hide();//do not allow a worker to proceed
 					$('#recaptcha').hide();
+					return;
 				}else if (assignmentId=="" || hitId=="" || workerId==""){	// invalid access
 					bootbox.alert("You must visit this website through Amazon Mechanical Turk!");
 					$("#intro").hide();
