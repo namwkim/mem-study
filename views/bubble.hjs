@@ -64,7 +64,7 @@
 				//load target images
 	    		$.getJSON('/bubble/images', {hitId:hitId}, function(res){
 	    			if (res.targets.length==0){
-	    				bootbox.alert("Failed to retrieve visualization images.", function(){
+	    				bootbox.alert("Failed to retrieve visualization images. HIT ID is not valid ("+hitId+")." , function(){
 							$("#submit-btn").trigger("click", [true]);
 						});
 	    			}

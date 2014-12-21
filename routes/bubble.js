@@ -17,7 +17,7 @@ router.get('/images', function(req, res){
         if (err) {
             return console.log(new Date(), 'error in loading images', err);
         }
-        //console.log(result);
+        console.log(result);
         if (result) {
             var images = result;
             
