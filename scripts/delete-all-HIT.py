@@ -32,25 +32,29 @@ def delete_all_hit(keyfile):
 		mturk_url = 'mechanicalturk.amazonaws.com'
 		preview_url = 'https://mturk.com/mturk/preview?groupId='
 
-	conn = MTurkConnection(aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, host=mturk_url)
-
-	for hit in conn.get_reviewable_hits(): 
-		print "HIT " + hit.HITId
-		assignments = conn.get_assignments(hit_id=hit.HITId);
-		i = int(assignments.NumResults);
-		while i!=0:
-			print "page# = " + assignments.PageNumber + ", # of assignments = " + assignments.NumResults	
-			for assignment in assignments:
-				print "Rejecting " + assignment.AssignmentId
-				conn.reject_assignment(assignment.AssignmentId);	
-				i=i-1
-			assignments = conn.get_assignments(hit_id=hit.HITId);
+	conn = MTurkConnection(aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, host=mturk_url)		
 
 	for hit in conn.get_all_hits():
+		print "HIT " + hit.HITId + "(Status: "+hit.HITStatus+")"
 		conn.expire_hit(hit.HITId)
-		# Give the HIT a moment to expire.
-		
+
+		# Give the HIT a moment to expire.		
 		time.sleep(0.25)
+
+		# Update Hit
+		hit = conn.get_hit(hit_id=hit.HITId)[0];
+		print "HIT " + hit.HITId + "(Status: "+hit.HITStatus+")"
+		if hit.HITStatus == "Reviewable":
+			assignments = conn.get_assignments(hit_id=hit.HITId);
+			i = int(assignments.NumResults);
+			while i!=0:
+				print "page# = " + assignments.PageNumber + ", # of assignments = " + assignments.NumResults	
+				for assignment in assignments:
+					print "Rejecting " + assignment.AssignmentId
+					conn.reject_assignment(assignment.AssignmentId);	
+					i=i-1
+				assignments = conn.get_assignments(hit_id=hit.HITId);
+
 
 		conn.dispose_hit(hit.HITId)
 
