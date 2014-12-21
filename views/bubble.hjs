@@ -61,7 +61,7 @@
 
 
 				//load target images
-	    		$.getJSON('/bubble/images', {hitId:hitId} function(res){
+	    		$.getJSON('/bubble/images', {hitId:hitId}, function(res){
 	    			if (res.targets.length==0){
 	    				bootbox.alert("Failed to retrieve visualization images.", function(){
 							$("#submit-btn").trigger("click", [true]);
