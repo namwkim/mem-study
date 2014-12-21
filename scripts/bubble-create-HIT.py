@@ -1,5 +1,6 @@
 from boto.mturk.connection import MTurkConnection
 from boto.mturk.question import ExternalQuestion
+from boto.mturk.qualification import LocaleRequirement, PercentAssignmentsApprovedRequirement, Qualifications
 import os, pymongo, sys
 
 ######  AMT CONFIGURATION PARAMETRS  ######
@@ -30,8 +31,8 @@ AWS_SECRET_KEY = ''
 # Your Amazon Web Services IAM User Name (private)
 
 ######  BUBBLE CONFIGURATION PARAMETRS  ######
-BASE_URI = "/images/bubble-db/targets/"
-BASE_URI_BLUR = "/images/bubble-db/targets_blurred/"
+BASE_URI = "/images/bubble-db-pilot/targets/"
+BASE_URI_BLUR = "/images/bubble-db-pilot/targets_blurred/"
 #######################################
 
 
@@ -51,31 +52,46 @@ def create_hits(keyfile):
 		mturk_url = 'mechanicalturk.amazonaws.com'
 		preview_url = 'https://mturk.com/mturk/preview?groupId='
 
-	q = ExternalQuestion(external_url=HIT_URL, frame_height=800)
-	conn = MTurkConnection(aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, host=mturk_url)
-	hitIDs = []
-	for i in range(0, NUMBER_OF_HITS):
-		create_hit_rs = conn.create_hit(question=q, lifetime=LIFETIME, max_assignments=NUMBER_OF_ASSIGNMENTS, title=TITLE, keywords=KEYWORDS, reward=REWARD, duration=DURATION, approval_delay=APPROVAL_DELAY, annotation=DESCRIPTION)
-		print(preview_url + create_hit_rs[0].HITTypeId)
-		print("HIT ID: " + create_hit_rs[0].HITId)
-
-		# save HIT IDs
-		hitIDs.append(create_hit_rs[0].HITId); 
-
 	# collect target image filenames
 	targets = []
-	for root, dirs, files in os.walk("../public/images/bubble-db/targets"):		
+	for root, dirs, files in os.walk("../public/images/bubble-db-pilot/targets"):		
 		for file in files:		
 			if file.startswith('.'):
 				continue
 			targets.append(file)
 
 	targets_blurred = []
-	for root, dirs, files in os.walk("../public/images/bubble-db/targets_blurred"):		
+	for root, dirs, files in os.walk("../public/images/bubble-db-pilot/targets_blurred"):		
 		for file in files:		
 			if file.startswith('.'):
 				continue
 			targets_blurred.append(file)
+
+	if len(targets)!=len(targets_blurred):
+		print "target!=targets_blurred";
+		sys.exit(0)
+
+	# set # of HITs to the number of images
+	NUMBER_OF_HITS = len(targets);
+
+	# Create External Question
+	q = ExternalQuestion(external_url=HIT_URL, frame_height=800)
+	conn = MTurkConnection(aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, host=mturk_url)
+
+	# Create Qualifications
+	quals = Qualifications()
+	quals.add(PercentAssignmentsApprovedRequirement(comparator="GreaterThan", integer_value="95"))
+	quals.add(LocaleRequirement(comparator="EqualTo", locale="US"))
+
+	#Create HITs
+	hitIDs = []
+	for i in range(0, NUMBER_OF_HITS):
+		create_hit_rs = conn.create_hit(question=q, lifetime=LIFETIME, max_assignments=NUMBER_OF_ASSIGNMENTS, title=TITLE, keywords=KEYWORDS, reward=REWARD, duration=DURATION, approval_delay=APPROVAL_DELAY, annotation=DESCRIPTION, qualifications=quals)
+		print(preview_url + create_hit_rs[0].HITTypeId)
+		print("HIT ID: " + create_hit_rs[0].HITId)
+
+		# save HIT IDs
+		hitIDs.append(create_hit_rs[0].HITId); 
 
 	# open db connection
 	client 	= pymongo.MongoClient('localhost', 27017)

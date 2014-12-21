@@ -1,5 +1,6 @@
 from boto.mturk.connection import MTurkConnection
 from boto.mturk.question import ExternalQuestion
+from boto.mturk.qualification import LocaleRequirement, PercentAssignmentsApprovedRequirement, Qualifications
 import os, pymongo, sys
 
 ######  AMT CONFIGURATION PARAMETRS  ######
@@ -52,9 +53,15 @@ def create_hits(keyfile):
 
 	q = ExternalQuestion(external_url=HIT_URL, frame_height=800)
 	conn = MTurkConnection(aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, host=mturk_url)
+
+	# Create Qualifications
+	quals = Qualifications()
+	quals.add(PercentAssignmentsApprovedRequirement(comparator="GreaterThan", integer_value="95"))
+	quals.add(LocaleRequirement(comparator="EqualTo", locale="US"))
+		
 	hitIDs = []
 	for i in range(0, NUMBER_OF_HITS):
-		create_hit_rs = conn.create_hit(question=q, lifetime=LIFETIME, max_assignments=NUMBER_OF_ASSIGNMENTS, title=TITLE, keywords=KEYWORDS, reward=REWARD, duration=DURATION, approval_delay=APPROVAL_DELAY, annotation=DESCRIPTION)
+		create_hit_rs = conn.create_hit(question=q, lifetime=LIFETIME, max_assignments=NUMBER_OF_ASSIGNMENTS, title=TITLE, keywords=KEYWORDS, reward=REWARD, duration=DURATION, approval_delay=APPROVAL_DELAY, annotation=DESCRIPTION, qualifications=quals)
 		print(preview_url + create_hit_rs[0].HITTypeId)
 		print("HIT ID: " + create_hit_rs[0].HITId)
 

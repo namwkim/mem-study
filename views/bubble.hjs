@@ -15,13 +15,13 @@
 	    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 	    <script type="text/javascript">
 	    	var INTRO = 0, CONSENT = 1, PRAC_INST = 2, REAL_INST = 3, STUDY = 4, DEBRIEF = 5;
-	    	var MIN_DESC = 150;// IMG_WIDTH = 700, IMG_HEIGHT=700;
+	    	var MIN_DESC = 150, RADIUS_PIXEL = 30;// IMG_WIDTH = 700, IMG_HEIGHT=700;
 	    	var stage = INTRO;
 	    	var formSelector = "#mturk-form";
 	    	var images = null;
 	    	var realImages = null;
 	    	var practiceImages = null;
-    		var base_url = "/images/bubble-db/";
+    		var base_url = "/images/bubble-db-pilot/";
     		var logs = null;
     		var isPractice = false;
 
@@ -61,7 +61,12 @@
 
 
 				//load target images
-	    		$.getJSON('/bubble/images', function(res){
+	    		$.getJSON('/bubble/images', {hitId:hitId} function(res){
+	    			if (res.targets.length==0){
+	    				bootbox.alert("Failed to retrieve visualization images.", function(){
+							$("#submit-btn").trigger("click", [true]);
+						});
+	    			}
 					console.log(res);
 					realImages = res;
 				});
@@ -157,6 +162,8 @@
 					nextButtonText: "Next »",
 					prevButtonText: "Prev »"
 				});
+				$("#bubble-vis-desc").val("This chart show the relationship between global malaria deaths and R&D funding across different continents. Africa accounts for a major portion of malaria deaths. Overall, global malaria deaths have been decreasing as R&D funding increases over time.");
+				$('#char-count').text($('#bubble-vis-desc').val().length);
 			}
 			function StartExperiment(){
 				console.log("StartExperiment");				
@@ -167,6 +174,8 @@
 				ChangeStage(STUDY);
 
 				$("#tutorial-msg").hide();
+				$("#bubble-vis-desc").val("");
+				$('#char-count').text($('#bubble-vis-desc').val().length);
 			}
 			function SetupImage(idx){
 				// reset click count
@@ -182,19 +191,22 @@
 					curBlurImg = new Image();
 					curBlurImg.onload = function(){						
 						// draw blurred image first
+						//console.log($(curBlurImg).width() + ", " + console.log($(curBlurImg).height()));
 						var canvas = $("#canvas");
 						canvas.off('click');
-						canvas.on('click', {width:this.width, height:this.height}, OnClickDrawMask);
+						canvas.on('click', {width:this.naturalWidth, height:this.naturalHeight}, OnClickDrawMask);
 						var ctx = canvas[0].getContext('2d');
 						ctx.clearRect(0, 0, canvas.width(), canvas.height());
-						var newSize = CalcNewImageSize(this.width, this.height, canvas.width(), canvas.height());
+						var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, canvas.width(), canvas.height());
 						ctx.drawImage(curBlurImg,0,0, newSize.width, newSize.height);
 					}
 					curBlurImg.src = images.blurred[idx];
 				}
 				curImg.src = images.targets[idx];
 			}
-			function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {				
+			function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {		
+				console.log("(canvasWidth, canvasHeight) = " + canvasWidth + ", " + canvasHeight);
+				console.log("(oldWidth, oldHeight) = " + imgWidth + ", " + imgHeight);						
 				var newWidth 	= imgWidth;	
 				var newHeight	= imgHeight;		
 				if (newWidth>canvasWidth){
@@ -207,6 +219,7 @@
 					var hratio 	= canvasHeight/imgHeight;
 					newWidth 	= hratio*newWidth;
 				}
+				console.log("(newWidth, newHeight) = " + newWidth + ", " + newHeight);
 				return {width: newWidth, height: newHeight};
 			}
 			function OnClickDrawMask(e){
@@ -228,7 +241,7 @@
 
 			    //draw the circle
 			    ctx.beginPath();
-		        ctx.arc(x, y, 25, 0, 6.28, false); 
+		        ctx.arc(x, y, RADIUS_PIXEL, 0, 6.28, false); 
 		        ctx.clip();
 		        ctx.drawImage(curImg,0,0, newSize.width, newSize.height);
 
@@ -239,7 +252,7 @@
 		        	is_practice: isPractice, 
 		        	center_x: x,
 		        	center_y: y,
-		        	radius: 25
+		        	radius: RADIUS_PIXEL
 		        }
 		        LogAction("click", data);
 		        clickCount++;
@@ -548,7 +561,7 @@
 					</div>
 				</div>
 				<div id="bubble">	
-					<h2>Click and Describe the Image. <span id="tutorial-msg" class="label label-info">Tutorial</span></h2>		
+					<h2><span id="tutorial-msg" class="label label-danger">Tutorial</span> Click and Describe the Image.</h2>		
 					<div class="row">
 						<div class="col-md-8">							
 							<canvas id="canvas" width="600" height="600"></canvas>
@@ -559,7 +572,7 @@
 								    <label for="bubble-vis-desc">
 								    	<span class="badge"><span id="click-count">0</span> clicks</span>
 								    	<span class="badge"><span id="char-count">0</span> characters</span></label>
-								    <textarea id="bubble-vis-desc" name="desc" class="form-control" rows="20" placeholder="Describe the image in as much as possible..."></textarea>
+								    <textarea id="bubble-vis-desc" name="desc" class="form-control" rows="20" placeholder="Describe the image in as much detail as possible..."></textarea>
 							  	</div>	
 							</form>
 							<button id="bubble-next-btn" type="button" class="btn btn-success btn-lg btn-block">
@@ -643,7 +656,7 @@
 													</div>
 													<div class="checkbox">
 														<label class="checkbox-inline">
-														  	<input type="checkbox" id="ethnicAfrican" value="Black_African"> Black / Afracan Descent
+														  	<input type="checkbox" id="ethnicAfrican" value="Black_African"> Black / African Descent
 														</label>
 														<label class="checkbox-inline">
 														  	<input type="checkbox" id="ethnicMiddle" value="Middle_Eastern"> Middle Eastern

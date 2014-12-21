@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
   	<head>
-	    <title>{{ title }}</title>
-	    <!--<link rel='stylesheet' href='/stylesheets/study.css' />-->
+	    <title>{{ title }}</title>	    
 	    <link rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap.min.css' />
+	    <link rel='stylesheet' href='/stylesheets/recall.css' />
 
 	    <script src="/javascripts/turkify.js"></script>
 	    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
@@ -13,7 +13,7 @@
 	    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 	    <script type="text/javascript">
 	    	var INTRO = 0, CONSENT = 1, PRAC_INST = 2, REAL_INST = 3, STUDY = 4, DEBRIEF = 5;
-	    	var MIN_DESC = 150, IMG_WIDTH = 500, IMG_HEIGHT=500;
+	    	var MIN_DESC = 150, IMG_WIDTH = 1024, IMG_HEIGHT = 768;
 	    	var stage = INTRO;
 	    	var formSelector = "#mturk-form";
 	    	var images = null;
@@ -67,9 +67,8 @@
 
 				//load practice images
 				practiceImages = { targets:[] };
-				practiceImages.targets.push(base_url+"study-practice-1.jpg");
-				practiceImages.targets.push(base_url+"study-practice-2.jpg");
-				practiceImages.targets = _.first(_.shuffle(practiceImages.targets), 2); //randomly pick 2 items from a set of practice images.	
+				practiceImages.targets.push(base_url+"practice-image.png");
+				//practiceImages.targets = _.first(_.shuffle(practiceImages.targets), 2); //randomly pick 2 items from a set of practice images.	
 
 				//Set up callback functions
 				$(document).keydown(OnKeyPress);
@@ -88,7 +87,7 @@
 
     			$('#study-vis-desc').keyup(function(){
     				$('#char-count').text($('#study-vis-desc').val().length);
-    			})    			
+    			})    	
 
 			}
 			function ConfirmRecaptcha(){
@@ -115,7 +114,9 @@
 				var third 	= $("input:radio[name=radioThird]:checked").val();
 
 				if (first == "no" || second == "no" || third == "no"){
-					bootbox.alert("Sorry, You  are not allowed to participate in this study.");
+					bootbox.alert("Sorry, You are not allowed to participate in this study.", function(){
+						$("#submit-btn").trigger("click", [true]);
+					});
 				}else{
 					ChangeStage(stage+1);
 				}
@@ -167,17 +168,29 @@
 					$("#char-count").text(0);
 					//clear text area
 					$("#study-vis-desc").val("");
-
+					if (isPractice){
+						$("#study-title").text("This is how long 10 seconds is");
+					}else{
+						$("#study-title").text("");
+					}
 					//setup a new image
-					var curImg = new Image();
+					var image = $("#study-image")[0];
+					image.onload = function(){
+						var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, IMG_WIDTH, IMG_HEIGHT);
+						image.width = newSize.width;
+						image.height = newSize.height;
+					}
+
+					image.src = images.targets[curIdx];
+					/*var curImg = new Image();
 					curImg.onload = function() {
 						var canvas = $("#canvas");
 						var ctx = canvas[0].getContext('2d');
 						ctx.clearRect(0, 0, canvas.width(), canvas.height());	//clear canvas
 						ctx.drawImage(curImg,0,0, IMG_WIDTH, IMG_HEIGHT);	//draw image
-					}
-					curImg.src = images.targets[curIdx];
-					$("#canvas").show();
+					}*/
+
+					$("#study-image").show();
 					$("#describe-form").hide();
 					//$("#canvas").show();
 
@@ -188,10 +201,21 @@
 				}else{//describe the previous image
 					console.log("Describe the Image!");
 					showImage = true;
-					
-					var canvas = $("#canvas");
+					if (isPractice){
+						$("#study-title").text("Now you will describe the image you saw.");
+						$("#study-vis-desc").val("This chart show the relationship between global malaria deaths and R&D funding across different continents. Africa accounts for a major portion of malaria deaths. Overall, global malaria deaths have been decreasing as R&D funding increases over time.");
+						$('#char-count').text($('#study-vis-desc').val().length);
+					}else{
+						$("#study-title").val("");
+						$('#char-count').text($('#study-vis-desc').val().length);
+						
+					}
+
+					$("#study-image")[0].src = "";
+					/*var canvas = $("#canvas");
 					var ctx = canvas[0].getContext('2d');
 					ctx.clearRect(0, 0, canvas.width(), canvas.height());	//clear canvas
+					*/
 					/*
 					ctx.strokeStyle = "#d3d7cf";
 					ctx.rect(0,0,canvas.width(), canvas.height());
@@ -207,12 +231,30 @@
 					ctx.lineTo(0,canvas.height());
 					ctx.stroke();
 					*/
-					$("#canvas").hide();
+					$("#study-image").hide();
 					$("#describe-form").show();
 
 					//next image
 					curIdx++;					
 				}
+			}
+			function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {		
+				console.log("(canvasWidth, canvasHeight) = " + canvasWidth + ", " + canvasHeight);
+				console.log("(oldWidth, oldHeight) = " + imgWidth + ", " + imgHeight);						
+				var newWidth 	= imgWidth;	
+				var newHeight	= imgHeight;		
+				if (newWidth>canvasWidth){
+					newWidth 	= canvasWidth;
+					var wratio 	= canvasWidth/imgWidth;
+					newHeight 	= wratio*newHeight;
+				}
+				if (newHeight>canvasHeight){
+					newHeight 	= canvasHeight;
+					var hratio 	= canvasHeight/imgHeight;
+					newWidth 	= hratio*newWidth;
+				}
+				console.log("(newWidth, newHeight) = " + newWidth + ", " + newHeight);
+				return {width: newWidth, height: newHeight};
 			}
 
 			function OnKeyPress(e){
@@ -287,8 +329,12 @@
 	    		});
 
 	    	}
-	    	function SubmitForm () {
-	   			//generating answer data (name-value pairs)
+	    	function SubmitForm (e, notQualified) {
+	   			if (notQualified==true){//failed to pass the consent form
+	    			$("<input type='hidden' name='consentForm' value='notQualified'>");
+	    			$(formSelector).submit();	
+	    			return;
+	    		}
 	   			
 	    		// 1. Target Image Count
 	    		$("<input type='hidden' name='imageCount' value='" + images.targets.length + "'>").appendTo($(formSelector));
@@ -307,6 +353,7 @@
 	    		if ($("#ethnicEastInd").prop('checked'))	ethnic += "/" + $("#ethnicEastInd").val();
 	    		if ($("#ethnicNative").prop('checked'))		ethnic += "/" + $("#ethnicNative").val();
 	    		if ($("#ethnicOther").prop('checked'))		ethnic += "/" + $("#ethnicOther").val();
+	    		if ($("#ethnicNotToSay").prop('checked'))	ethnic += "/" + $("#ethnicNotToSay").val();
 	    		var feedback = $("#survey-feedback").val();
 
 	    		// // submit the form to the mturk site
@@ -367,7 +414,7 @@
 								<strong>What your participation in this study will involve:</strong><br>
 								Reading a summary of relevant background information.<br>
 								Seeing a sequence of visualization images, where each image is presented for 10 seconds and disappears.<br>
-								Writing a text description of what participant recalls about the image.
+								Writing a text description of what you recall about the image.
 								<br><br>
 								<strong>Time required:</strong> Participation will take approximately 5 minutes.
 								<br><br>
@@ -447,17 +494,17 @@
 							<p class="text-justify">
 								Welcome!  In this HIT you will be presented with a series of images containing graphs and diagrams.  
 								<br><br>
-								You will see each image for 10 seconds, and will then be asked to describe the images in as much detail as possible.  
+								You will see each image for 10 seconds, the image will disappear, and then be asked to describe the images in as much detail as possible.  
 								<br><br>
-								We will only approve work for payment that has successfully been completed.
+								We will only only pay for successfully completed work.
 								<br><br>
-								We will start with some practice images.  Please <strong>click the "Practice" button</strong> below when you are ready to begin.	
+								We will start with a tutorial. Please <strong>click the button</strong> below when you are ready to begin.					
 							</p>
 							<br>
 							<img class="center-block thumbnail" height="350" src="/images/recall-db/study_overview.png">
 							<br>
-							<button id="practice-btn" type="button" class="btn btn-primary btn-lg btn-block">
-						  		<span class="glyphicon glyphicon-pencil"></span> Practice
+							<button id="practice-btn" type="button" class="btn btn-success btn-lg btn-block">
+						  		<span class="glyphicon glyphicon-play"></span> Continue
 							</button>
 						</div>
 					</div>
@@ -467,7 +514,7 @@
 						<div class="col-md-12">
 							<h2>Visualization Recall Study Instruction</h2>
 							<p class="text-justify">
-								Great job! Now you will start the real study. The real study will be just like the practice you just did, except a bit longer. 	
+								Now you will start the real study. The real study will be just like the practice you just did, except a bit longer. 	
 								<br><br>
 								Please <strong>click the "Start" button</strong> below when you are ready to begin.					
 							</p>
@@ -480,11 +527,14 @@
 						</div>
 					</div>
 				</div>				
-				<div id="study">	
-					<h2 id="study-title"></h2>				
+				<div id="study">								
 					<div class="row">
 						<div class="col-md-6 col-md-offset-3">							
-							<canvas id="canvas" width="500" height="500"></canvas>					
+							<!--<canvas id="canvas" width="500" height="500"></canvas>-->
+							<br>
+							<div class="alert alert-info" role="alert"><h3 id="study-title"></h3></div>
+							
+							<img id="study-image" class="center-block">					
 						
 							<form id="describe-form" role="form">
 								<div class="form-group">									
@@ -526,6 +576,9 @@
 													</label>
 													<label class="radio-inline">
 													  <input type="radio" name="gender" id="genderFemale" value="male"> Male
+													</label>
+													<label class="radio-inline">
+													  <input type="radio" name="gender" id="genderOther" value="other"> Prefer not to say
 													</label>
 												</td>
 											</tr>
@@ -572,7 +625,7 @@
 													</div>
 													<div class="checkbox">
 														<label class="checkbox-inline">
-														  	<input type="checkbox" id="ethnicAfrican" value="Black_African"> Black / Afracan Descent
+														  	<input type="checkbox" id="ethnicAfrican" value="Black_African"> Black / African Descent
 														</label>
 														<label class="checkbox-inline">
 														  	<input type="checkbox" id="ethnicMiddle" value="Middle_Eastern"> Middle Eastern
@@ -590,6 +643,9 @@
 														</label>
 														<label class="checkbox-inline">
 														  	<input type="checkbox" id="ethnicOther" value="Other"> Other
+														</label>
+														<label class="checkbox-inline">
+														  	<input type="checkbox" id="ethnicNotToSay" value="NotToSay"> Prefer not to say
 														</label>
 													</div>																																						
 												</td>

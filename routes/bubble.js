@@ -13,7 +13,7 @@ router.get('/', function(req, res) {
 router.get('/images', function(req, res){
 	var db = req.bubbledb;
 	var hitId = req.body.hitId;
-	db.collection('images').find().toArray(function(err, result){
+	db.collection('images').find({hit_id: hitId}).toArray(function(err, result){
         if (err) {
             return console.log(new Date(), 'error in loading images', err);
         }
@@ -22,10 +22,10 @@ router.get('/images', function(req, res){
             var images = result;
             
             // target images
-            var targets = _.take(_.map(images, function(img){ return img.img_url; }), 3);
+            var targets = _.map(images, function(img){ return img.img_url; })
 
             // filler images
-            var blurred = _.take(_.map(images, function(img){ return img.blur_img_url; }), 3);
+            var blurred = _.map(images, function(img){ return img.blur_img_url; })
 
             res.json({ targets: targets, blurred: blurred});
         }
@@ -69,12 +69,12 @@ router.post('/recaptcha', function(req, res){
 router.post('/log', function(req, res){
 	var db 		= req.bubbledb;
 	var newLog	= {};
-    newLog.timestamp    = req.body.timestamp;
-	newLog.hitId 		= req.body.hitId;
-	newLog.assignmentId = req.body.assignmentId;
-	newLog.workerId 	= req.body.workerId;
-	newLog.action 		= req.body.action;
-	newLog.data 		= req.body.data;	
+    newLog.timestamp         = req.body.timestamp;
+	newLog.hit_id 		     = req.body.hitId;
+	newLog.assignment_id     = req.body.assignmentId;
+	newLog.worker_id 	     = req.body.workerId;
+	newLog.action 		     = req.body.action;
+	newLog.data 		     = req.body.data;	
     console.log(newLog);
 	db.collection('logs').insert(newLog, function(err, result) {
         if (err) {
