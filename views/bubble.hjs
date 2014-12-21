@@ -251,6 +251,7 @@
 		        //log click actio
 		        data = {
 		        	is_practice: isPractice, 
+		        	image: image:images.targets[curIdx]
 		        	center_x: x,
 		        	center_y: y,
 		        	radius: RADIUS_PIXEL
@@ -259,6 +260,7 @@
 		        clickCount++;
 		        $("#click-count").text(clickCount);
 		        totalClickCount++;
+		        console.log(totalClickCount);
 			}
 			function NextImage(){		
 				// if the description is less than minumum, can't approve
