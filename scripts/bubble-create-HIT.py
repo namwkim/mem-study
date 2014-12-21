@@ -1,7 +1,7 @@
 from boto.mturk.connection import MTurkConnection
 from boto.mturk.question import ExternalQuestion
 from boto.mturk.qualification import LocaleRequirement, PercentAssignmentsApprovedRequirement, Qualifications
-import os, pymongo, sys
+import os, pymongo, sys, random
 
 ######  AMT CONFIGURATION PARAMETRS  ######
 
@@ -9,9 +9,9 @@ SANDBOX = True  # Select whether to post to the sandbox (using fake money), or l
 HIT_URL = "https://study.namwkim.org/bubble"  # Provide the URL that you want workers to sent sent to complete you task
 
 NUMBER_OF_HITS = 5  # Number of different HITs posted for this task
-NUMBER_OF_ASSIGNMENTS = 20  # Number of tasks that DIFFERENT workers will be able to take for each HIT
+NUMBER_OF_ASSIGNMENTS = 3  # Number of tasks that DIFFERENT workers will be able to take for each HIT
 LIFETIME = 60 * 60 * 24 * 7  # How long that the task will stay visible if not taken by a worker (in seconds)
-REWARD = 0.5  # Base payment value for completing the task (in dollars)
+REWARD = 0.1  # Base payment value for completing the task (in dollars)
 DURATION = 60*20  # How long the worker will be able to work on a single task (in seconds)
 APPROVAL_DELAY = 60*60*24*7  # How long after the task is completed will the worker be automatically paid if not manually approved (in seconds)
 
@@ -71,9 +71,6 @@ def create_hits(keyfile):
 		print "target!=targets_blurred";
 		sys.exit(0)
 
-	# set # of HITs to the number of images
-	NUMBER_OF_HITS = len(targets);
-
 	# Create External Question
 	q = ExternalQuestion(external_url=HIT_URL, frame_height=800)
 	conn = MTurkConnection(aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, host=mturk_url)
@@ -104,6 +101,11 @@ def create_hits(keyfile):
 	# calculate the number of images for each HIT
 	hitSize = len(targets)/len(hitIDs);
 
+	# shuffle
+	z = zip(targets, targets_blurred)
+	random.shuffle(z)
+	targets, targets_blurred = zip(*z)
+	
 	hitIdx 	= 0
 	hitID 	= hitIDs[hitIdx]
 	count 	= 0
