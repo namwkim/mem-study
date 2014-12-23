@@ -10,21 +10,31 @@ router.get('/', function(req, res) {
 	console.log(req.params);
   	res.render('bubble', { title: 'Bubble Experiment' });
 });
-router.post('/images', function(req, res){
+router.get('/admin', function(req, res) {
+    console.log(req.params);
+    res.render('bubble_admin', { title: 'Bubble Experiment Admin' });
+});
+router.get('/images', function(req, res){
 	var db = req.bubbledb;
-	var hitId = req.body.hitId;
+	var hitId = req.query.hitId;
     console.log(hitId);
-	db.collection('images').find({hit_id: hitId}).toArray(function(err, result){
+    var query = {hit_id: hitId};
+    if (hitId.search("TEST")!=-1){
+        query = {};
+    }
+	db.collection('images').find(query).toArray(function(err, result){
         if (err) {
             return console.log(new Date(), 'error in loading images', err);
         }
         console.log(result);
         if (result) {
-            var images = result;
-            
+            var images = result;  
+                      
+            if (hitId.search("TEST")!=-1){
+                images = _.sample(images, 2);
+            }
             // target images
             var targets = _.map(images, function(img){ return img.img_url; })
-
             // filler images
             var blurred = _.map(images, function(img){ return img.blur_img_url; })
 
@@ -67,6 +77,19 @@ router.post('/recaptcha', function(req, res){
     });
 */
 });
+router.get('/logs', function(req, res){
+    var db = req.bubbledb;
+    db.collection('logs').find().toArray(function(err, result){
+        if (err) {
+            return console.log(new Date(), 'error in loading images', err);
+        }
+        //console.log(result);
+        if (result) {
+            
+            res.json(result);
+        }
+    });
+})
 router.post('/log', function(req, res){
 	var db 		= req.bubbledb;
 	var newLog	= {};
