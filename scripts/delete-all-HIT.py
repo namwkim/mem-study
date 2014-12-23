@@ -55,8 +55,7 @@ def delete_all_hit(keyfile):
 					i=i-1
 				assignments = conn.get_assignments(hit_id=hit.HITId);
 
-
-		conn.dispose_hit(hit.HITId)
+		conn.disable_hit(hit.HITId)
 
 		print("HIT " + hit.HITId + " was deleted!")
 
