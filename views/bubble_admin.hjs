@@ -25,19 +25,6 @@
 	    		$.get('/bubble/logs', function(res){
 	    			var logs = res;
 	    			console.log(logs);
-
-	    			//get text-description
-	    			description = _.chain(logs)
-	    				.filter(function(log){ return log.action=="explain" && log.data.is_practice=="false";})
-	    				.reduce(function(map, log){
-	    					var key = log.data.image + "/" + log.hit_id + "/" + log.assignment_id;
-	    					map[key] = log;
-	    					//console.log(map);
-	    					return map;
-	    				}, {})
-	    				.value();
-	    			console.log(description);
-
 	    			//get survey
 	    			survey = _.chain(logs)
 	    				.filter(function(log){ return log.action=="survey";})
@@ -48,10 +35,29 @@
 	    					return map;
 	    				}, {})
 	    				.value();
+
+
+	    			//get text-description
+	    			description = _.chain(logs)
+	    				.filter(function(log){ return log.action=="explain" && log.data.is_practice=="false";})
+	    				.reduce(function(map, log){
+	    					if (_.has(survey,log.hit_id + "/" + log.assignment_id)==false)//filter invalid assignments
+	    						return map;
+	    					var key = log.data.image + "/" + log.hit_id + "/" + log.assignment_id;
+	    					map[key] = log;
+	    					//console.log(map);
+	    					return map;
+	    				}, {})
+	    				.value();
+	    			console.log(description);
+
+	    			
     				console.log(survey);
 
 	    			//get click data
-	    			clicks = _.filter(logs, function(log){ return log.action=="click" && log.data.is_practice=="false"; });
+	    			clicks = _.filter(logs, function(log){ 
+	    				return log.action=="click" && log.data.is_practice=="false" && _.has(survey,log.hit_id + "/" + log.assignment_id)==true; 
+	    			});
 
 	    			// group by images
 	    			images = _.groupBy(clicks, function(click){ return click.data.image.replace(/^.*[\\\/]/, ''); });
