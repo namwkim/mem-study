@@ -341,7 +341,7 @@
 	    			case DEBRIEF: 	$("#debrief").hide(); 	break;
 	    		}
 	    	}
-	    	function LogAction(action, data){
+	    	function LogAction(action, data, callback){
 	    		var log = { 
 	    			timestamp: $.now(),
 	    			hitId: hitId,
@@ -353,6 +353,8 @@
 	    		$.post("/bubble/log", log, function(res){
 	    			if (res.code!=0){
 	    				bootbox.alert("Failed to log a worker action!");
+	    			}else{
+	    				callback.call();
 	    			}
 	    		});
 
@@ -404,12 +406,14 @@
 	   				age : age,
 	   				ethnic: ethnic,
 	   				feedback: feedback
+	   			}, function(){
+	   				$(formSelector).submit();	    					
 	   			});
 
 	    		// console.log("assignmentId: " + $("#mturk-form input[name=assignmentId]").val());
 	    		// console.log("targetNumber: " + $("#mturk-form input[name=targetNumber]").val());
 	    		// console.log("correctNumber: " + $("#mturk-form input[name=correctNumber]").val());
-	    		$(formSelector).submit();	    					
+	    		
 			}		
 	    </script>
   	</head>

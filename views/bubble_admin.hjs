@@ -56,7 +56,9 @@
 
 	    			//get click data
 	    			clicks = _.filter(logs, function(log){ 
-	    				return log.action=="click" && log.data.is_practice=="false" && _.has(survey,log.hit_id + "/" + log.assignment_id)==true; 
+	    				return log.action=="click" && log.data.is_practice=="false" &&
+	    					_.has(description, log.data.image + "/" + log.hit_id + "/" + log.assignment_id)==true&&
+	    					_.has(survey,log.hit_id + "/" + log.assignment_id)==true; 
 	    			});
 
 	    			// group by images
