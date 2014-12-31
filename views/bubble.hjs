@@ -354,7 +354,7 @@
 	    			if (res.code!=0){
 	    				bootbox.alert("Failed to log a worker action!");
 	    			}else{
-	    				callback.call();
+	    				if (callback)	callback.call();
 	    			}
 	    		});
 
