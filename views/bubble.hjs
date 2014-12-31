@@ -15,7 +15,7 @@
 	    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 	    <script type="text/javascript">
 	    	var INTRO = 0, CONSENT = 1, PRAC_INST = 2, REAL_INST = 3, STUDY = 4, DEBRIEF = 5;
-	    	var MIN_DESC = 150, RADIUS_PIXEL = 16;// IMG_WIDTH = 700, IMG_HEIGHT=700;
+	    	var MIN_DESC = 150, RADIUS_PIXEL = 32;// IMG_WIDTH = 700, IMG_HEIGHT=700;
 	    	var stage = INTRO;
 	    	var formSelector = "#mturk-form";
 	    	var images = null;
