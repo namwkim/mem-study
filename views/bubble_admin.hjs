@@ -11,16 +11,26 @@
 	    <script src="/bower_components/bootstro/bootstro.min.js"></script>
 	    <script src="/bower_components/underscore/underscore-min.js"></script>
 	    <script src="/bower_components/bootbox/bootbox.js"></script>
+	    <script src="/javascripts/heatmap.js-2.0/build/heatmap.js"></script>
 	    <script type="text/javascript">
 	    	var curImage 	= null, curAssignment = null;
 	    	var assignments = {};
 	    	var description = null;
 	    	var survey  	= null;	
 	    	var images  	= null;
+	    	var heatmap 	= null
 	    	$(document).ready(function(){
 	    		Initialize();
 			});
 			function Initialize(){
+
+				//set bubble image
+				
+				heatmap = h337.create({
+  					container: document.getElementById('bubble-canvas'),
+  					radius: 16
+				});
+
 				//load logs								
 	    		$.get('/bubble/logs', function(res){
 	    			var logs = res;
@@ -111,13 +121,12 @@
 						var clickData = e.data;
 						var image_path = clickData[0].data.image;
 						
-						//set bubble image
-
+						
 						//draw image
 						var img = new Image();
 						img.onload = function(){
 							var canvas = $("#bubble-canvas");
-							console.log(canvas.naturalWidth);
+							console.log(this.naturalWidth);
 							var ctx = canvas[0].getContext('2d');
 							ctx.clearRect(0, 0, canvas[0].width, canvas[0].height);
 
@@ -126,16 +135,59 @@
 
 							//draw circles
 							ctx.save();
-							ctx.globalAlpha = 0.1;
+							ctx.globalAlpha = 0.2;
+							
+							prev_x = null, prev_y=null
+
+							heatmapData = [];
 							for (var i in clickData){
 								var click = clickData[i].data;
 								//console.log(click);
+								/*heatmap.addData({
+							    	x: click.center_x,
+								    y: click.center_y,
+								    value: 100
+								 });
+								*/
+								
 								ctx.beginPath();
 								ctx.arc(click.center_x, click.center_y, click.radius, 0, 6.28, false); 
 								ctx.fillStyle="red";
 								ctx.fill();
+
+								if (prev_x && prev_y){
+									ctx.save();
+									ctx.globalAlpha = 0.5;
+									ctx.beginPath();
+									ctx.moveTo(prev_x, prev_y);
+									ctx.lineTo(click.center_x, click.center_y);
+									ctx.strokeStyle="green";
+									ctx.stroke();
+									ctx.restore();
+								}
+								ctx.save();
+								ctx.globalAlpha = 0.8;	
+								ctx.fillStyle="green"
+								roundRect(ctx, parseFloat(click.center_x), parseFloat(click.center_y), 25, 12, 5, true, false);
+								ctx.restore();
+
+								ctx.save();
+								ctx.beginPath();
+								ctx.font="10px Georgia";		
+								ctx.globalAlpha = 0.5;	
+								ctx.fillStyle="white";
+								var date = new Date(parseInt(clickData[i].timestamp));
+								ctx.fillText(date.getMinutes()+":"+date.getSeconds(), click.center_x, parseFloat(click.center_y)+8);
+								ctx.restore();
+
+								prev_x=click.center_x;	prev_y = click.center_y;
+
+								heatmapData.push({x:click.center_x, y:click.center_y, value:1})
 							}
 							ctx.restore();
+							
+							heatmap.setData({data:heatmapData});
+							console.log()
 						}
 						img.src = image_path;	
 						
@@ -177,7 +229,31 @@
 				//console.log("(newWidth, newHeight) = " + newWidth + ", " + newHeight);
 				return {width: newWidth, height: newHeight};
 			}
-
+			function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+				if (typeof stroke == "undefined" ) {
+					stroke = true;
+				}
+				if (typeof radius === "undefined") {
+					radius = 5;
+				}
+				ctx.beginPath();
+				ctx.moveTo(x + radius, y);
+				ctx.lineTo(x + width - radius, y);
+				ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+				ctx.lineTo(x + width, y + height - radius);
+				ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+				ctx.lineTo(x + radius, y + height);
+				ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+				ctx.lineTo(x, y + radius);
+				ctx.quadraticCurveTo(x, y, x + radius, y);
+				ctx.closePath();
+				if (stroke) {
+					ctx.stroke();
+				}
+				if (fill) {
+					ctx.fill();
+				}        
+}
 
 
 	    </script>

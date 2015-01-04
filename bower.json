@@ -29,6 +29,7 @@
     "bootstrap": "~3.2.0",
     "underscore": "~1.7.0",
     "bootbox": "~4.3.0",
-    "bootstro": "*"
+    "bootstro": "*",
+    "heatmap.js.bower": "*"
   }
 }
