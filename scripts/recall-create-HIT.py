@@ -79,6 +79,7 @@ def create_hits(keyfile):
 			for key, group in itertools.groupby(filtered, lambda x: x.split('-')[0]):
 				#groups.append(sorted(group))
 				names.append(key)
+			print names
 			instances = []
 			instances = instances + [[names[0] + ST_BASE, 		names[1] + ST_PARAGRAPH, 	names[2] + ST_TITLE]]
 			instances = instances + [[names[2] + ST_TITLE, 		names[0] + ST_BASE, 		names[1] + ST_PARAGRAPH]]
