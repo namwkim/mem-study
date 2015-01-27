@@ -57,7 +57,8 @@ def create_hits(keyfile):
 
 	# collect target image filenames
 	targets = []
-	for root, dirs, files in os.walk("../public/images/recall-db/"):		
+	for root, dirs, files in os.walk("../public/images/recall-db/"):
+		print root		
 		if len(dirs)==0: # loop over sub-directories
 			# create an instance
 
@@ -137,7 +138,7 @@ def create_hits(keyfile):
 					assignment["img_urls"].append( (BASE_URI+'0'+str(i+1)+"/"+filename) )
 				else:
 					assignment["img_urls"].append( (BASE_URI+str(i+1)+"/"+filename) )
-			print assignment					
+			#print assignment					
 			images.insert(assignment)
    	 
 if __name__ == "__main__":
