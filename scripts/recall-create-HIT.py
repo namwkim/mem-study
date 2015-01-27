@@ -58,7 +58,7 @@ def create_hits(keyfile):
 	# collect target image filenames
 	targets = {}
 	for root, dirs, files in os.walk("../public/images/recall-db/"):
-				
+		print root
 		if len(dirs)==0: # loop over sub-directories
 			
 			#cleanup
