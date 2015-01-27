@@ -56,12 +56,11 @@ def create_hits(keyfile):
 
 
 	# collect target image filenames
-	targets = []
+	targets = {}
 	for root, dirs, files in os.walk("../public/images/recall-db/"):
-		print root		
+				
 		if len(dirs)==0: # loop over sub-directories
-			# create an instance
-
+			
 			#cleanup
 			for file in files:
 				if file.startswith('.'):# skip hidden  or _DS_Store
@@ -92,7 +91,7 @@ def create_hits(keyfile):
 			instances = instances + [[names[1] + ST_BASE, 		names[2] + ST_PARAGRAPH, 	names[0] + ST_TITLE]]
 			instances = instances + [[names[0] + ST_TITLE, 		names[1] + ST_BASE, 		names[2] + ST_PARAGRAPH]]
 			instances = instances + [[names[2] + ST_PARAGRAPH, 	names[0] + ST_TITLE, 		names[1] + ST_BASE]]
-			targets.append(instances)
+			targets[int(root[-2:])] = instances
 
 	
 
@@ -128,7 +127,7 @@ def create_hits(keyfile):
 		
 		hitID = hitIDs[i]
 		#print "HIT ID : ", hitID
-		instances = targets[i]
+		instances = targets[i+1]
 		for j in range(len(instances)):
 			print "Group: ", i+1, " Instance: ", j+1
 			progress.insert({"group": i+1, "instance" : j+1, "count" : 0 })
