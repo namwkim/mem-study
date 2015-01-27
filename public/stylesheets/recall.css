@@ -3,3 +3,25 @@ body{
 	font-weight: 300;
 	line-height: 1.4;
 }
+/* centered columns styles */
+.row-centered {
+    text-align:center;
+}
+.col-centered {
+    float:none;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+.col-fixed {
+    /* custom width */
+    width:320px;
+}
+.col-min {
+    /* custom min width */
+    min-width:320px;
+}
+.col-max {
+    /* custom max width */
+    max-width:320px;
+}

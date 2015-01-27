@@ -68,8 +68,8 @@ def create_hits(keyfile):
 				splited = file.split(".")
 				
 				if len(splited)>2: #png.jpg, png.gif to png
-					print 'file name changed: ', file 
-					os.rename(os.path.join(root, file), os.path.join(root, splited[0]+"."+splited[1]))
+					print 'strange filename found: ', file 
+					# os.rename(os.path.join(root, file), os.path.join(root, splited[0]+"."+splited[1]))
 			
 
 			filtered = itertools.ifilter(lambda x: x.endswith("png"), files)
@@ -131,12 +131,13 @@ def create_hits(keyfile):
 		for j in range(len(instances)):
 			print "Group: ", i+1, " Instance: ", j+1
 			progress.insert({"group": i+1, "instance" : j+1, "count" : 0 })
+			assignment = {"hit_id": hitID, "group": i+1, "instance" : (j+1), "img_urls": [] }
 			for filename in instances[j]:
 				if j<10:
-					images.insert({"hit_id": hitID, "group": i+1, "instance" : (j+1), "img_url": BASE_URI+'0'+str(i+1)+"/"+filename }) 
+					assignment["img_urls"].append( (BASE_URI+'0'+str(i+1)+"/"+filename) )
 				else:
-					images.insert({"hit_id": hitID, "group": i+1, "instance" : (j+1), "img_url": BASE_URI+str(i+1)+"/"+filename }) 
-
+					assignment["img_urls"].append( (BASE_URI+str(i+1)+"/"+filename) )					
+			images.insert(assignment)
    	 
 if __name__ == "__main__":
 	create_hits(sys.argv[1])

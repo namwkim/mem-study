@@ -163,7 +163,7 @@
 					nextButtonText: "Next »",
 					prevButtonText: "Prev »"
 				});
-				$("#bubble-vis-desc").val("This chart show the relationship between global malaria deaths and R&D funding across different continents. Africa accounts for a major portion of malaria deaths. Overall, global malaria deaths have been decreasing as R&D funding increases over time.");
+				$("#bubble-vis-desc").val("This chart shows the relationship between global malaria deaths and R&D funding across different continents. Africa accounts for a major portion of malaria deaths. Overall, global malaria deaths have been decreasing as R&D funding increases over time.");
 				$('#char-count').text($('#bubble-vis-desc').val().length);
 			}
 			function StartExperiment(){

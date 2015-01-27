@@ -105,7 +105,7 @@ router.post('/log', function(req, res){
             return console.log(new Date(), 'insert error', err);
         }
         if (result) {            
-            res.json({ code: 0, message: 'Successfully Created!', recall: result[0]});
+            res.json({ code: 0, message: 'Successfully Created!', result: result[0]});
         }
 
     });

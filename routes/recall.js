@@ -12,19 +12,34 @@ router.get('/', function(req, res) {
 });
 router.get('/images', function(req, res){
 	var db = req.recalldb;
-	var hitId = req.body.hitId;
-	db.collection('images').find().toArray(function(err, result){
+	var hitId = req.query.hitId;
+    console.log(hitId);
+    var query = {hit_id: hitId};
+    if (hitId.search("TEST")!=-1){
+        query = {};
+    }    
+	db.collection('images').find(query).toArray(function(err, result){
         if (err) {
             return console.log(new Date(), 'error in loading images', err);
         }
-        //console.log(result);
+        
         if (result) {
             var images = result;
-            
-            // target images
-            var targets = _.take(_.map(images, function(img){ return img.img_url; }), 3);
 
-            res.json({ targets: targets });
+            if (hitId.search("TEST")!=-1){
+                images = _.filter(images, function(assignment){
+                    return assignment.group==1;
+                });               
+            }
+            var group = images[0].group;
+            console.log('group: ' + group);
+            db.collection('progress').find({group: group }).toArray(function(err, progress){
+                var minAssignment = _.min(progress, function(assignment){ return assignment.count});
+                var finalSet = _.filter(images, function(assignment){ return assignment.group==group && assignment.instance==minAssignment.instance; })
+                console.log('instance: ' + minAssignment.instance);
+                console.log(finalSet);
+                res.json({ assignment: minAssignment, targets: finalSet[0].img_urls });
+            })
         }
 	});
 });
@@ -56,6 +71,27 @@ router.post('/recaptcha', function(req, res){
             }
         });
 });
+router.put('/progress', function(req, res){
+    var db      = req.recalldb;
+    var query  = {};
+    query.group     = parseInt(req.body.group);
+    query.instance  = parseInt(req.body.instance);
+    var newCount    = parseInt(req.body.count);
+
+    console.log(query);
+    console.log("count: " + newCount);
+    db.collection('progress').update(query, {count: newCount}, function(err, result) {
+        if (err) {
+            return console.log(new Date(), 'update error', err);
+        }
+        console.log(result);
+        if (result) {            
+            res.json({ code: 0, message: 'Successfully Updated!', result: result[0]});
+        }
+
+    });
+
+});
 router.post('/log', function(req, res){
 	var db 		= req.recalldb;
 	var newLog	= {};
@@ -64,6 +100,8 @@ router.post('/log', function(req, res){
 	newLog.assignmentId = req.body.assignmentId;
 	newLog.workerId 	= req.body.workerId;
 	newLog.action 		= req.body.action;
+    newLog.group        = req.body.group;
+    newLog.instance     = req.body.instance;
 	newLog.data 		= req.body.data;	
     console.log(newLog);
 	db.collection('logs').insert(newLog, function(err, result) {
@@ -71,7 +109,7 @@ router.post('/log', function(req, res){
             return console.log(new Date(), 'insert error', err);
         }
         if (result) {            
-            res.json({ code: 0, message: 'Successfully Created!', recall: result[0]});
+            res.json({ code: 0, message: 'Successfully Created!', result: result[0]});
         }
 
     });
