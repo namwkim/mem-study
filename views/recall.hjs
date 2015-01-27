@@ -13,7 +13,7 @@
 	    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 	    <script type="text/javascript">
 	    	var INTRO = 0, CONSENT = 1, PRAC_INST = 2, REAL_INST = 3, STUDY = 4, DEBRIEF = 5;
-	    	var MIN_DESC = 150, IMG_WIDTH = 600, IMG_HEIGHT = 600;
+	    	var MIN_DESC = 100, IMG_WIDTH = 600, IMG_HEIGHT = 600;
 	    	var stage = INTRO;
 	    	var formSelector = "#mturk-form";
 	    	var images = null;
@@ -155,7 +155,7 @@
 					// if the description is less than minumum, can't approve
 					var desc = $("#study-vis-desc").val();
 					if (desc.length<MIN_DESC){
-						bootbox.alert("The description should be more than 150 characters!")
+						bootbox.alert("The description should be more than " + MIN_DESC +" characters!")
 						return;
 					}
 					//save the description
@@ -202,7 +202,8 @@
 						setTimeout(function(){
 							console.log("Timeout!")
 							SetupImage();// disappear the image
-						}, 10000)						
+						}, 10000)
+						
 					}
 
 					image.src = images.targets[curIdx];

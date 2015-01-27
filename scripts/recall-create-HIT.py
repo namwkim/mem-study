@@ -17,11 +17,14 @@ APPROVAL_DELAY = 60*60*24*7  # How long after the task is completed will the wor
 
 
 # HIT title (as it will appear on the public listing)
-TITLE = 'Visualization Recall Study'
+TITLE = 'Graph/Chart Descriptions'
 # Description of the HIT that workers will see when deciding to accept it or not
-DESCRIPTION = 'Describe a visualization image!'
+DESCRIPTION = ("In this HIT you will be presented with a series of images containing graphs and diagrams. "+
+				"You will see each image for 10 seconds, the image will disappear, and then be asked to describe the image in as much detail as possible. "+
+				"The HIT should take about 5 minutes to complete.")
+
 # Search terms for the HIT posting
-KEYWORDS = ['Image', 'Visualization', 'Describe']
+KEYWORDS = ['Easy', 'Chart', 'Graph', 'Text', 'Visualization', 'Image', 'Describe']
 
 
 # Your Amazon Web Services Access Key (private)
