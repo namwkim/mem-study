@@ -136,7 +136,8 @@ def create_hits(keyfile):
 				if j<10:
 					assignment["img_urls"].append( (BASE_URI+'0'+str(i+1)+"/"+filename) )
 				else:
-					assignment["img_urls"].append( (BASE_URI+str(i+1)+"/"+filename) )					
+					assignment["img_urls"].append( (BASE_URI+str(i+1)+"/"+filename) )
+			print assignment					
 			images.insert(assignment)
    	 
 if __name__ == "__main__":
