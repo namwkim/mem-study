@@ -423,7 +423,7 @@
 	    	<div id="intro">					
 				<div class="row">
 					<div class="col-md-12">
-						<h2>Visualization Recall Study</h2>
+						<h2>Graph/Chart Descriptions</h2>
 						<p class="text-justify">
 							In this HIT you will be presented with a series of images containing graphs and diagrams, and asked to describe the images in as much detail as possible.
 							<br><br>
@@ -528,7 +528,7 @@
 			<div id="prac-inst">					
 				<div class="row">
 					<div class="col-md-12">
-						<h2>Visualization Recall Study Instruction</h2>
+						<h2>Graph/Chart Descriptions - Study Instruction</h2>
 						<p class="text-justify">
 							Welcome!  In this HIT you will be presented with a series of images containing graphs and diagrams.  
 							<br><br>
@@ -550,7 +550,7 @@
 			<div id="real-inst">					
 				<div class="row">
 					<div class="col-md-12">
-						<h2>Visualization Recall Study Instruction</h2>
+						<h2>Graph/Chart Descriptions - Study Instruction</h2>
 						<p class="text-justify">
 							Now you will start the real study. The real study will be just like the practice you just did, except a bit longer. 	
 							<br><br>
