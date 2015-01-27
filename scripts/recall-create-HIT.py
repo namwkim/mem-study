@@ -113,7 +113,7 @@ def create_hits(keyfile):
 		
 	hitIDs = []
 	for i in range(0, NUMBER_OF_HITS):
-		create_hit_rs = conn.create_hit(question=q, lifetime=LIFETIME, max_assignments=NUMBER_OF_ASSIGNMENTS, title=TITLE, keywords=KEYWORDS, reward=REWARD, duration=DURATION, approval_delay=APPROVAL_DELAY, annotation=DESCRIPTION, qualifications=quals)
+		create_hit_rs = conn.create_hit(question=q, lifetime=LIFETIME, max_assignments=NUMBER_OF_ASSIGNMENTS, title=TITLE, keywords=KEYWORDS, reward=REWARD, duration=DURATION, approval_delay=APPROVAL_DELAY, description=DESCRIPTION, qualifications=quals)
 		print(preview_url + create_hit_rs[0].HITTypeId)
 		print("HIT ID: " + create_hit_rs[0].HITId)
 
