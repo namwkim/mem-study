@@ -91,7 +91,10 @@ def create_hits(keyfile):
 			instances = instances + [[names[1] + ST_BASE, 		names[2] + ST_PARAGRAPH, 	names[0] + ST_TITLE]]
 			instances = instances + [[names[0] + ST_TITLE, 		names[1] + ST_BASE, 		names[2] + ST_PARAGRAPH]]
 			instances = instances + [[names[2] + ST_PARAGRAPH, 	names[0] + ST_TITLE, 		names[1] + ST_BASE]]
-			targets[int(root[-2:])] = instances
+
+			group = int(root[-2:])
+			print 'Group: ', group
+			targets[group] = instances
 
 	
 
