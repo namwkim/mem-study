@@ -136,7 +136,7 @@ def create_hits(keyfile):
 			progress.insert({"group": i+1, "instance" : j+1, "count" : 0 })
 			assignment = {"hit_id": hitID, "group": i+1, "instance" : (j+1), "img_urls": [] }
 			for filename in instances[j]:
-				if j<10:
+				if i<10:
 					assignment["img_urls"].append( (BASE_URI+'0'+str(i+1)+"/"+filename) )
 				else:
 					assignment["img_urls"].append( (BASE_URI+str(i+1)+"/"+filename) )
