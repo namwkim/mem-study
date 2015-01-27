@@ -74,7 +74,7 @@ def create_hits(keyfile):
 
 			filtered = itertools.ifilter(lambda x: x.endswith("png"), files)
 			filtered = map(lambda x: x.strip('.png'), filtered)
-			filtered = sorted(filtered, key=lambda x: x.split('-')[0])
+			filtered = sorted(filtered)
 			names = []
 			for key, group in itertools.groupby(filtered, lambda x: x.split('-')[0]):
 				#groups.append(sorted(group))
