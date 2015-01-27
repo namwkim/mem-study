@@ -73,7 +73,7 @@ def create_hits(keyfile):
 			
 
 			filtered = itertools.ifilter(lambda x: x.endswith("png"), files)
-			filtered = itertools.imap(lambda x: x.strip('.png'), filtered)
+			filtered = map(lambda x: x.strip('.png'), filtered)
 			print filtered
 			names = []
 			for key, group in itertools.groupby(filtered, lambda x: x.split('-')[0]):
