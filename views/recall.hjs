@@ -35,6 +35,13 @@
 	    		Initialize();
 			});
 			function Initialize(){
+
+				var w=window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+				var h=window.innerHeight || document.documentElement.clientHeight ||document.body.clientHeight;
+
+				alert("(width, height)=" + w + ", " + h);
+				alert("(screen width, screen height)=" + screen.width + ", " + screen.height);
 				$("#consent").hide();
 				$("#prac-inst").hide();
 				$("#real-inst").hide();
