@@ -30,18 +30,18 @@
 
     		var assignmentId, hitId, workerId;
     		var charCount = 0;
+    		var size = {width:0, height:0, screenWidth: 0, screenHeight: 0};
 
 	    	$(document).ready(function(){
 	    		Initialize();
 			});
 			function Initialize(){
 
-				var w=window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+				size.width 			= window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+				size.height 		= window.innerHeight || document.documentElement.clientHeight ||document.body.clientHeight;
+				size.screenWidth 	= screen.width;
+				size.screenHeight 	= screen.height;
 
-				var h=window.innerHeight || document.documentElement.clientHeight ||document.body.clientHeight;
-
-				alert("(width, height)=" + w + ", " + h);
-				alert("(screen width, screen height)=" + screen.width + ", " + screen.height);
 				$("#consent").hide();
 				$("#prac-inst").hide();
 				$("#real-inst").hide();
@@ -166,7 +166,7 @@
 						return;
 					}
 					//save the description
-					LogAction("explain", {is_practice: isPractice, image:images.targets[curIdx-1], desc: desc});	
+					LogAction("explain", {is_practice: isPractice, image:images.targets[curIdx-1], desc: desc, size: size});	
 
 				}
 				//all images are used, move on to the next stage

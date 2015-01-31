@@ -10,6 +10,22 @@ router.get('/', function(req, res) {
 	console.log(req.params);
   	res.render('recall', { title: 'Visualization Recall Study' });
 });
+router.get('/admin', function(req, res) {
+    console.log(req.params);
+    res.render('recall_admin', { title: 'Recall Experiment Admin' });
+});
+router.get('/all_images', function(req, res){
+    var db = req.recalldb;
+    db.collection('images').find().toArray(function(err, result){
+        if (err) {
+            return console.log(new Date(), 'error in loading images', err);
+        }
+        
+        if (result) {
+            res.json({ images : result});            
+        }
+    });
+}); 
 router.get('/images', function(req, res){
 	var db = req.recalldb;
 	var hitId = req.query.hitId;
