@@ -139,8 +139,8 @@ def create_hits(keyfile):
 		instances = targets[PILOT_GROUP]
 		for j in range(len(instances)):
 			print "Group: ", PILOT_GROUP, " Instance: ", j+1
-			progress.insert({"group": i+1, "instance" : j+1, "count" : 0 })
-			assignment = {"hit_id": hitID, "group": i+1, "instance" : (j+1), "img_urls": [] }
+			progress.insert({"group": PILOT_GROUP, "instance" : j+1, "count" : 0 })
+			assignment = {"hit_id": hitID, "group": PILOT_GROUP, "instance" : (j+1), "img_urls": [] }
 			for filename in instances[j]:
 				if PILOT_GROUP<10:
 					assignment["img_urls"].append( (BASE_URI+'0'+str(PILOT_GROUP)+"/"+filename) )
