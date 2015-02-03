@@ -13,7 +13,7 @@
 	    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 	    <script type="text/javascript">
 	    	var INTRO = 0, CONSENT = 1, PRAC_INST = 2, REAL_INST = 3, STUDY = 4, DEBRIEF = 5;
-	    	var MIN_DESC = 100, IMG_WIDTH = 600, IMG_HEIGHT = 600;
+	    	var MIN_DESC = 100, IMG_WIDTH = 600, IMG_HEIGHT = 700;
 	    	var stage = INTRO;
 	    	var formSelector = "#mturk-form";
 	    	var images = null;
@@ -194,13 +194,13 @@
 					//setup a new image
 					var image = $("#study-image")[0];
 					image.onload = function(){
-						// var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, IMG_WIDTH, IMG_HEIGHT);
-						// image.height 	= newSize.height;
-						// image.width 	= newSize.width;
-						if (this.naturalWidth>IMG_WIDTH)
-							image.width = IMG_WIDTH;
-						else
-							image.width = this.naturalWidth;
+						var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, IMG_WIDTH, IMG_HEIGHT);
+						image.height 	= newSize.height;
+						image.width 	= newSize.width;
+						// if (this.naturalWidth>IMG_WIDTH)
+						// 	image.width = IMG_WIDTH;
+						// else
+						// 	image.width = this.naturalWidth;
 
 						$("#study-image").show();
 						$("#describe-form").hide();
@@ -267,12 +267,13 @@
 				console.log("(canvasWidth, canvasHeight) = " + canvasWidth + ", " + canvasHeight);
 				console.log("(oldWidth, oldHeight) = " + imgWidth + ", " + imgHeight);						
 				var newWidth 	= imgWidth;	
-				var newHeight	= imgHeight;		
+						
 				if (newWidth>canvasWidth){
 					newWidth 	= canvasWidth;
 					var wratio 	= canvasWidth/imgWidth;
-					newHeight 	= wratio*newHeight;
+					imgHeight 	= wratio*imgHeight;
 				}
+				var newHeight	= imgHeight;
 				if (newHeight>canvasHeight){
 					newHeight 	= canvasHeight;
 					var hratio 	= canvasHeight/imgHeight;
