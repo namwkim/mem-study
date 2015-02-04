@@ -4,70 +4,87 @@
 	    <title>{{ title }}</title>
 	    <link rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap.min.css' />
 	    <link rel='stylesheet' href='/bower_components/bootstro/bootstro.min.css' />
-	    <link rel='stylesheet' href='/stylesheets/recall_admin.css'/>
+	    <link rel='stylesheet' href='/stylesheets/bubble_admin.css'/>
 
 	    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
 	    <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 	    <script src="/bower_components/bootstro/bootstro.min.js"></script>
 	    <script src="/bower_components/underscore/underscore-min.js"></script>
 	    <script src="/bower_components/bootbox/bootbox.js"></script>
-	    <script src="/javascripts/heatmap.js-2.0/build/heatmap.js"></script>
+	    
 	    <script type="text/javascript">
-	    	var IMG_WIDTH = 1024, IMG_HEIGHT = 768;
-	    	var groups  	= null;	
-	    	var imgCurPath  = null;
+	    	var curImage 	= null, curAssignment = null;
+	    	var assignments = {};
+	    	var description = null;
+	    	var survey  	= null;	
+	    	var images  	= null;
+	    	var heatmap 	= null
 	    	$(document).ready(function(){
 	    		Initialize();
 			});
 			function Initialize(){
 
-				//set recall image
-								//load logs								
-	    		$.get('/recall/all_images', {hitId: "ALL"} , function(res){
-	    			var images = res.images;
-	    			console.log(images);
-	    			
-	    			
-	    			groups = _.groupBy(images, function(image){  return image.group; });
+				//load logs								
+	    		$.get('/bubble/logs', function(res){
+	    			var logs = res;
+	    			console.log(logs);
 
-	    			console.log(groups);
-	    			UpdateImageList(groups);
+	    			//get survey
+	    			survey = _.chain(logs)
+	    				.filter(function(log){ return log.action=="survey";})
+	    				.reduce(function(map, log){
+	    					var key = log.hit_id + "/" + log.assignment_id;
+	    					map[key] = log;
+	    					//console.log(map);
+	    					return map;
+	    				}, {})
+	    				.value();
+
+
+	    			//get text-description
+	    			description = _.chain(logs)
+	    				.filter(function(log){ return log.action=="explain" && log.data.is_practice=="false";})
+	    				.reduce(function(map, log){
+	    					if (_.has(survey,log.hit_id + "/" + log.assignment_id)==false)//filter invalid assignments
+	    						return map;
+	    					var key = log.data.image + "/" + log.hit_id + "/" + log.assignment_id;
+	    					map[key] = log;
+	    					//console.log(map);
+	    					return map;
+	    				}, {})
+	    				.value();
+	    			console.log(description);
+
 	    			
+    				console.log(survey);
+
+	    			// //get click data
+	    			// clicks = _.filter(logs, function(log){ 
+	    			// 	return log.action=="click" && log.data.is_practice=="false" &&
+	    			// 		_.has(description, log.data.image + "/" + log.hit_id + "/" + log.assignment_id)==true&&
+	    			// 		_.has(survey,log.hit_id + "/" + log.assignment_id)==true; 
+	    			// });
+
+	    			// group by images
+	    			images = _.groupBy(description, function(text){ return text.data.image.replace(/^.*[\\\/]/, ''); });
+
+	    			// for each image, group by assignments
+	    			for (var image_name in images){
+	    				assignments[image_name] = _.groupBy(images[image_name], function(click){ return click.hit_id +"/"+click.assignment_id; });
+	    			}
+	    			UpdateImageList(images);
 				});
-				$("#resize").click(function(e){
-					e.preventDefault(); 
-					IMG_WIDTH = parseInt($("#max-width").val());
-					IMG_HEIGHT = parseInt($("#max-height").val());
-
-					console.log(IMG_WIDTH + ", " + IMG_HEIGHT);
-					var image = $("#study-image")[0];
-					image.src = "";
-					image.onload = function(){
-						var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, IMG_WIDTH, IMG_HEIGHT);
-						console.log(newSize);
-						image.height 	= newSize.height;
-						image.width 	= newSize.width;
-						// if (this.naturalWidth>IMG_WIDTH)
-						// 	image.width = IMG_WIDTH;
-						// else
-						// 	image.width = this.naturalWidth;
-					}
-
-					image.src = imgCurPath;					
-					return false;
-				})
 			}
-			
-			function UpdateImageList(groups){
-				for (var group in groups){					
+			function UpdateImageList(){
+				for (var image_name in images){					
 					//create new elem
-					var newElem = $("<a class='list-group-item' > HIT Group " + group + "</a>");
+					var newElem = $("<a class='list-group-item' >" + image_name + "</a>");
 
 					//append to list
 					newElem.appendTo("#image-list");					
 
 					//click callback
-					newElem.click(groups[group], function(e){
+					newElem.click(assignments[image_name], function(e){
 						$("#image-list a.active").removeClass("active");
 						$(this).addClass("active");
 
@@ -80,47 +97,44 @@
 				//select first
 				$("#image-list a").first().click();
 			}
-			function UpdateAssignmentList(group){
-				
-				var images = _.reduce(group,function(map, item){
-					for (var i in item.img_urls){
-						var filename = item.img_urls[i].replace(/^.*[\\\/]/, '');
-						if (_.has(map, filename)==false){
-							map[filename] = item.img_urls[i];
-						}
-					}
-					
-					return map;
-				}, {});
-				
-				for (var filename in images){
+			function UpdateAssignmentList(as_list){
+				console.log(as_list);
+				for (var key in as_list){
 					
 					//create new elem
-					var newElem = $("<a class='list-group-item' >" + filename + "</a>");
+					var newElem = $("<a class='list-group-item' >" + key + "</a>");
 
 					//append to list
 					newElem.appendTo("#assignment-list");	
 
 					//click callback
-					newElem.click(images[filename], function(e){
+					newElem.click(as_list[key], function(e){
 						$("#assignment-list a.active").removeClass("active");
 						$(this).addClass("active");
 
-						var img_path= imgCurPath = e.data;
-						var image = $("#study-image")[0];
-						image.onload = function(){
-							var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, IMG_WIDTH, IMG_HEIGHT);
-							console.log(newSize);
-							image.height 	= newSize.height;
-							image.width 	= newSize.width;
-							// if (this.naturalWidth>IMG_WIDTH)
-							// 	image.width = IMG_WIDTH;
-							// else
-							// 	image.width = this.naturalWidth;
-							}
-
-							image.src = img_path
+						var assignment = e.data;
+						var image_path = assignment[0].data.image;
 						
+						
+						//draw image
+						var image = $("#study-image")[0];
+					
+						image.src = image_path;	
+						
+						//set text description
+						var explain = description[assignment[0].data.image + "/" + assignment[0].hit_id + "/" + assignment[0].assignment_id];
+						$("#bubble-desc").text(explain.data.desc);
+
+						//set survey data
+						var s = survey[assignment[0].hit_id + "/" + assignment[0].assignment_id];
+						$("#survey-hit").text(s.hit_id);
+						$("#survey-assignment").text(s.assignment_id);
+						$("#survey-worker").text(s.worker_id);
+						$("#survey-image").text(image_path);
+						$("#survey-gender").text(s.data.gender);
+						$("#survey-age").text(s.data.age);
+						$("#survey-ethnicity").text(s.data.ethnic);
+						$("#survey-feedback").text(s.data.feedback);
 					})
 
 				}
@@ -146,19 +160,20 @@
 				console.log("(newWidth, newHeight) = " + newWidth + ", " + newHeight);
 				return {width: newWidth, height: newHeight};
 			}
+
+
 	    </script>
   	</head>
   	<body>
 	  	<div class="container">
 	  		<h3><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Bubble Monitoring Interface</h3>
-
 	  		<div class="row">
 	  			<div class="col-md-2">
 	  				<div class="panel panel-default">
 						<!-- Default panel contents -->
-						<div class="panel-heading">Groups</div>
+						<div class="panel-heading">Images</div>
 						<!-- List group -->
-						<div id="image-list" class="list-group" style="max-height:600px;overflow-y:scroll; ">
+						<div id="image-list" class="list-group">
 					
 						</div>
 					</div>
@@ -166,7 +181,7 @@
 	  			<div class="col-md-2">
 	  				<div class="panel panel-default">
 						<!-- Default panel contents -->
-						<div class="panel-heading">Images</div>
+						<div class="panel-heading">HIT/Assignments</div>
 						<!-- List group -->
 						<div id="assignment-list" class="list-group">
 					
@@ -174,34 +189,42 @@
 					</div>
 	  			</div>
 	  			<div class="col-md-8">
-  					
-  						<div class="well">
-				  			<form class="form-inline">
-							  <div class="form-group">
-							    <label for="exampleInputName2">Max-Width: </label>
-							    <input id="max-width" type="text" class="form-control" placeholder="1024" value="1024">
-							  </div>
-							  <div class="form-group">
-							    <label for="exampleInputEmail2">Max-Height: </label>
-							    <input id="max-height" type="text" class="form-control" placeholder="768" value="768">
-							  </div>
-							  <button id="resize" type="submit" class="btn btn-default">Resize</button>
-							</form>
-						</div>
-			  		
 	  				<div class="panel panel-default" role="tabpanel">
 	  					<div class="panel-heading">
 					  		<!-- Nav tabs -->
 					  		<ul class="nav nav-pills" role="tablist">
-							    <li role="presentation" class="active"><a href="#recall" aria-controls="recall" role="tab" data-toggle="tab">Image</a></li>
+							    <li role="presentation" class="active"><a href="#bubble" aria-controls="bubble" role="tab" data-toggle="tab">Bubble</a></li>
+							    <li role="presentation"><a href="#desc" aria-controls="desc" role="tab" data-toggle="tab">Description</a></li>
+							    <li role="presentation"><a href="#survey" aria-controls="survey" role="tab" data-toggle="tab">Survey</a></li>
 						  	</ul>
 					  	</div>
 
 					  	<!-- Tab panes -->
-					  	<div class="panel-body" >
+					  	<div class="panel-body">
 						  	<div class="tab-content">
-						    	<div role="tabpanel" class="tab-pane fade in active" id="recall" style="min-height:800px;max-height:800px;overflow-y:scroll; ">
+						    	<div role="tabpanel" class="tab-pane fade in active" id="bubble">
+						    		<p id="bubble-desc"></p>
 						    		<img id="study-image" class="center-block">					
+						    	</div>
+						    	<div role="tabpanel" class="tab-pane fade" id="survey">
+						    		<strong>HIT ID: </strong><span id="survey-hit"></span>
+						    		<br><br>
+						    		<strong>Assignment ID: </strong><span id="survey-assignment"></span>
+						    		<br><br>
+						    		<strong>Worker ID: </strong><span id="survey-worker"></span>
+						    		<br><br>
+						    		<strong>Image File: </strong><span id="survey-image"></span>
+						    		<br><br>
+						    		<strong>Gender: </strong><span id="survey-gender"></span>
+						    		<br><br>
+						    		<strong>Age: </strong><span id="survey-age"></span>
+						    		<br><br>
+						    		<strong>Ethnicity: </strong><span id="survey-ethnicity"></span>
+						    		<br><br>
+						    		<strong>Feedback: </strong><span id="survey-feedback"></span>
+						    		<br><br>
+
+
 						    	</div>
 						  	</div>
 					  	</div>

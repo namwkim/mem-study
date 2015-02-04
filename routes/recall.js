@@ -14,6 +14,10 @@ router.get('/admin', function(req, res) {
     console.log(req.params);
     res.render('recall_admin', { title: 'Recall Experiment Admin' });
 });
+router.get('/inspect_images', function(req, res) {
+    console.log(req.params);
+    res.render('recall-image-inspection', { title: 'Recall Experiment Image Inspection' });
+});
 router.get('/all_images', function(req, res){
     var db = req.recalldb;
     db.collection('images').find().toArray(function(err, result){
@@ -108,6 +112,19 @@ router.put('/progress', function(req, res){
     });
 
 });
+router.get('/logs', function(req, res){
+    var db = req.bubbledb;
+    db.collection('logs').find().toArray(function(err, result){
+        if (err) {
+            return console.log(new Date(), 'error in loading images', err);
+        }
+        //console.log(result);
+        if (result) {
+            
+            res.json(result);
+        }
+    });
+})
 router.post('/log', function(req, res){
 	var db 		= req.recalldb;
 	var newLog	= {};
