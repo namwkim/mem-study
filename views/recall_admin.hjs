@@ -13,6 +13,7 @@
 	    <script src="/bower_components/bootbox/bootbox.js"></script>
 	    
 	    <script type="text/javascript">
+	    	var IMG_WIDTH = 600, IMG_HEIGHT = 700;
 	    	var curImage 	= null, curAssignment = null;
 	    	var assignments = {};
 	    	var description = null;
@@ -118,7 +119,17 @@
 						
 						//draw image
 						var image = $("#study-image")[0];
-					
+						image.src = "";
+						image.onload = function(){
+							var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, IMG_WIDTH, IMG_HEIGHT);
+							console.log(newSize);
+							image.height 	= newSize.height;
+							image.width 	= newSize.width;
+							// if (this.naturalWidth>IMG_WIDTH)
+							// 	image.width = IMG_WIDTH;
+							// else
+							// 	image.width = this.naturalWidth;
+						}
 						image.src = image_path;	
 						
 						//set text description

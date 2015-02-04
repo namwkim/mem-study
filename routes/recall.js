@@ -129,9 +129,9 @@ router.post('/log', function(req, res){
 	var db 		= req.recalldb;
 	var newLog	= {};
     newLog.timestamp    = req.body.timestamp;
-	newLog.hitId 		= req.body.hitId;
-	newLog.assignmentId = req.body.assignmentId;
-	newLog.workerId 	= req.body.workerId;
+    newLog.hit_id            = req.body.hitId;
+    newLog.assignment_id     = req.body.assignmentId;
+    newLog.worker_id         = req.body.workerId;
 	newLog.action 		= req.body.action;
     newLog.group        = req.body.group;
     newLog.instance     = req.body.instance;
