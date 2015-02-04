@@ -113,7 +113,7 @@ router.put('/progress', function(req, res){
 
 });
 router.get('/logs', function(req, res){
-    var db = req.bubbledb;
+    var db = req.recalldb;
     db.collection('logs').find().toArray(function(err, result){
         if (err) {
             return console.log(new Date(), 'error in loading images', err);
