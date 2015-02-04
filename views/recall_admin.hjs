@@ -204,8 +204,7 @@
 	  					<div class="panel-heading">
 					  		<!-- Nav tabs -->
 					  		<ul class="nav nav-pills" role="tablist">
-							    <li role="presentation" class="active"><a href="#bubble" aria-controls="bubble" role="tab" data-toggle="tab">Bubble</a></li>
-							    <li role="presentation"><a href="#desc" aria-controls="desc" role="tab" data-toggle="tab">Description</a></li>
+							    <li role="presentation" class="active"><a href="#bubble" aria-controls="bubble" role="tab" data-toggle="tab">Bubble</a></li>							    
 							    <li role="presentation"><a href="#survey" aria-controls="survey" role="tab" data-toggle="tab">Survey</a></li>
 						  	</ul>
 					  	</div>

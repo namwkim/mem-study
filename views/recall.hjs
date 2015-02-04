@@ -31,6 +31,7 @@
     		var assignmentId, hitId, workerId;
     		var charCount = 0;
     		var size = {width:0, height:0, screenWidth: 0, screenHeight: 0};
+    		var finished = false;
 
 	    	$(document).ready(function(){
 	    		Initialize();
@@ -106,6 +107,8 @@
     				$('#char-count').text($('#study-vis-desc').val().length);
     			})    	
 
+				// $('a').on('click', function() { inFormOrLink = true; });
+				// $('form').on('submit', function() { inFormOrLink = true; });
 			}
 			function ConfirmRecaptcha(){
 				//check reCAPTCHA
@@ -402,19 +405,8 @@
 	   				ethnic: ethnic,
 	   				feedback: feedback
 	   			}, function(){
-		   			//update assignment(~instance) count
-		   			$.ajax({
-		   				url:"/recall/progress",
-		   				type:"PUT",
-		   				data: {
-		   					group: realImages.assignment.group,
-		   					instance: realImages.assignment.instance,
-		   					count: realImages.assignment.count+1
-		   				},
-		   				success: function(res){
-		   					$(formSelector).submit();	    
-		   				}
-		   			})
+
+   					$(formSelector).submit();	    
 	   									
 	   			});
 
@@ -422,8 +414,24 @@
 	    		// console.log("assignmentId: " + $("#mturk-form input[name=assignmentId]").val());
 	    		// console.log("targetNumber: " + $("#mturk-form input[name=targetNumber]").val());
 	    		// console.log("correctNumber: " + $("#mturk-form input[name=correctNumber]").val());
+	    		finished = true;
 	    		$(formSelector).submit();	    					
-			}		
+			}	
+			$(window).on("beforeunload", function() { 
+	   			if (finished==false){
+		   			$.ajax({
+		   				url:"/recall/progress",
+		   				type:"PUT",
+		   				data: {
+		   					group: realImages.assignment.group,
+		   					instance: realImages.assignment.instance,
+		   					count: realImages.assignment.count-1
+		   				}
+		   			})
+	   			}				
+			    //return finished==false? "Do you really want to close?" : null; 
+			})	
+		
 	    </script>
   	</head>
   	<body>

@@ -48,17 +48,30 @@ router.get('/images', function(req, res){
 
             if (hitId.search("TEST")!=-1){
                 images = _.filter(images, function(assignment){
-                    return assignment.group==1;
+                    return assignment.group==8;
                 });               
             }
             var group = images[0].group;
-            console.log('group: ' + group);
+            //console.log('group: ' + group);
             db.collection('progress').find({group: group }).toArray(function(err, progress){
+
                 var minAssignment = _.min(progress, function(assignment){ return assignment.count});
                 var finalSet = _.filter(images, function(assignment){ return assignment.group==group && assignment.instance==minAssignment.instance; })
-                console.log('instance: ' + minAssignment.instance);
+                //console.log('instance: ' + minAssignment.instance);
                 console.log(finalSet);
-                res.json({ assignment: minAssignment, targets: finalSet[0].img_urls });
+                minAssignment.count = parseInt(minAssignment.count) + 1;
+                console.log(minAssignment);
+                db.collection('progress').update({group: minAssignment.group, instance: minAssignment.instance }, { "$set": {count: minAssignment.count}}, 
+                    function(err, result){
+                        if (err) {
+                            return console.log(new Date(), 'update error', err);
+                        }
+                        if (result) {            
+                            res.json({ assignment: minAssignment, targets: finalSet[0].img_urls });
+                        }
+
+                    });
+                
             })
         }
 	});
@@ -100,7 +113,7 @@ router.put('/progress', function(req, res){
 
     console.log(query);
     console.log("count: " + newCount);
-    db.collection('progress').update(query, {count: newCount}, function(err, result) {
+    db.collection('progress').update(query, { "$set": {count: newCount}}, function(err, result) {
         if (err) {
             return console.log(new Date(), 'update error', err);
         }
