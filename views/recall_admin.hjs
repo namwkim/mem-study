@@ -25,7 +25,7 @@
 			function Initialize(){
 
 				//load logs								
-	    		$.get('/bubble/logs', function(res){
+	    		$.get('/recall/logs', function(res){
 	    			var logs = res;
 	    			console.log(logs);
 
