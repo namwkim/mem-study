@@ -5,7 +5,7 @@ import os, pymongo, sys, itertools
 
 ######  AMT CONFIGURATION PARAMETRS  ######
 
-SANDBOX = True  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
+SANDBOX = False  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 HIT_URL = "https://study.namwkim.org/recall"  # Provide the URL that you want workers to sent sent to complete you task
 
 NUMBER_OF_HITS = 1  # Number of different HITs posted for this task
