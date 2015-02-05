@@ -209,12 +209,13 @@
 				console.log("(canvasWidth, canvasHeight) = " + canvasWidth + ", " + canvasHeight);
 				console.log("(oldWidth, oldHeight) = " + imgWidth + ", " + imgHeight);						
 				var newWidth 	= imgWidth;	
-				var newHeight	= imgHeight;		
+						
 				if (newWidth>canvasWidth){
 					newWidth 	= canvasWidth;
 					var wratio 	= canvasWidth/imgWidth;
-					newHeight 	= wratio*newHeight;
+					imgHeight 	= wratio*imgHeight;
 				}
+				var newHeight	= imgHeight;
 				if (newHeight>canvasHeight){
 					newHeight 	= canvasHeight;
 					var hratio 	= canvasHeight/imgHeight;
@@ -571,7 +572,7 @@
 					<h2><span id="tutorial-msg" class="label label-danger">Tutorial</span> Click and Describe the Image.</h2>		
 					<div class="row">
 						<div class="col-md-8">							
-							<canvas id="canvas" width="600" height="600"></canvas>
+							<canvas id="canvas" width="600" height="800"></canvas>
 						</div>
 						<div class="col-md-4">
 							<form id="describe-form" role="form">

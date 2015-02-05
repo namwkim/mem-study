@@ -5,10 +5,10 @@ import os, pymongo, sys, random
 
 ######  AMT CONFIGURATION PARAMETRS  ######
 
-SANDBOX = False  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
+SANDBOX = True  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 HIT_URL = "https://study.namwkim.org/bubble"  # Provide the URL that you want workers to sent sent to complete you task
 
-NUMBER_OF_HITS = 5  # Number of different HITs posted for this task
+NUMBER_OF_HITS = 12  # Number of different HITs posted for this task
 NUMBER_OF_ASSIGNMENTS = 3  # Number of tasks that DIFFERENT workers will be able to take for each HIT
 LIFETIME = 60 * 60 * 24 * 7  # How long that the task will stay visible if not taken by a worker (in seconds)
 REWARD = 0.5  # Base payment value for completing the task (in dollars)
@@ -17,11 +17,12 @@ APPROVAL_DELAY = 60*60*24*7  # How long after the task is completed will the wor
 
 
 # HIT title (as it will appear on the public listing)
-TITLE = 'Bubble Study'
+TITLE = 'Graph/Chart Descriptions'
 # Description of the HIT that workers will see when deciding to accept it or not
-DESCRIPTION = 'Describe a visualization image!'
+DESCRIPTION = ("In this HIT you will be presented with a series of images containing graphs and diagrams. "+
+				"For each image, you will be asked to describe the image in as much detail as possible (minimum 150 characters). The image is heavily blurred so that you can only see a rough outline of the image. However, you can click to reveal small, circular areas of the image ('bubbles') to inspect the full details.")
 # Search terms for the HIT posting
-KEYWORDS = ['Image', 'Visualization', 'Describe']
+KEYWORDS = ['Easy', 'Chart', 'Graph', 'Text', 'Visualization', 'Image', 'Describe']
 
 
 # Your Amazon Web Services Access Key (private)
@@ -83,7 +84,7 @@ def create_hits(keyfile):
 	#Create HITs
 	hitIDs = []
 	for i in range(0, NUMBER_OF_HITS):
-		create_hit_rs = conn.create_hit(question=q, lifetime=LIFETIME, max_assignments=NUMBER_OF_ASSIGNMENTS, title=TITLE, keywords=KEYWORDS, reward=REWARD, duration=DURATION, approval_delay=APPROVAL_DELAY, annotation=DESCRIPTION, qualifications=quals)
+		create_hit_rs = conn.create_hit(question=q, lifetime=LIFETIME, max_assignments=NUMBER_OF_ASSIGNMENTS, title=TITLE, keywords=KEYWORDS, reward=REWARD, duration=DURATION, approval_delay=APPROVAL_DELAY, description=DESCRIPTION, qualifications=quals)
 		print(preview_url + create_hit_rs[0].HITTypeId)
 		print("HIT ID: " + create_hit_rs[0].HITId)
 
@@ -111,7 +112,7 @@ def create_hits(keyfile):
 	count 	= 0
 	for i in range(len(targets)):
 		count +=1
-		images.insert({"hit_id": hitID, "img_url": BASE_URI+targets[i], "blur_img_url": BASE_URI_BLUR+targets_blurred[i]}) # insert an image into the db with HIT ID assigned
+		images.insert({"hit_id": hitID, "group": hitIdx, "img_url": BASE_URI+targets[i], "blur_img_url": BASE_URI_BLUR+targets_blurred[i]}) # insert an image into the db with HIT ID assigned
 		if count>=hitSize:
 			count   = 0
 			hitIdx += 1
