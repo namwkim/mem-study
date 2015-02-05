@@ -28,7 +28,7 @@
     		var curIdx = 0;
     		var curImg = null;
     		var curBlurImg = null;
-
+    		var size = {width:0, height:0, screenWidth: 0, screenHeight: 0};
     		var assignmentId, hitId, workerId;
     		var clickCount = 0, totalClickCount = 0, charCount = 0;
 
@@ -36,6 +36,11 @@
 	    		Initialize();
 			});
 			function Initialize(){
+				size.width 			= window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+				size.height 		= window.innerHeight || document.documentElement.clientHeight ||document.body.clientHeight;
+				size.screenWidth 	= screen.width;
+				size.screenHeight 	= screen.height;
+
 				$("#consent").hide();
 				$("#prac-inst").hide();
 				$("#real-inst").hide();
@@ -255,7 +260,8 @@
 		        	image: images.targets[curIdx],
 		        	center_x: x,
 		        	center_y: y,
-		        	radius: RADIUS_PIXEL
+		        	radius: RADIUS_PIXEL,
+		        	size: size
 		        }
 		        LogAction("click", data);
 		        clickCount++;
