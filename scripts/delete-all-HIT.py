@@ -51,7 +51,7 @@ def delete_all_hit(keyfile):
 				print "page# = " + assignments.PageNumber + ", # of assignments = " + assignments.NumResults	
 				for assignment in assignments:
 					print "Rejecting " + assignment.AssignmentId
-					conn.reject_assignment(assignment.AssignmentId);	
+					conn.approve_assignment(assignment.AssignmentId);	
 					i=i-1
 				assignments = conn.get_assignments(hit_id=hit.HITId);
 
