@@ -267,7 +267,7 @@
 						<!-- Default panel contents -->
 						<div class="panel-heading">Images</div>
 						<!-- List group -->
-						<div id="image-list" class="list-group">
+						<div id="image-list" class="list-group" style="max-height:600px;overflow-y:scroll;">
 					
 						</div>
 					</div>
@@ -277,7 +277,7 @@
 						<!-- Default panel contents -->
 						<div class="panel-heading">HIT/Assignments</div>
 						<!-- List group -->
-						<div id="assignment-list" class="list-group">
+						<div id="assignment-list" class="list-group" style="max-height:600px;overflow-y:scroll;">
 					
 						</div>
 					</div>
@@ -288,7 +288,6 @@
 					  		<!-- Nav tabs -->
 					  		<ul class="nav nav-pills" role="tablist">
 							    <li role="presentation" class="active"><a href="#bubble" aria-controls="bubble" role="tab" data-toggle="tab">Bubble</a></li>
-							    <li role="presentation"><a href="#desc" aria-controls="desc" role="tab" data-toggle="tab">Description</a></li>
 							    <li role="presentation"><a href="#survey" aria-controls="survey" role="tab" data-toggle="tab">Survey</a></li>
 						  	</ul>
 					  	</div>
@@ -297,11 +296,14 @@
 					  	<div class="panel-body">
 						  	<div class="tab-content">
 						    	<div role="tabpanel" class="tab-pane fade in active" id="bubble">
+						    		<div class="well">
+						    			<strong>Worker ID: </strong><span id="survey-worker"></span>
+						    			<br>
+						    			<strong>Image File: </strong><span id="survey-image"></span>
+						    			<br>
+						    			<p id="bubble-desc"></p>
+						    		</div>
 						    		<canvas id="bubble-canvas" width="600" height="600"></canvas>
-						    	</div>
-						    	<div role="tabpanel" class="tab-pane fade" id="desc">
-						    		<p id="bubble-desc"></p>
-						    	
 						    	</div>
 						    	<div role="tabpanel" class="tab-pane fade" id="survey">
 						    		<strong>HIT ID: </strong><span id="survey-hit"></span>
