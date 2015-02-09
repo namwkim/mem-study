@@ -79,14 +79,23 @@ router.post('/recaptcha', function(req, res){
 });
 router.get('/logs', function(req, res){
     var db = req.bubbledb;
-    db.collection('logs').find().toArray(function(err, result){
+    var pageSize = req.query.pageSize;
+    var lastID   = req.query.lastID;
+    var query    = {}
+    if (lastID!=null){
+        query._id = { '$gt':lastID };
+
+    }
+    db.collection('logs').find(query).toArray(function(err, result){
         if (err) {
             return console.log(new Date(), 'error in loading images', err);
         }
         //console.log(result);
         if (result) {
             
-            res.json(result);
+            res.json({ lastID = result[result.length-1]._id, logs : result});
+        }else{
+            res.json({lastID: null, logs: null})
         }
     });
 })

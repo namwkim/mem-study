@@ -13,15 +13,35 @@
 	    <script src="/bower_components/bootbox/bootbox.js"></script>
 	    <script src="/javascripts/heatmap.js-2.0/build/heatmap.js"></script>
 	    <script type="text/javascript">
+	    	var PAGE_SIZE	= 50;
 	    	var curImage 	= null, curAssignment = null;
 	    	var assignments = {};
 	    	var description = null;
 	    	var survey  	= null;	
 	    	var images  	= null;
-	    	var heatmap 	= null
+	    	var heatmap 	= null;
+	    	var loadComplete = 0;
+	    	var logs;
 	    	$(document).ready(function(){
 	    		Initialize();
 			});
+
+			function LoadMore(lastID){
+				$.get('/bubble/logs', {pageSize:PAGE_SIZE, lastID: lastID},  function(res){
+    					//check if complete
+    					if (res.lastID==null){
+    						loadComplete=1;
+    						return;
+    					}
+    						
+    					//copy new data
+    					for (var i in res.logs){
+    						logs.push(res.logs[i]);
+    					}
+    					//try loading more
+    					LoadMore(res.lastID)
+    				});
+			}
 			function Initialize(){
 
 				//set bubble image
@@ -32,8 +52,14 @@
 				});
 
 				//load logs								
-	    		$.get('/bubble/logs', function(res){
-	    			var logs = res;
+	    		$.get('/bubble/logs', {pageSize:PAGE_SIZE, lastID: null},  function(res){
+	    			var lastID 	= res.lastID;
+	    			logs 		= res.logs;
+	    			LoadMore(lastID);
+	    			while(loadComplete==false)//block progression
+	    			
+	    			console.log('loading additional logs...');
+
 	    			console.log(logs);
 	    			//get survey
 	    			survey = _.chain(logs)
