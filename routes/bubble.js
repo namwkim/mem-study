@@ -79,6 +79,7 @@ router.post('/recaptcha', function(req, res){
 });
 router.get('/logs', function(req, res){
     var db = req.bubbledb;
+    console.log(req.query);
     var pageSize = req.query.pageSize;
     var lastID   = req.query.lastID;
     var query    = {}
