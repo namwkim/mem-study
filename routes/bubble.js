@@ -89,8 +89,7 @@ router.get('/logs', function(req, res){
     console.log(query);
     bands.count(function(err, count) {
         console.log('There are ' + count + ' bands in the database');
-    });
-    db.collection('logs').find(query).limit(pageSize).toArray(function(err, result){
+         db.collection('logs').find(query).limit(pageSize).toArray(function(err, result){
         if (err) {
             return console.log(new Date(), 'error in loading images', err);
         }
@@ -102,6 +101,8 @@ router.get('/logs', function(req, res){
             res.json({lastID: null, logs: result})
         }
     });
+    });
+   
 })
 router.post('/log', function(req, res){
 	var db 		= req.bubbledb;
