@@ -93,7 +93,7 @@ router.get('/logs', function(req, res){
         //console.log(result);
         if (result) {
             
-            res.json({ lastID = result[result.length-1]._id, logs : result});
+            res.json({ lastID : result[result.length-1]._id, logs : result});
         }else{
             res.json({lastID: null, logs: null})
         }
