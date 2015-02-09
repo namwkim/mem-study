@@ -13,7 +13,7 @@
 	    <script src="/bower_components/bootbox/bootbox.js"></script>
 	    <script src="/javascripts/heatmap.js-2.0/build/heatmap.js"></script>
 	    <script type="text/javascript">
-	    	var PAGE_SIZE	= 10000;
+	    	var PAGE_SIZE	= 20000;
 	    	var curImage 	= null, curAssignment = null;
 	    	var assignments = {};
 	    	var description = null;
@@ -59,8 +59,6 @@
 	    			var lastID 	= res.lastID;
 	    			logs 		= res.logs;
 	    			LoadMore(lastID, function(){
-		    			
-		    			console.log('loading additional logs...');
 
 		    			console.log(logs);
 		    			//get survey
