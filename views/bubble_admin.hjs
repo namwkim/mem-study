@@ -26,11 +26,13 @@
 	    		Initialize();
 			});
 
-			function LoadMore(lastID){
+			function LoadMore(lastID, callback){
 				$.get('/bubble/logs', {pageSize:PAGE_SIZE, lastID: lastID},  function(res){
     					//check if complete
     					if (res.lastID==null){
     						loadComplete=1;
+    						console.log("load complete!")
+    						callback.call();
     						return;
     					}
     						
@@ -39,7 +41,8 @@
     						logs.push(res.logs[i]);
     					}
     					//try loading more
-    					LoadMore(res.lastID)
+    					console.log('loading additional logs...');
+    					LoadMore(res.lastID, callback)
     				});
 			}
 			function Initialize(){
@@ -55,56 +58,58 @@
 	    		$.get('/bubble/logs', {pageSize:PAGE_SIZE, lastID: null},  function(res){
 	    			var lastID 	= res.lastID;
 	    			logs 		= res.logs;
-	    			LoadMore(lastID);
-	    			while(loadComplete==false)//block progression
-	    			
-	    			console.log('loading additional logs...');
+	    			LoadMore(lastID, function(){
+		    			
+		    			console.log('loading additional logs...');
 
-	    			console.log(logs);
-	    			//get survey
-	    			survey = _.chain(logs)
-	    				.filter(function(log){ return log.action=="survey";})
-	    				.reduce(function(map, log){
-	    					var key = log.hit_id + "/" + log.assignment_id;
-	    					map[key] = log;
-	    					//console.log(map);
-	    					return map;
-	    				}, {})
-	    				.value();
+		    			console.log(logs);
+		    			//get survey
+		    			survey = _.chain(logs)
+		    				.filter(function(log){ return log.action=="survey";})
+		    				.reduce(function(map, log){
+		    					var key = log.hit_id + "/" + log.assignment_id;
+		    					map[key] = log;
+		    					//console.log(map);
+		    					return map;
+		    				}, {})
+		    				.value();
 
 
-	    			//get text-description
-	    			description = _.chain(logs)
-	    				.filter(function(log){ return log.action=="explain" && log.data.is_practice=="false";})
-	    				.reduce(function(map, log){
-	    					if (_.has(survey,log.hit_id + "/" + log.assignment_id)==false)//filter invalid assignments
-	    						return map;
-	    					var key = log.data.image + "/" + log.hit_id + "/" + log.assignment_id;
-	    					map[key] = log;
-	    					//console.log(map);
-	    					return map;
-	    				}, {})
-	    				.value();
-	    			console.log(description);
+		    			//get text-description
+		    			description = _.chain(logs)
+		    				.filter(function(log){ return log.action=="explain" && log.data.is_practice=="false";})
+		    				.reduce(function(map, log){
+		    					if (_.has(survey,log.hit_id + "/" + log.assignment_id)==false)//filter invalid assignments
+		    						return map;
+		    					var key = log.data.image + "/" + log.hit_id + "/" + log.assignment_id;
+		    					map[key] = log;
+		    					//console.log(map);
+		    					return map;
+		    				}, {})
+		    				.value();
+		    			console.log(description);
 
-	    			
-    				console.log(survey);
+		    			
+	    				console.log(survey);
 
-	    			//get click data
-	    			clicks = _.filter(logs, function(log){ 
-	    				return log.action=="click" && log.data.is_practice=="false" &&
-	    					_.has(description, log.data.image + "/" + log.hit_id + "/" + log.assignment_id)==true&&
-	    					_.has(survey,log.hit_id + "/" + log.assignment_id)==true; 
+		    			//get click data
+		    			clicks = _.filter(logs, function(log){ 
+		    				return log.action=="click" && log.data.is_practice=="false" &&
+		    					_.has(description, log.data.image + "/" + log.hit_id + "/" + log.assignment_id)==true&&
+		    					_.has(survey,log.hit_id + "/" + log.assignment_id)==true; 
+		    			});
+
+		    			// group by images
+		    			images = _.groupBy(clicks, function(click){ return click.data.image.replace(/^.*[\\\/]/, ''); });
+
+		    			// for each image, group by assignments
+		    			for (var image_name in images){
+		    				assignments[image_name] = _.groupBy(images[image_name], function(click){ return click.hit_id +"/"+click.assignment_id; });
+		    			}
+		    			UpdateImageList(images);
+
 	    			});
-
-	    			// group by images
-	    			images = _.groupBy(clicks, function(click){ return click.data.image.replace(/^.*[\\\/]/, ''); });
-
-	    			// for each image, group by assignments
-	    			for (var image_name in images){
-	    				assignments[image_name] = _.groupBy(images[image_name], function(click){ return click.hit_id +"/"+click.assignment_id; });
-	    			}
-	    			UpdateImageList(images);
+	    			//while(loadComplete==false)//block progression
 				});
 			}
 			function UpdateImageList(){
