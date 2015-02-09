@@ -87,7 +87,7 @@ router.get('/logs', function(req, res){
         query._id = { '$gt':lastID };
 
     }
-    db.collection('logs').find(query).toArray(function(err, result){
+    db.collection('logs').find(query).limit(pageSize).toArray(function(err, result){
         if (err) {
             return console.log(new Date(), 'error in loading images', err);
         }
