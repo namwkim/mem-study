@@ -28,7 +28,7 @@
 
 			function LoadMore(lastID, callback){
 				$.get('/bubble/logs', {pageSize:PAGE_SIZE, lastID: lastID},  function(res){
-					console.log(res.length);
+					console.log(res.logs.length);
 					//copy new data (if, exist)
 					for (var i in res.logs){
 						logs.push(res.logs[i]);
