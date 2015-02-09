@@ -83,7 +83,7 @@ router.get('/logs', function(req, res){
     var pageSize = req.query.pageSize;
     var lastID   = req.query.lastID;
     var query    = {}
-    if (lastID!=null){
+    if (lastID!=''){
         query._id = { '$gt':lastID };
 
     }
@@ -92,7 +92,7 @@ router.get('/logs', function(req, res){
             return console.log(new Date(), 'error in loading images', err);
         }
         console.log(result);
-        if (result) {
+        if (result.length!=0) {
             
             res.json({ lastID : result[result.length-1]._id, logs : result});
         }else{
