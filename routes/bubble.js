@@ -84,9 +84,10 @@ router.get('/logs', function(req, res){
     var lastID   = req.query.lastID;
     var query    = {}
     if (lastID!=''){
-        query._id = { '$gt':lastID };
+        query._id = { '$gt':req.toObjectID(lastID) };
 
     }
+    console.log(query)
     db.collection('logs').find(query).limit(pageSize).toArray(function(err, result){
         if (err) {
             return console.log(new Date(), 'error in loading images', err);

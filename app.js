@@ -38,6 +38,7 @@ app.use(function(req, res, next){
     req.db = db;
     req.bubbledb = bubbledb;
     req.recalldb = recalldb;
+    req.toObjectID = mongo.helper.toObjectID;
     next();
 });
 
