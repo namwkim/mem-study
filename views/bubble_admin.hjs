@@ -328,7 +328,7 @@
 						  	<div class="tab-content">
 						    	<div role="tabpanel" class="tab-pane fade in active" id="bubble">
 						    		<div class="well">
-						    			<strong>ID </strong><span id="survey-worker"></span>,<span id="survey-image"></span>
+						    			<strong>ID: </strong><span id="survey-worker"></span>,<span id="survey-image"></span>
 						    			<br>
 						    			<p id="bubble-desc"></p>
 						    		</div>
