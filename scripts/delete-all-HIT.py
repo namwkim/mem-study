@@ -52,8 +52,9 @@ def delete_all_hit(keyfile):
 				for assignment in assignments:
 					print "Approving " + assignment.AssignmentId
 					conn.approve_assignment(assignment.AssignmentId);	
-					i=i-1
+					
 				assignments = conn.get_assignments(hit_id=hit.HITId);
+				i = int(assignments.NumResults);
 
 		conn.disable_hit(hit.HITId)
 
