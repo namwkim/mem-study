@@ -21,13 +21,17 @@
 	    	var images  	= null;
 	    	var heatmap 	= null;
 	    	var loadComplete = 0;
-	    	var logs;
+	    	var logs = [];
 	    	$(document).ready(function(){
 	    		Initialize();
 			});
 
 			function LoadMore(lastID, callback){
 				$.get('/bubble/logs', {pageSize:PAGE_SIZE, lastID: lastID},  function(res){
+    					//copy new data (if, exist)
+    					for (var i in res.logs){
+    						logs.push(res.logs[i]);
+    					}
     					//check if complete
     					if (res.lastID==null){
     						loadComplete=1;
@@ -36,10 +40,7 @@
     						return;
     					}
     						
-    					//copy new data
-    					for (var i in res.logs){
-    						logs.push(res.logs[i]);
-    					}
+
     					//try loading more
     					console.log('loading additional logs...');
     					LoadMore(res.lastID, callback)
@@ -55,60 +56,60 @@
 				});
 
 				//load logs								
-	    		$.get('/bubble/logs', {pageSize:PAGE_SIZE, lastID: null},  function(res){
-	    			var lastID 	= res.lastID;
-	    			logs 		= res.logs;
-	    			LoadMore(lastID, function(){
+	    		// $.get('/bubble/logs', {pageSize:PAGE_SIZE, lastID: null},  function(res){
+	    		// 	var lastID 	= res.lastID;
+	    		// 	logs 		= res.logs;
+    			LoadMore(null, function(){
+    				console.log("Total:" + logs.length);
+	    			console.log(logs);
+	    			//get survey
+	    			survey = _.chain(logs)
+	    				.filter(function(log){ return log.action=="survey";})
+	    				.reduce(function(map, log){
+	    					var key = log.hit_id + "/" + log.assignment_id;
+	    					map[key] = log;
+	    					//console.log(map);
+	    					return map;
+	    				}, {})
+	    				.value();
 
-		    			console.log(logs);
-		    			//get survey
-		    			survey = _.chain(logs)
-		    				.filter(function(log){ return log.action=="survey";})
-		    				.reduce(function(map, log){
-		    					var key = log.hit_id + "/" + log.assignment_id;
-		    					map[key] = log;
-		    					//console.log(map);
-		    					return map;
-		    				}, {})
-		    				.value();
 
+	    			//get text-description
+	    			description = _.chain(logs)
+	    				.filter(function(log){ return log.action=="explain" && log.data.is_practice=="false";})
+	    				.reduce(function(map, log){
+	    					if (_.has(survey,log.hit_id + "/" + log.assignment_id)==false)//filter invalid assignments
+	    						return map;
+	    					var key = log.data.image + "/" + log.hit_id + "/" + log.assignment_id;
+	    					map[key] = log;
+	    					//console.log(map);
+	    					return map;
+	    				}, {})
+	    				.value();
+	    			console.log(description);
 
-		    			//get text-description
-		    			description = _.chain(logs)
-		    				.filter(function(log){ return log.action=="explain" && log.data.is_practice=="false";})
-		    				.reduce(function(map, log){
-		    					if (_.has(survey,log.hit_id + "/" + log.assignment_id)==false)//filter invalid assignments
-		    						return map;
-		    					var key = log.data.image + "/" + log.hit_id + "/" + log.assignment_id;
-		    					map[key] = log;
-		    					//console.log(map);
-		    					return map;
-		    				}, {})
-		    				.value();
-		    			console.log(description);
+	    			
+    				console.log(survey);
 
-		    			
-	    				console.log(survey);
-
-		    			//get click data
-		    			clicks = _.filter(logs, function(log){ 
-		    				return log.action=="click" && log.data.is_practice=="false" &&
-		    					_.has(description, log.data.image + "/" + log.hit_id + "/" + log.assignment_id)==true&&
-		    					_.has(survey,log.hit_id + "/" + log.assignment_id)==true; 
-		    			});
-
-		    			// group by images
-		    			images = _.groupBy(clicks, function(click){ return click.data.image.replace(/^.*[\\\/]/, ''); });
-
-		    			// for each image, group by assignments
-		    			for (var image_name in images){
-		    				assignments[image_name] = _.groupBy(images[image_name], function(click){ return click.hit_id +"/"+click.assignment_id; });
-		    			}
-		    			UpdateImageList(images);
-
+	    			//get click data
+	    			clicks = _.filter(logs, function(log){ 
+	    				return log.action=="click" && log.data.is_practice=="false" &&
+	    					_.has(description, log.data.image + "/" + log.hit_id + "/" + log.assignment_id)==true&&
+	    					_.has(survey,log.hit_id + "/" + log.assignment_id)==true; 
 	    			});
+
+	    			// group by images
+	    			images = _.groupBy(clicks, function(click){ return click.data.image.replace(/^.*[\\\/]/, ''); });
+
+	    			// for each image, group by assignments
+	    			for (var image_name in images){
+	    				assignments[image_name] = _.groupBy(images[image_name], function(click){ return click.hit_id +"/"+click.assignment_id; });
+	    			}
+	    			UpdateImageList(images);
+
+    			});
 	    			//while(loadComplete==false)//block progression
-				});
+				// });
 			}
 			function UpdateImageList(){
 				for (var image_name in images){					
