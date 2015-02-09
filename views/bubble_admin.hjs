@@ -231,7 +231,7 @@
 						$("#survey-hit").text(s.hit_id);
 						$("#survey-assignment").text(s.assignment_id);
 						$("#survey-worker").text(s.worker_id);
-						$("#survey-image").text(image_path);
+						$("#survey-image").text(image_path.replace(/^.*[\\\/]/, ''));
 						$("#survey-gender").text(s.data.gender);
 						$("#survey-age").text(s.data.age);
 						$("#survey-ethnicity").text(s.data.ethnic);
@@ -328,9 +328,7 @@
 						  	<div class="tab-content">
 						    	<div role="tabpanel" class="tab-pane fade in active" id="bubble">
 						    		<div class="well">
-						    			<strong>Worker ID: </strong><span id="survey-worker"></span>
-						    			<br>
-						    			<strong>Image File: </strong><span id="survey-image"></span>
+						    			<strong>ID </strong><span id="survey-worker"></span>,<span id="survey-image"></span>
 						    			<br>
 						    			<p id="bubble-desc"></p>
 						    		</div>
@@ -341,10 +339,10 @@
 						    		<br><br>
 						    		<strong>Assignment ID: </strong><span id="survey-assignment"></span>
 						    		<br><br>
-						    		<strong>Worker ID: </strong><span id="survey-worker"></span>
+						    		<!--<strong>Worker ID: </strong><span id="survey-worker"></span>
 						    		<br><br>
 						    		<strong>Image File: </strong><span id="survey-image"></span>
-						    		<br><br>
+						    		<br><br>-->
 						    		<strong>Gender: </strong><span id="survey-gender"></span>
 						    		<br><br>
 						    		<strong>Age: </strong><span id="survey-age"></span>
