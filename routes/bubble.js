@@ -87,9 +87,6 @@ router.get('/logs', function(req, res){
         query._id = { '$gt':req.toObjectID(lastID) };
     }
     console.log(query);
-    db.collection('logs').count(function(err, count) {
-        console.log('There are ' + count + ' bands in the database');
-    });
     db.collection('logs').find(query).sort({"_id":1}).limit(pageSize).toArray(function(err, result){
         if (err) {
             return console.log(new Date(), 'error in loading images', err);
