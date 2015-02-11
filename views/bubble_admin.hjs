@@ -21,6 +21,7 @@
 	    	var images  	= null;
 	    	var heatmap 	= null;
 	    	var loadComplete = 0;
+	    	var progress 	= 0;
 	    	var logs = [];
 	    	$(document).ready(function(){
 	    		Initialize();
@@ -36,12 +37,14 @@
 					//check if complete
 					if (res.lastID==null){
 						loadComplete=1;
-						console.log("load complete!")
+						console.log("load complete!");
 						callback.call();
+						$("#progress-bar").css('width', "100%").attr('aria-valuenow', 100); 
+						$("#progress-modal").modal("hide");
 						return;
 					}
-						
-
+					progress+=5;	
+	                $("#progress-bar").css('width', inc+'%').attr('aria-valuenow', progress);
 					//try loading more
 					console.log('loading additional logs...');
 					LoadMore(res.lastID, callback)
@@ -51,10 +54,15 @@
 
 				//set bubble image
 				
-				heatmap = h337.create({
-  					container: document.getElementById('bubble-canvas'),
-  					radius: 16
-				});
+				// heatmap = h337.create({
+  		// 			container: document.getElementById('bubble-canvas'),
+  		// 			radius: 16
+				// });
+
+				$("#progress-modal").modal({
+	                keyboard: false,
+	                backdrop: "static"
+	            });
 
 				//load logs								
 	    		// $.get('/bubble/logs', {pageSize:PAGE_SIZE, lastID: null},  function(res){
@@ -170,7 +178,7 @@
 							
 							prev_x = null, prev_y=null
 
-							heatmapData = [];
+							//heatmapData = [];
 							for (var i in clickData){
 								var click = clickData[i].data;
 								//console.log(click);
@@ -213,11 +221,11 @@
 
 								prev_x=click.center_x;	prev_y = click.center_y;
 
-								heatmapData.push({x:click.center_x, y:click.center_y, value:1})
+								//heatmapData.push({x:click.center_x, y:click.center_y, value:1})
 							}
 							ctx.restore();
 							
-							heatmap.setData({data:heatmapData});
+							//heatmap.setData({data:heatmapData});
 							console.log()
 						}
 						img.src = image_path;	
@@ -290,6 +298,22 @@
 	    </script>
   	</head>
   	<body>
+		<!-- Progress Modal -->
+		<div class="modal fade" id="progress-modal" tabindex="-1" role="dialog" aria-labelledby="progress-modal-label" aria-hidden="true">
+		    <div class="modal-dialog">
+		        <div class="modal-content">
+		            <div class="modal-header">
+		                <h4 class="modal-title" id="progress-modal-label">서울시 예산 정보를 로딩 중입니다...</h4>
+		            </div>
+		            <div class="modal-body">
+		                <div class="progress">
+		                    <div id="progress-bar" class="progress-bar progress-bar-striped" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">
+		                    </div>
+		                </div>  
+		            </div>
+		        </div>
+		    </div>
+		</div>
 	  	<div class="container">
 	  		<h3><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Bubble Monitoring Interface</h3>
 	  		<div class="row">
