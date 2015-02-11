@@ -44,7 +44,7 @@
 						return;
 					}
 					progress+=5;	
-	                $("#progress-bar").css('width', inc+'%').attr('aria-valuenow', progress);
+	                $("#progress-bar").css('width', progress+'%').attr('aria-valuenow', progress);
 					//try loading more
 					console.log('loading additional logs...');
 					LoadMore(res.lastID, callback)
@@ -303,7 +303,7 @@
 		    <div class="modal-dialog">
 		        <div class="modal-content">
 		            <div class="modal-header">
-		                <h4 class="modal-title" id="progress-modal-label">서울시 예산 정보를 로딩 중입니다...</h4>
+		                <h4 class="modal-title" id="progress-modal-label">Loading Bubbles...</h4>
 		            </div>
 		            <div class="modal-body">
 		                <div class="progress">
