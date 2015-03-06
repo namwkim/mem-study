@@ -6,7 +6,10 @@ router.get('/', function(req, res) {
     console.log(req.params);
   res.render('index', { title: 'Memorability Experiment' });
 });
-
+router.get('/test', function(req, res) {
+    console.log(req.params);
+  res.render('test', { title: 'Coding Test' });
+});
 router.get('/images', function(req, res){
 	var db = req.db;
 	db.collection('images').find().toArray(function(err, result){
