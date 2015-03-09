@@ -70,7 +70,7 @@ def create_hits(keyfile, descfile):
 				# else:
 				# 	removed = False
 
-				curImage = row[9].split("=")[3].split(".")[0].lower()+".png"
+				curImage = row[9].split("=")[3].split(".")[0]+".png"
 				
 				
 				
