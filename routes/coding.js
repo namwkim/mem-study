@@ -8,21 +8,22 @@ var router  = express.Router();
 
 router.get('/', function(req, res) {
 	console.log(req.params);
-  	res.render('bubble', { title: 'Bubble Experiment' });
+  	res.render('coding', { title: 'Evaluation Experiment' });
 });
+/*
 router.get('/admin', function(req, res) {
     console.log(req.params);
     res.render('bubble_admin', { title: 'Bubble Experiment Admin' });
-});
+});*/
 router.get('/images', function(req, res){
-	var db = req.bubbledb;
+	var db = req.codingdb;
 	var hitId = req.query.hitId;
     console.log(hitId);
     var query = {hit_id: hitId};
     if (hitId.search("TEST")!=-1){
         query = {};
     }
-	db.collection('images').find(query).toArray(function(err, result){
+	db.collection('stimuli').find(query).toArray(function(err, result){
         if (err) {
             return console.log(new Date(), 'error in loading images', err);
         }
@@ -31,14 +32,12 @@ router.get('/images', function(req, res){
             var images = result;  
                       
             if (hitId.search("TEST")!=-1){
-                images = _.sample(images, 2);
+                images = _.sample(images, 5);
             }
             // target images
-            var targets = _.map(images, function(img){ return img.img_url; })
-            // filler images
-            var blurred = _.map(images, function(img){ return img.blur_img_url; })
+            var targets = _.map(images, function(img){ return { url: img.img_url, desc:img.desc, pid: img.pid }; })
 
-            res.json({ targets: targets, blurred: blurred});
+            res.json({ targets: targets });
         }
 	});
 });
@@ -77,8 +76,9 @@ router.post('/recaptcha', function(req, res){
     });
 */
 });
+/*
 router.get('/logs', function(req, res){
-    var db = req.bubbledb;
+    var db = req.codingdb;
     console.log(req.query);
     var pageSize = parseInt(req.query.pageSize);
     var lastID   = req.query.lastID;
@@ -99,9 +99,9 @@ router.get('/logs', function(req, res){
             res.json({lastID: null, logs: result})
         }
     });
-})
+})*/
 router.post('/log', function(req, res){
-	var db 		= req.bubbledb;
+	var db 		= req.codingdb;
 	var newLog	= {};
     newLog.timestamp         = req.body.timestamp;
 	newLog.hit_id 		     = req.body.hitId;

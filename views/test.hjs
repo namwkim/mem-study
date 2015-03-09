@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ title }}</title>
+    
+    <link rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap.min.css' />
+    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="/bower_components/underscore/underscore-min.js"></script>
+    <style>
+    	
+    </style>
+    <script type="text/javascript">
+    
+
+
+    	$(document).ready(function(){
+
+    		$("#textbox").click(function(){
+    			console.log("in focus");
+    			$("#msg").text($("#textbox").val());
+    		});
+
+    		$("#textbox").focusout(function(){
+    			console.log("out focus");
+    			$("#msg").text($("#textbox").val());
+    		});
+		});
+    </script>
+  </head>
+  <body>
+  	<h2>Code Test</h2>
+
+	<div class="jumbotron">
+		<p id="msg"></p>
+	  
+	</div>
+
+	<textarea id="textbox" class="form-control" rows="15" cols="200" placeholder="">
+	</textarea>
+	<button type="button" class="btn btn-primary btn-lg" style="width:100%">
+	  	<span class="glyphicon glyphicon-star" aria-hidden="true"></span> Star
+	</button>
+  </body>
+</html>
