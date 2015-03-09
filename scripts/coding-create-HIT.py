@@ -56,7 +56,7 @@ def create_hits(keyfile, descfile):
 
 	# read image-description pairs
 	codings = []
-	with open(descfile, 'r') as codingcsv:	
+	with open(descfile, 'rU') as codingcsv:	
 		codingreader = csv.reader(codingcsv)
 		next(codingreader, None); # skip header
 		
