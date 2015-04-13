@@ -14,6 +14,11 @@ router.get('/admin', function(req, res) {
     console.log(req.params);
     res.render('bubble_admin', { title: 'Bubble Experiment Admin' });
 });
+router.get('/eval', function(req, res) {
+    console.log(req.params);
+    res.render('bubble_admin', { title: 'Bubble Experiment Admin' });
+});
+
 router.get('/images', function(req, res){
 	var db = req.bubbledb;
 	var hitId = req.query.hitId;
@@ -77,6 +82,35 @@ router.post('/recaptcha', function(req, res){
     });
 */
 });
+router.get('/pagelogs', function(req, res){
+    var db = req.bubbledb;
+    console.log(req.query);
+    var pageSize = parseInt(req.query.pageSize);
+    var pageNum  = parseInt(req.query.pageNum);
+    console.log("pageSize = " + pageSize);
+    // var lastID   = req.query.lastID;
+    // var query    = {}
+    // if (lastID!=''){
+    //     query._id = { '$gt':req.toObjectID(lastID) };
+    // }
+    db.collection('refinedLogs').count(function(err, count){
+        db.collection('refinedLogs').find({}, null, {
+            limit:  pageSize,
+            skip:   pageNum > 1 ? ((pageNum - 1) * pageSize) : 0,
+            sort: {
+                '_id': -1
+            }
+        }).toArray(function(err, result){
+            if (err) {
+                return console.log(new Date(), 'error in loading images', err);
+            }
+            console.log('loaded: ' + result.length);
+                
+            res.json({ pageNum : pageNum, pageSize:pageSize, totalPage: Math.ceil(count*1.0/pageSize), logs : result});
+        });
+    });
+
+})
 router.get('/logs', function(req, res){
     var db = req.bubbledb;
     console.log(req.query);

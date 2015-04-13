@@ -9,3 +9,7 @@ body{
 #bubble-desc{
 	word-wrap:break-word;	
 }
+.slider-selection {
+	background: lightblue;
+}
+

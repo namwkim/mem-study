@@ -396,7 +396,7 @@
 
 						<!-- List group -->
 						<div id="image-list" class="list-group" style="max-height:600px;overflow-y:scroll;">
-							<a href="#" class='list-group-item' ng-repeat="x in images" ng-class="{active: $first}" ng-click="onClickImage($event)" repeat-end><% x.image %></a>
+							<a href="#" class='list-group-item' ng-repeat="x in images" ng-class="{active: $first}" ng-click="onClickImage($event)" repeat-end><span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span><% x.image %></a>
 						</div>
 					</div>
 	  			</div>
@@ -406,7 +406,7 @@
 						<div class="panel-heading">AssignmentID</div>
 						<!-- List group -->
 						<div id="assignment-list" class="list-group" style="max-height:600px;overflow-y:scroll;">
-							<a href="#" class='list-group-item' ng-repeat="x in assignments" ng-class="{active: $first}" ng-click="onClickAssmt($event, x)" repeat-end><% x.survey.assignment_id %></a>
+							<a href="#" class='list-group-item' ng-repeat="x in assignments" ng-class="{active: $first}" ng-click="onClickAssmt($event, x)" repeat-end><span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span><% x.survey.assignment_id %></a>
 						</div>
 					</div>
 	  			</div>
