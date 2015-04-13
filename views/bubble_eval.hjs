@@ -19,19 +19,16 @@
 	    <script src="/bower_components/spinjs/spin.js"></script>
 	    <script src="/bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"></script>
 	    <script src="/bower_components/angular-bootstrap-slider/slider.js"></script>
-	    
+	    <script src="/javascripts/turkify.js"></script>
 	    
 	    <script type="text/javascript">
 	    	var PAGE_SIZE 	= 13;
 	    	var pageNum 	= 1;
 	    	var totalPage 	= -1;
-	    	var description = null;
-	    	var survey  	= null;	
-	    	var images  	= null;
-	    	var heatmap 	= null;
 	    	var loadComplete = 0;
 	    	var progress 	= 0;
 	    	var logs = [];
+
 	    	$(document).ready(function(){
 	    		Initialize();
 			});
@@ -79,8 +76,16 @@
 			    $scope.pages = {};
 			    $scope.totalPage = 4;
 			    $scope._ = window._;
-			    $scope.imageType = "original"
-			    $scope.seeBubbles = true
+			    $scope.imageType = "original";
+			    $scope.seeBubbles = true;
+			    //$scope.totalBubbles = 0;
+
+			    $scope.rater = gup("rater")
+			    if ($scope.rater!="Michelle" && $scope.rater!="Zoya" && $scope.rater!="Nam"){
+			    	alert("Invalid Access!")
+			    	return;
+			    }
+
 				$scope.formaterFn = function(value) {
 					if ($scope.minDate==undefined)
 						return value
@@ -89,33 +94,82 @@
 					var diff = new Date(date.getTime() - $scope.minDate.getTime())
 					return  diff.getMinutes() + ":" + diff.getSeconds();
 				};
+				$scope.updateRemaining = function(){
+					$scope.doneImages = 0;
+					for (var i in $scope.images){
+						if ($scope.images[i].doneRating)	$scope.doneImages++;
+					}
+					$scope.doneAssignments = 0;
+					for (var i in $scope.assignments){
+						if ($scope.assignments[i].rating && $scope.assignments[i].rating.quality!=null) $scope.doneAssignments++;
+					}
+				}
 				$scope.onSlide = function(e, value){
 					if (loadComplete==0)
 						return;
+
+					console.log("onSlide" + value);
 					$scope.updateCanvas();
 				};
 				$scope.updateCanvas = function(){					
 					var imagePath = $scope.imagePath
 					if ($scope.imageType=="blurred")
 						imagePath = $scope.blurredImage
+					console.log($scope.slider)
 					var date = new Date(parseInt($scope.slider.value));
 					var diff = new Date(date.getTime() - $scope.minDate.getTime())
+					
 					drawImage(imagePath, function(){
-						if ($scope.seeBubbles)
-				    		drawBubbles($scope.clickData, diff);
-			    	});	
+						$scope.$apply(function(){
+							if ($scope.seeBubbles)
+					    		$scope.totalBubbles = drawBubbles($scope.clickData, diff);
+					    	else
+					    		$scope.totalBubbles = 0;
+						})
+
+			    	});		
 				}
 				$scope.onImageTypeChange = function(){
 					if (loadComplete==0)
 						return;
+					console.log("onImageTypeChange");
 					$scope.updateCanvas();
 				}
 				$scope.onSeeBubblesCheck = function(){
 					if (loadComplete==0)
 						return;
+					console.log("onSeeBubblesCheck");
 					$scope.updateCanvas();	
 					//$("#bSlider").attr("enabled", $scope.seeBubbles);
 					console.log($("#bSlider").attr("enabled"));
+				}
+				$scope.onRating = function(){
+					//update rating status for image
+					var img = _.findWhere($scope.images, {image: $scope.rating.image});
+					if (img.doneRating==false){
+						var hasAll = 0;
+						for (var j in img.logs){
+							if (img.logs[j].rating && img.logs[j].rating.quality!=null){
+								hasAll+=1;
+							}
+						}
+						if (hasAll==img.logs.length)
+							img.doneRating = true;
+					}
+					
+					// update evaluation
+					$http.post('/bubble/rating', $scope.rating)
+					.success(function(){
+						console.log("rating updated!");
+					})
+					$scope.updateRemaining();
+				}
+				$scope.onSuspicious = function(){
+					// update evaluation
+					$http.post('/bubble/rating', $scope.rating)
+					.success(function(){
+						console.log("rating updated!");
+					})
 				}
 			    $scope.onClickAssmt = function(e, x){
 			    	if (e!=null){
@@ -132,13 +186,37 @@
 			    	   	
 			    	//set a time slider
 			    	$scope.minDate = new Date(parseInt($scope.clickData[0].timestamp));
-			    	$scope.slider = {
-			    		min : parseInt($scope.clickData[0].timestamp),
-			    		max : parseInt($scope.clickData[$scope.clickData.length-1].timestamp),
-			    		value: parseInt($scope.clickData[$scope.clickData.length-1].timestamp)
-			    		
+			    	$scope.slider = {}
+			    	$scope.slider.min = parseInt($scope.clickData[0].timestamp);
+			    	$scope.slider.max = parseInt($scope.clickData[$scope.clickData.length-1].timestamp);
+			    	$scope.slider.step = 2;
+			    	$scope.slider.value = $scope.slider.max;
+			    	
+
+			    	console.log("mindate" + $scope.minDate);
+			    	console.log("maxdate" + new Date(parseInt($scope.clickData[$scope.clickData.length-1].timestamp)));
+			    	console.log($scope.slider)
+			    	//console.log(new Date(parseInt($scope.slider.value)))
+			    	// set up rating form
+			    	var imageName 		= x.clicks[0].data.image.replace(/^.*[\\\/]/, '').slice(0,-4);
+			    	var assignment_id 	= $scope.survey.assignment_id;
+			    	
+			    	if (x.rating){
+			    		$scope.rating = x.rating;
+			    	}else{
+
+						$scope.rating = x.rating = {
+			    			hit_id: $scope.survey.hit_id,
+			    			assignment_id: assignment_id,
+			    			image: imageName,
+			    			rater: $scope.rater,
+			    			suspicious: null,
+			    			quality: null
+			    		}
 			    	}
-			    	$scope.updateCanvas();	
+		    		
+			    	//console.log($scope.rating);
+
 
 			    }
 
@@ -153,13 +231,15 @@
 			    		if (image.image==imgName){
 			    			//update assignments
 			    			$scope.assignments = image.logs;	
+			    			$scope.updateRemaining();
+			    			console.log($scope.assignments)
 			    			break;
 			    		}
 			    	}
 
 			    }
 			    $scope.onClickPage = function(e, pnum) {
-			    	console.log(e.target)
+			    	//console.log(e.target)
 			    	pageNum = pnum;		
 			    	if ($('#image-list').html()=="" && loadComplete==0){
 			    		$("#load-alert").show().effect( "shake" ).delay(1000).toggle( "fade" );
@@ -177,22 +257,61 @@
 						$('#image-list').fadeTo("fast", 0.3);
 						loadComplete = 0;
 			    		$http.get('/bubble/pagelogs', {params: query})
-			    			.success(function(res){
-			    				//remove spinner		
-								//update image list
-								$("#image-panel").find('.spinner').remove();
-								
+		    			.success(function(res){
 
-								$scope.totalPage = res.totalPage;
-								
-								$scope.images = $scope.pages[pageNum] = res.logs;		
+		    				//remove spinner							
+							$("#image-panel").find('.spinner').remove();
+							
+							//update image list
+							$scope.totalPage = res.totalPage;
+							
+							$scope.images = $scope.pages[pageNum] = res.logs;		
 
-								$('#image-list').fadeTo("fast", 1.0);						
-								loadComplete = 1;
-			    			})
+							//load ratings (TODO: improve duplicate loadings)
+		    				$http.get('/bubble/ratings', {params: {rater: $scope.rater}})
+	    					.success(function(ratings){
+	    						
+	    						if (ratings.length>0){
+	    							$scope.ratings = {};
+	    							//group by images
+	    							var imageGroup = _.groupBy(ratings, function(r){ return r.image })
+	    							for (var img in imageGroup){
+	    								var g = imageGroup[img];
+	    								$scope.ratings[img] = _.groupBy(g, function(r){ return r.assignment_id })
+	    							}
+									for (var i in $scope.images){
+		    							var img = $scope.images[i].image;
+		    							var hasAll = 0;
+		    							for (var j in $scope.images[i].logs){
+		    								var assID = $scope.images[i].logs[j].survey.assignment_id;
+		    								if (_.has($scope.ratings, img) && _.has($scope.ratings[img], assID)){
+		    									
+		    									$scope.images[i].logs[j].rating = $scope.ratings[img][assID][0];	
+		    									if ($scope.images[i].logs[j].rating.quality!=null) 
+		    										hasAll+=1;
+		    									//console.log("rating:")
+		    									//console.log($scope.images[i].logs[j].rating);
+		    								}		    								
+		    							}
+
+		    							if (hasAll==$scope.images[i].logs.length)
+		    								$scope.images[i].doneRating = true;
+		    							else
+		    								$scope.images[i].doneRating = false;
+		    							//console.log("done: " + $scope.images[i].doneRating);
+		    						}
+		    						$scope.updateRemaining();
+	    						}
+	    						
+	    					})	
+							
+							$('#image-list').fadeTo("fast", 1.0);						
+							loadComplete = 1;
+		    			})
 
 			    	}else{
-			    		$scope.images = $scope.pages[pageNum];	
+			    		$scope.images = $scope.pages[pageNum];
+			    		$scope.updateRemaining();	
 			    	}
 					
 			    }		
@@ -200,6 +319,8 @@
 			    //$scope.onClickPage(null, 0);	    
 			});
 			function Initialize(){
+				$('[data-toggle="tooltip"]').tooltip()
+				$('[data-toggle="popover"]').popover({ trigger: "hover", container: 'body'})
 				$("#progress-modal").modal({
 	                keyboard: false,
 	                backdrop: "static"
@@ -219,11 +340,7 @@
 	                $("#progress-bar").css('width', progress+'%').attr('aria-valuenow', progress);
 					
 	            }, 500);
-			    	$('#ex1').slider({
-						formatter: function(value) {
-							return 'Current value: ' + value;
-						}
-					});
+
 
 			}
 
@@ -232,14 +349,14 @@
 				var img = new Image();
 				img.onload = function(){
 					var canvas = $("#bubble-canvas");
-					console.log(this.naturalWidth);
+					//console.log(this.naturalWidth);
 					var ctx = canvas[0].getContext('2d');
 					ctx.clearRect(0, 0, canvas[0].width, canvas[0].height);
 
 					var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, canvas[0].width, canvas[0].height);
 					ctx.drawImage(img,0,0, newSize.width, newSize.height);
 
-					if (callback) callback.call();
+					if (callback) callback.call(this);
 
 				}
 				img.src = imagePath;	
@@ -247,9 +364,9 @@
 
 			function drawBubbles(clickData, maxDate){
 				var canvas = $("#bubble-canvas");
-				console.log(canvas)
+				//console.log(canvas)
 				var ctx = canvas[0].getContext('2d');
-				
+				var totalCount = 0;
 
 				
 				//draw circles
@@ -273,6 +390,7 @@
 					var minDate = new Date(parseInt(clickData[0].timestamp));
 					var diff = new Date(date.getTime() - minDate.getTime())
 
+					totalCount++;
 					if (maxDate && maxDate.getTime()<diff.getTime())
 						break;
 
@@ -311,10 +429,11 @@
 					//heatmapData.push({x:click.center_x, y:click.center_y, value:1})
 				}
 				ctx.restore();
+				return totalCount;
 			}
 
 			function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {		
-				console.log("(canvasWidth, canvasHeight) = " + canvasWidth + ", " + canvasHeight);
+				//console.log("(canvasWidth, canvasHeight) = " + canvasWidth + ", " + canvasHeight);
 				//console.log("(oldWidth, oldHeight) = " + imgWidth + ", " + imgHeight);						
 				var newWidth 	= imgWidth;	
 				var newHeight	= imgHeight;		
@@ -378,7 +497,7 @@
 		    </div>
 		</div>
 	  	<div class="container">
-	  		<h3><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Bubble Monitoring Interface</h3>
+	  		<h3><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Bubble Monitoring Interface <small>(<% rater %>)</small></h3>
 	  		<div class="row">
 	  			<div class="col-md-2">
 	  				<div  id="image-panel" class="panel panel-default">
@@ -386,8 +505,10 @@
 						<!-- Default panel contents -->
 						<div class="panel-heading">Images</div>
 						<!-- Pagination -->
+						
 						<nav class="text-center">
-						  <ul class="pagination pagination-sm">						    
+							<div><% doneImages %>/<% images.length %></div>
+						  	<ul class="pagination pagination-sm" style="margin:5px 0">						    
 						    <li class="animate-repeat" ng-repeat="x in _.range(1,totalPage+1)" ng-class="{active: $first}" ng-click="onClickPage($event, x)" repeat-end>
 						    	<a href="#"><% x %></a>
 						    </li>					    
@@ -396,7 +517,7 @@
 
 						<!-- List group -->
 						<div id="image-list" class="list-group" style="max-height:600px;overflow-y:scroll;">
-							<a href="#" class='list-group-item' ng-repeat="x in images" ng-class="{active: $first}" ng-click="onClickImage($event)" repeat-end><span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span><% x.image %></a>
+							<a href="#" class='list-group-item' ng-repeat="x in images" ng-class="{active: $first}" ng-click="onClickImage($event)" style="word-break: break-all;" repeat-end><span class="glyphicon glyphicon-ok text-success" style="margin-right:8px;" aria-hidden="true" ng-show="x.doneRating"></span><% x.image %></a>
 						</div>
 					</div>
 	  			</div>
@@ -404,9 +525,10 @@
 	  				<div class="panel panel-default">
 						<!-- Default panel contents -->
 						<div class="panel-heading">AssignmentID</div>
+						<div align="center"><% doneAssignments %>/<% assignments.length %></div>
 						<!-- List group -->
 						<div id="assignment-list" class="list-group" style="max-height:600px;overflow-y:scroll;">
-							<a href="#" class='list-group-item' ng-repeat="x in assignments" ng-class="{active: $first}" ng-click="onClickAssmt($event, x)" repeat-end><span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span><% x.survey.assignment_id %></a>
+							<a href="#" class='list-group-item' ng-repeat="x in assignments" ng-class="{active: $first}" ng-click="onClickAssmt($event, x)" style="word-break: break-all;" repeat-end><span class="glyphicon glyphicon-ok text-success" style="margin-right:8px;" aria-hidden="true" ng-show="x.rating?x.rating.quality!=null:false"></span><% x.survey.assignment_id %></a>
 						</div>
 					</div>
 	  			</div>
@@ -426,17 +548,47 @@
 						    	<div role="tabpanel" class="tab-pane fade in active" id="bubble">
 						    		<div class="well">
 						    			<p id="bubble-desc" ><% desc %></p>
+						    			<div class="row">
+						    				<div class="col-md-11">
+								    		<div class="input-group">
+								    			<label class="radio-inline" ><input type="radio" name="rating" ng-model="rating.quality" value="1" ng-change="onRating()">Poor</label>
+												<label class="radio-inline" ><input type="radio" name="rating" ng-model="rating.quality" value="2" ng-change="onRating()">Fair</label>													
+												<label class="radio-inline" ><input type="radio" name="rating" ng-model="rating.quality" value="3" ng-change="onRating()">Good</label>													
+												<label class="radio-inline" ><input type="radio" name="rating" ng-model="rating.quality" value="4" ng-change="onRating()">Very Good</label>													
+												<label class="radio-inline" ><input type="radio" name="rating" ng-model="rating.quality" value="5" ng-change="onRating()">Excellent</label>	
+											</div>
+											<label class="checkbox-inline"><input type="checkbox" ng-model="rating.suspicious" ng-change="onSuspicious()">Suspicious (e.g., bubbles and descriptions do not match each other.)</label>	
+											</div>
+											<div class="col-md-1">
+												<a id="helpPopover" data-html="true" href="" data-toggle="popover" data-placement="left" title="Help" 
+												data-content="
+													<div>
+														<p>
+															<strong>Poor</strong>: Not correct, gibberish, or irrelevant <br>
+															<strong>Fair</strong>: Relevant, but incoherent description or incorrect interpretation<br>
+															<strong>Good</strong>: Main trend described, or just title or paragraph<br>
+															<strong>Very Good</strong>: Main trend with some additional details<br>
+															<strong>Excellent</strong>: Thourougly described<br>
+														</p>
+													<div>
+												"><span class="glyphicon glyphicon-question-sign lead" style="margin-right:8px;font-size:24px" aria-hidden="true"></a>	
+											</div>		
+										</div>							
+									
+
 						    		</div>
 						    		<div class="panel panel-default">
 										<div class="panel-body">
 								    		<div class="row">
 								    			<div class="col-md-4">
 									    			<label class="radio-inline"><input type="radio" name="imageType" ng-model="imageType" value="original" ng-change="onImageTypeChange()">Original</label>
-													<label class="radio-inline"><input type="radio" name="imageType" ng-model="imageType" value="blurred" ng-change="onImageTypeChange()">Blurred</label>													
+													<label class="radio-inline"><input type="radio" name="imageType" ng-model="imageType" value="blurred" ng-change="onImageTypeChange()">Blurred</label>					
+													<br>
+													
 												</div>
 												<div class="col-md-8">
-													<label class="checkbox-inline"><input type="checkbox" ng-model="seeBubbles" ng-change="onSeeBubblesCheck()">See Bubbles</label>
-													<slider id="bSlider" ng-model="slider.value" min="slider.min" step="slider.step" max="slider.max" value="slider.value" formater="formaterFn" on-slide="onSlide($event, value)" ></slider>
+													<label class="checkbox-inline"><input type="checkbox" ng-model="seeBubbles" ng-change="onSeeBubblesCheck()">See Bubbles (<span><% totalBubbles %>/<% clickData.length %></span>)</label>
+													<slider id="bSlider" ng-model="slider.value" min="slider.min" step="slider.step" max="slider.max" formater="formaterFn" on-slide="onSlide($event, slider.value)" ></slider>		
 												</div>
 								    		</div>
 								    		<br>
@@ -450,9 +602,9 @@
 						    		<br><br>
 						    		<strong>Assignment ID: </strong><% survey.assignment_id%></span>
 						    		<br><br>
-						    		<!--<strong>Worker ID: </strong><span id="survey-worker"></span>
+						    		<strong>Worker ID: </strong><% survey.worker_id%></span>
 						    		<br><br>
-						    		<strong>Image File: </strong><span id="survey-image"></span>
+						    		<!--<strong>Image File: </strong><span id="survey-image"></span>
 						    		<br><br>-->
 						    		<strong>Gender: </strong><% survey.data.gender %></span>
 						    		<br><br>

@@ -16,7 +16,7 @@ router.get('/admin', function(req, res) {
 });
 router.get('/eval', function(req, res) {
     console.log(req.params);
-    res.render('bubble_admin', { title: 'Bubble Experiment Admin' });
+    res.render('bubble_eval', { title: 'Bubble Evaluation' });
 });
 
 router.get('/images', function(req, res){
@@ -82,6 +82,40 @@ router.post('/recaptcha', function(req, res){
     });
 */
 });
+router.get('/ratings', function(req, res){
+    var db = req.bubbledb;
+    var rater = req.query.rater;
+    console.log(rater);
+    db.collection('expertRatings').find({ rater: rater}).toArray(function(err, result){
+        res.json(result);
+    });
+})
+router.post('/rating', function(req, res){
+    var db      = req.bubbledb;
+    var rating  = {};
+    rating.hit_id            = req.body.hit_id;
+    rating.assignment_id     = req.body.assignment_id;
+    rating.image              = req.body.image;
+    rating.rater              = req.body.rater;  
+    rating.quality            = req.body.quality;
+    rating.suspicious         = req.body.suspicious;   
+    console.log(rating);
+    db.collection('expertRatings').update(
+        {image: rating.image, assignment_id: rating.assignment_id, rater: rating.rater}, 
+        rating, 
+        { upsert: true }, 
+        function(err, result) {
+            if (err) {
+                return console.log(new Date(), 'update error', err);
+            }
+            if (result) {            
+                res.json({ code: 0, message: 'Successfully updated!', result: result[0]});
+            }
+
+    });
+
+});
+
 router.get('/pagelogs', function(req, res){
     var db = req.bubbledb;
     console.log(req.query);

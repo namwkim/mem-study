@@ -13,3 +13,6 @@ body{
 	background: lightblue;
 }
 
+.popover{
+        max-width:600px;
+    }

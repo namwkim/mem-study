@@ -46,28 +46,36 @@ if __name__ == "__main__":
 		 	clicks.append(x)
 	#print clicks
 
+	#clear existing collection
+	db.refinedLogs.remove({})
+
 
 	#group by images 
 	
 	sortedByImage = sorted(clicks, key=lambda x : x['data']['image'])
-	for k, g in itertools.groupby(sortedByImage, key=lambda x : x['data']['image']):		
-	    groupClicks = list(g)
-	    sortedByAsmt = sorted(groupClicks, key=lambda x : x['hit_id']+'/'+x['assignment_id'])
-	    assignments = []
+	for k, g in itertools.groupby(sortedByImage, key=lambda x : x['data']['image']):	
+		#save back to database
+		imageName = k.split("/")[-1].split(".")[0]	
+		print 'saving... ', imageName
+		groupClicks = list(g)
+		sortedByAsmt = sorted(groupClicks, key=lambda x : x['hit_id']+'/'+x['assignment_id'])
+		assignments = []
+		#group by assignments
+		for ak, ag in itertools.groupby(sortedByAsmt, key=lambda x : x['hit_id']+'/'+x['assignment_id']):
+	    	#sort clicks
+			sortedClicks = sorted(ag, key=lambda x: x['timestamp'])	    	
+			asmt = {}
+			asmt["id"]		= ak
+			asmt["clicks"] 	= sortedClicks
+			asmt["desc"] 	= desc[ak+'/'+k]
+			asmt["survey"] 	= survey[ak]
+			assignments.append(asmt)
+			print 'assignment ID: ', ak, ', click counts: ', len(asmt["clicks"]), " start to end", asmt["clicks"][0]["timestamp"], ", ", asmt["clicks"][len(asmt["clicks"])-1]["timestamp"]
 
-	    #group by assignments
-	    for ak, ag in itertools.groupby(groupClicks, key=lambda x : x['hit_id']+'/'+x['assignment_id']):		
-	    	asmt = {}
-	    	asmt["id"]		= ak
-	    	asmt["clicks"] 	= list(ag)
-	    	asmt["desc"] 	= desc[ak+'/'+k]
-	    	asmt["survey"] 	= survey[ak]
-	    	assignments.append(asmt)
+		
 
-	    #save back to database
-	    imageName = k.split("/")[-1].split(".")[0]
-	    print 'saving... ', imageName	    
-	    db.refinedLogs.insert({ "image": imageName, "logs": assignments })
+		print len(assignments)
+		db.refinedLogs.insert({ "image": imageName, "logs": assignments }) 
 	
 
 	
