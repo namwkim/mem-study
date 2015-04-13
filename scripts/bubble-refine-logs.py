@@ -70,7 +70,7 @@ if __name__ == "__main__":
 			asmt["desc"] 	= desc[ak+'/'+k]
 			asmt["survey"] 	= survey[ak]
 			assignments.append(asmt)
-			print 'assignment ID: ', ak, ', click counts: ', len(asmt["clicks"]), " start to end", asmt["clicks"][0]["timestamp"], ", ", asmt["clicks"][len(asmt["clicks"])-1]["timestamp"]
+			print 'assignment ID: ', ak, ', click counts: ', len(asmt["clicks"])
 
 		
 
