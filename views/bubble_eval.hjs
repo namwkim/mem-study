@@ -239,11 +239,12 @@
 			    }
 			    $scope.onClickPage = function(e, pnum) {
 			    	//console.log(e.target)
-			    	pageNum = pnum;		
+			    		
 			    	if (loadComplete==0){
 			    		$("#load-alert").show().effect( "shake" ).delay(1000).toggle( "fade" );
 			    		return;
 			    	}
+			    	pageNum = pnum;	
 			    	if (e!=null){
 						$("ul.pagination li.active").removeClass("active");
 						$(e.currentTarget).addClass("active");			    		
