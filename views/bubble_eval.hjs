@@ -25,7 +25,7 @@
 	    	var PAGE_SIZE 	= 13;
 	    	var pageNum 	= 1;
 	    	var totalPage 	= -1;
-	    	var loadComplete = 0;
+	    	var loadComplete = 2;
 	    	var progress 	= 0;
 	    	var logs = [];
 
@@ -189,7 +189,6 @@
 			    	$scope.slider = {}
 			    	$scope.slider.min = parseInt($scope.clickData[0].timestamp);
 			    	$scope.slider.max = parseInt($scope.clickData[$scope.clickData.length-1].timestamp);
-			    	$scope.slider.step = 2;
 			    	$scope.slider.value = $scope.slider.max;
 			    	
 
@@ -241,8 +240,9 @@
 			    $scope.onClickPage = function(e, pnum) {
 			    	//console.log(e.target)
 			    	pageNum = pnum;		
-			    	if ($('#image-list').html()=="" && loadComplete==0){
+			    	if (loadComplete==0){
 			    		$("#load-alert").show().effect( "shake" ).delay(1000).toggle( "fade" );
+			    		return;
 			    	}
 			    	if (e!=null){
 						$("ul.pagination li.active").removeClass("active");
@@ -259,18 +259,15 @@
 			    		$http.get('/bubble/pagelogs', {params: query})
 		    			.success(function(res){
 
-		    				//remove spinner							
-							$("#image-panel").find('.spinner').remove();
-							
-							//update image list
-							$scope.totalPage = res.totalPage;
-							
-							$scope.images = $scope.pages[pageNum] = res.logs;		
-
 							//load ratings (TODO: improve duplicate loadings)
 		    				$http.get('/bubble/ratings', {params: {rater: $scope.rater}})
 	    					.success(function(ratings){
 	    						
+	    						//update image list
+								$scope.totalPage = res.totalPage;
+								
+								$scope.images = $scope.pages[pageNum] = res.logs;	
+
 	    						if (ratings.length>0){
 	    							$scope.ratings = {};
 	    							//group by images
@@ -301,12 +298,17 @@
 		    							//console.log("done: " + $scope.images[i].doneRating);
 		    						}
 		    						$scope.updateRemaining();
+
+		    						//remove spinner
+		    						$("#image-panel").find('.spinner').remove();
+		    						$('#image-list').fadeTo("fast", 1.0);	
+		    						loadComplete = 1;
 	    						}
 	    						
 	    					})	
 							
-							$('#image-list').fadeTo("fast", 1.0);						
-							loadComplete = 1;
+												
+							
 		    			})
 
 			    	}else{
@@ -501,7 +503,7 @@
 	  		<div class="row">
 	  			<div class="col-md-2">
 	  				<div  id="image-panel" class="panel panel-default">
-	  					<div id="load-alert" class="alert alert-danger" role="alert" style="display:none">Be Patient!</div>
+	  					<div id="load-alert" class="alert alert-danger" role="alert" style="display:none">Loading...</div>
 						<!-- Default panel contents -->
 						<div class="panel-heading">Images</div>
 						<!-- Pagination -->
