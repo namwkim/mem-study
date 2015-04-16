@@ -299,12 +299,11 @@
 		    							//console.log("done: " + $scope.images[i].doneRating);
 		    						}
 		    						$scope.updateRemaining();
-
-		    						//remove spinner
-		    						$("#image-panel").find('.spinner').remove();
-		    						$('#image-list').fadeTo("fast", 1.0);	
-		    						loadComplete = 1;
 	    						}
+								//remove spinner
+	    						$("#image-panel").find('.spinner').remove();
+	    						$('#image-list').fadeTo("fast", 1.0);	
+	    						loadComplete = 1;
 	    						
 	    					})	
 							
