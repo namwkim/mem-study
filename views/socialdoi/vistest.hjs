@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  	<head>
+	    <title>{{ title }}</title>
+	    <link rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap.min.css' />
+	    <link rel='stylesheet' href='/bower_components/bootstro/bootstro.min.css' />
+	    <link rel='stylesheet' href='/stylesheets/treemap.css'/>
+
+	    <script src="/javascripts/turkify.js"></script>
+	    <script src="/javascripts/treemap.js"></script>
+	    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+	    <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+	    <script src="/bower_components/bootstro/bootstro.min.js"></script>
+	    <script src="/bower_components/underscore/underscore-min.js"></script>
+	    <script src="/bower_components/bootbox/bootbox.js"></script>
+	    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+	    <script src="/bower_components/angular/angular.min.js"></script>
+	    <script src="/bower_components/d3/d3.min.js"></script>	
+
+	    <script type="text/javascript">
+	    	var app = angular.module('myApp', [], function($interpolateProvider) {
+				$interpolateProvider.startSymbol('<%');
+				$interpolateProvider.endSymbol('%>');
+			});
+
+			app.controller('myCtrl', function($scope, $http) {
+				//load data
+				$http.get('/socialdoi/budgets')
+				.success(function(res){
+					_.each(res, function(r){
+						r.value = parseInt(r.approved);
+					})
+					var budgets = d3.nest()
+					    .key(function(d) { return d.service; })
+					    .key(function(d) { return d.department; })
+					    .key(function(d) { return d.project; })
+					    .entries(res);
+			   		//add root
+			   		budgets = { key: "Budget Investment Plan - 2015", values: budgets}
+				    console.log(budgets);
+
+				    var config = {
+				    	container: "#chart",
+				    	data: budgets,
+				    	margin: {top: 20, right: 0, bottom: 0, left: 0},
+				    	width : 960,
+				    	height : 500
+				    };
+
+				    var treemap = ZoomableTreemap(config);
+                	treemap.create();
+
+				    //create a treemap
+				});
+			});
+	    </script>
+  	</head>
+  	<body ng-app="myApp" ng-controller="myCtrl">
+  		<div>
+  			<div id="chart"></div>
+		</div>
+  	</body>
+</html>

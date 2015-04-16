@@ -33,7 +33,8 @@
     "heatmap.js.bower": "*",
     "spinjs": "~2.0.2",
     "jquery-ui": "~1.11.4",
-    "angular-bootstrap-slider": "~0.1.1"
+    "angular-bootstrap-slider": "~0.1.1",
+    "d3": "~3.5.5"
   },
   "resolutions": {
     "angular": "~1.3.0"
