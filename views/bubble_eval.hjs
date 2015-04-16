@@ -240,7 +240,7 @@
 			    $scope.onClickPage = function(e, pnum) {
 			    	//console.log(e.target)
 			    		
-			    	if (loadComplete!=1){
+			    	if (loadComplete==0){
 			    		$("#load-alert").show().effect( "shake" ).delay(1000).toggle( "fade" );
 			    		return;
 			    	}
