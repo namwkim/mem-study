@@ -265,7 +265,7 @@
 			function StartPractice(){
 				console.log("StartPractice");				
 				isPractice 	= true;
-				LogAction("start-practice", null);			
+				LogAction("start-practice", size);			
 				ChangeStage(STUDY);
 
 
@@ -278,7 +278,7 @@
 			function StartExperiment(){
 				console.log("StartExperiment");				
 				isPractice 	= false;
-				LogAction("start-experiment", null);
+				LogAction("start-experiment", size);
 				ChangeStage(STUDY);
 
 				$("#tutorial-msg").hide();
