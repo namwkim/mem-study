@@ -4,28 +4,145 @@
 	    <title>{{ title }}</title>
 	    <link rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap.min.css' />
 	    <link rel='stylesheet' href='/bower_components/bootstro/bootstro.min.css' />
-	    <link rel='stylesheet' href='/stylesheets/study.css'/>
+	    <link rel='stylesheet' href='/stylesheets/cstree.css'/>
+	    <link rel='stylesheet' href='/bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css' />
 
 	    <script src="/javascripts/turkify.js"></script>
+	    <script src="/javascripts/cstree.js"></script>
 	    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+	    <script src="/bower_components/jquery-ui/jquery-ui.min.js"></script>
 	    <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 	    <script src="/bower_components/bootstro/bootstro.min.js"></script>
 	    <script src="/bower_components/underscore/underscore-min.js"></script>
 	    <script src="/bower_components/bootbox/bootbox.js"></script>
 	    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-	    <script src="/bower_components/angular/angular.min.js"></script>	
+	    <script src="/bower_components/angular/angular.min.js"></script>
+	    <script src="/bower_components/d3/d3.js"></script>		
 	    <script type="text/javascript">
-	    	var app = angular.module('myApp', ['ui.bootstrap-slider'], function($interpolateProvider) {
+	    	var app = angular.module('myApp', [], function($interpolateProvider) {
 				$interpolateProvider.startSymbol('<%');
 				$interpolateProvider.endSymbol('%>');
 			});
-	    </script>
-	    <script type="text/javascript">
+			app.controller('myCtrl', function($scope, $http) {
+				//load data
+				$scope.selected = null;
+				$scope.programs = [];
+				$http.get('/socialdoi/budgets')
+				.success(function(res){
+									
+					
+				    $scope.budgetname = res.name;
+				    $scope.config = {
+				    	container: "#chart",
+				    	data: res,
+				    	margin: {top: 20, right: 0, bottom: 20, left: 150},
+				    	width : 800,
+				    	height : 700,
+				    	onClick: function(d){
+				    		$scope.$apply(function(){
+				    			$scope.selected = d;
+				    			console.log($scope.selected);
+				    			
+				    			//$scope.LogAction("select", d);
+				    		});
+				    		LogAction("select", {
+				    			is_practice: isPractice,
+				    			selectedBudget: $scope.ExtractBudgetInfo(d)
+				    		});
+				    	}
+				    };
+
+				    $scope.cstree = CSTree($scope.config);
+				    $scope.cstree.create();					
+
+				});
+				$scope.ExtractBudgetInfo = function(node){
+					return {
+	    				program: node.program? node.program: null,
+	    				department: node.department? node.department: null,
+	    				cabinet: node.cabinet? node.cabinet: null
+	    			};
+				}
+				$scope.Add = function(){
+			    	console.log("add")
+			    	if ($scope.selected==null || $scope.selected.program==null){
+			    		$("#addWarning").effect( "shake" );
+			    		return;
+			    	}
+			    	var contain=false;
+			    	for (var i in $scope.programs){
+			    		if ($scope.selected.program==$scope.programs[i].program &&
+			    			$scope.selected.department==$scope.programs[i].department &&
+			    			$scope.selected.cabinet ==$scope.programs[i].cabinet){
+			    			contain = true;
+			    			break;
+			    		}
+			    	}
+			    	if (contain){
+			    		bootbox.alert("WARNING: The selected program already exists!");
+			    		return;
+			    	}
+			    	$scope.programs.push($scope.ExtractBudgetInfo($scope.selected));
+			    }
+			    $scope.Remove = function(idx) {
+			    	$scope.programs.splice(idx, 1);
+			    }
+				$scope.Finish = function(){
+					if (isPractice==false){
+				    	if ($scope.programs.length<5){
+			    			$("#finishWarning").show().effect( "shake" ).delay(1000).toggle( "fade" );
+			    			return;
+			    		}
+			    		//finish task
+			    		LogAction("finish", angular.toJson($scope.programs));
+	    				$("<input type='hidden' name='programCount' value='" + $scope.programs.length + "'>").appendTo($(formSelector));
+	    		
+			    		ChangeStage(DEBRIEF);
+					}else{
+						var success = false;
+						for (var i in $scope.programs){
+							if ($scope.programs[i].program == "Parks Maintenance")
+								success = true;
+						}
+						if (success==0){
+							bootbox.alert("Add 'Parks Maintenance' to the list (Cabinet: Environment, Energy & Open Space, Department: Parks & Recreation Department).");
+							return;
+						}
+						$scope.selected = null
+						$scope.programs = []
+						
+						$scope.cstree.create();					
+
+						ChangeStage(REAL_INST);	
+					}
+			    	console.log($scope.programs);
+			    	
+			    }
+		    	$scope.LogAction = function (action, data, callback){
+		    		var log = { 
+		    			timestamp: $.now(),
+		    			hitId: hitId,
+		    			assignmentId: assignmentId,
+		    			workerId: workerId,
+		    			action: action,
+		    			data: data
+		    		};
+		    		$http.post("/socialdoi/log", log)
+			    		.success(function(res){
+			    			if (res.code!=0){
+			    				bootbox.alert("Failed to log a worker action!");
+			    			}else{
+			    				if (callback)	callback.call();
+			    			}
+			    		});
+
+		    	}
+			});
+
 	    	var INTRO = 0, CONSENT = 1, PRAC_INST = 2, REAL_INST = 3, STUDY = 4, DEBRIEF = 5;
 	    	var stage = INTRO;
 	    	var formSelector = "#mturk-form";
 
-    		var base_url = "/images/study-db-pilot/";
     		var logs = null;
     		var isPractice = false;
     		var budgets = null;
@@ -71,19 +188,13 @@
 				turkify(formSelector);
 
 
-				//load budgets
-	    		$.get('/socialdoi/budgets', , function(res){
-					budgets = res;
-				});
-
-
 				//Set up callback functions
-				$(document).keydown(OnKeyPress);
+				// $(document).keydown(OnKeyPress);
 
 				$(".next-btn").click(function(){
     				ChangeStage(stage+1);
     			});
-    			$("#study-next-btn").click(NextImage);
+    			
     			$("#submit-btn").click(SubmitForm);
 
     			$('#intro-start-button').click(ConfirmRecaptcha);
@@ -97,7 +208,26 @@
     			})
 
     			//bootstro initialization (tutorial)
-    			
+    			$('#chart').addClass("bootstro")
+	                .attr("data-bootstro-title", "Explore a Government Budget")
+	                .attr("data-bootstro-content", "Explore your government budget, and find a program of interest. You need to click an item to reveal or hide budget details. ")
+	                .attr("data-bootstro-placement", "right")
+	                .attr("data-bootstro-step", 0)
+                $('#add-btn').addClass("bootstro")
+	                .attr("data-bootstro-title", "Add a Program to Your List")
+	                .attr("data-bootstro-content", "Details for a selected program will appear here. If you find the budget program interesting, click 'Add' button to add to the list below.")
+	                .attr("data-bootstro-placement", "left")
+	                .attr("data-bootstro-step", 1)
+                $('#program-list').addClass("bootstro")
+	                .attr("data-bootstro-title", "Your Selection of Programs")
+	                .attr("data-bootstro-content", "This list should contain programs you find interesting for whatever reason.")
+	                .attr("data-bootstro-placement", "left")
+	                .attr("data-bootstro-step", 2)
+                $('#finish-btn').addClass("bootstro")
+	                .attr("data-bootstro-title", "Finish the Task")
+	                .attr("data-bootstro-content", "You need to find at least five programs to finish the task.")
+	                .attr("data-bootstro-placement", "left")
+	                .attr("data-bootstro-step", 3)
 
 			}
 			function ConfirmRecaptcha(){
@@ -134,153 +264,30 @@
 			}
 			function StartPractice(){
 				console.log("StartPractice");				
-				images 		= practiceImages;				
 				isPractice 	= true;
-				curIdx 		= clickCount = totalClickCount =0;	
 				LogAction("start-practice", null);			
 				ChangeStage(STUDY);
 
-				//start tutorial instruction
+
 				$("#tutorial-msg").show();
 				bootstro.start(".bootstro",{
 					nextButtonText: "Next »",
 					prevButtonText: "Prev »"
 				});
-				$("#study-vis-desc").val("This chart shows the relationship between global malaria deaths and R&D funding across different continents. Africa accounts for a major portion of malaria deaths. Overall, global malaria deaths have been decreasing as R&D funding increases over time.");
-				$('#char-count').text($('#study-vis-desc').val().length);
 			}
 			function StartExperiment(){
 				console.log("StartExperiment");				
-				images 		= realImages;
 				isPractice 	= false;
-				curIdx 		= clickCount = totalClickCount = 0;
 				LogAction("start-experiment", null);
 				ChangeStage(STUDY);
 
 				$("#tutorial-msg").hide();
-				$("#study-vis-desc").val("");
-				$('#char-count').text($('#study-vis-desc').val().length);
 			}
-			function SetupImage(idx){
-				// reset click count
-				clickCount = 0;
-				$("#click-count").text(clickCount);
-				$("#char-count").text(0);
-
-				//clear text area
-				$("#study-vis-desc").val("");
-
-				curImg = new Image();
-				curImg.onload = function() {
-					curBlurImg = new Image();
-					curBlurImg.onload = function(){						
-						// draw blurred image first
-						//console.log($(curBlurImg).width() + ", " + console.log($(curBlurImg).height()));
-						var canvas = $("#canvas");
-						canvas.off('click');
-						canvas.on('click', {width:this.naturalWidth, height:this.naturalHeight}, OnClickDrawMask);
-						var ctx = canvas[0].getContext('2d');
-						ctx.clearRect(0, 0, canvas.width(), canvas.height());
-						var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, canvas.width(), canvas.height());
-						ctx.drawImage(curBlurImg,0,0, newSize.width, newSize.height);
-					}
-					curBlurImg.src = images.blurred[idx];
-				}
-				curImg.src = images.targets[idx];
-			}
-			function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {		
-				console.log("(canvasWidth, canvasHeight) = " + canvasWidth + ", " + canvasHeight);
-				console.log("(oldWidth, oldHeight) = " + imgWidth + ", " + imgHeight);						
-				var newWidth 	= imgWidth;	
-						
-				if (newWidth>canvasWidth){
-					newWidth 	= canvasWidth;
-					var wratio 	= canvasWidth/imgWidth;
-					imgHeight 	= wratio*imgHeight;
-				}
-				var newHeight	= imgHeight;
-				if (newHeight>canvasHeight){
-					newHeight 	= canvasHeight;
-					var hratio 	= canvasHeight/imgHeight;
-					newWidth 	= hratio*newWidth;
-				}
-				console.log("(newWidth, newHeight) = " + newWidth + ", " + newHeight);
-				return {width: newWidth, height: newHeight};
-			}
-			function OnClickDrawMask(e){
-				var canvas = $("#canvas");
-				var ctx = canvas[0].getContext('2d');
-
-				ctx.save();
-
-				var rect = canvas[0].getBoundingClientRect();
-
-			    var x = e.clientX - rect.left;
-			    var y = e.clientY - rect.top;
-			    
-			    console.log("x, y = " + x + ", " + y);
-			    //reset previous cicle
-			    var newSize = CalcNewImageSize(e.data.width, e.data.height, canvas.width(), canvas.height());
-			    console.log(newSize);
-			    ctx.drawImage(curBlurImg,0,0, newSize.width, newSize.height);
-
-			    //draw the circle
-			    ctx.beginPath();
-		        ctx.arc(x, y, RADIUS_PIXEL, 0, 6.28, false); 
-		        ctx.clip();
-		        ctx.drawImage(curImg,0,0, newSize.width, newSize.height);
-
-		        ctx.restore();
-
-		        //log click actio
-		        data = {
-		        	is_practice: isPractice, 
-		        	image: images.targets[curIdx],
-		        	center_x: x,
-		        	center_y: y,
-		        	radius: RADIUS_PIXEL,
-		        	size: size
-		        }
-		        LogAction("click", data);
-		        clickCount++;
-		        $("#click-count").text(clickCount);
-		        totalClickCount++;
-		        console.log(totalClickCount);
-			}
-			function NextImage(){		
-				// if the description is less than minumum, can't approve
-				var desc = $("#study-vis-desc").val();
-				if (desc.length<MIN_DESC){
-					bootbox.alert("The description should be more than 150 characters!")
-					return;
-				}
-				//log description
-				LogAction("explain", {is_practice: isPractice, image:images.targets[curIdx], desc: desc});		
-				console.log('clickCount = ' + clickCount);
-				//increase image index
-				curIdx++;
-				if (curIdx<images.targets.length){					
-					//setup a new image
-					SetupImage(curIdx);
-				}else{
-					//all images are used, move on to the next stage
-					if (isPractice==true)
-						return ChangeStage(REAL_INST);
-					else
-						return ChangeStage(DEBRIEF);
-				}
+			function Setup(){
+				
 				
 			}
-			function OnKeyPress(e){
-				// if(e.keyCode == 32){
-				// 	e.preventDefault(); //disable spacebar scrolling
-				//    	// user has pressed space
-				//    	// if (stage==INTRO){
-				//    	// 	ChangeStage(stage+1);
-				//    	// 	return;
-				//    	// }				  
-				// }   	
-			}
+			
 	    	function ChangeStage(newStage){
 	    		HideStage(stage);
 	    		stage = newStage;
@@ -307,7 +314,7 @@
 	    			case STUDY:
 	    				console.log("STUDY");
 	    				$("#study").show();
-	    				SetupImage(curIdx);
+	    				Setup();
 	    			break;
 	    			case DEBRIEF:
 	    				console.log("DEBRIEF");
@@ -335,7 +342,7 @@
 	    			action: action,
 	    			data: data
 	    		};
-	    		$.post("/study/log", log, function(res){
+	    		$.post("/socialdoi/log", log, function(res){
 	    			if (res.code!=0){
 	    				bootbox.alert("Failed to log a worker action!");
 	    			}else{
@@ -352,12 +359,7 @@
 	    		}
 	   			//generating answer data (name-value pairs)
 	   			
-	    		// 1. Target Image Count
-	    		$("<input type='hidden' name='imageCount' value='" + images.targets.length + "'>").appendTo($(formSelector));
-	    		// 2. Total Click Count
-	    		$("<input type='hidden' name='clickCount' value='" + totalClickCount + "'>").appendTo($(formSelector));
-	    		// 3. Avg Click Count
-	    		$("<input type='hidden' name='avgClickCount' value='" + (totalClickCount/images.targets.length) + "'>").appendTo($(formSelector));
+	    		
 
 	    		var gender 	= $("input:radio[name=gender]:checked").val();
 	    		var age 	= $("input:radio[name=ageGroup]:checked").val();
@@ -377,10 +379,7 @@
 
 	    		// // submit the form to the mturk site
 	    		console.log("Submiting mturk-form...");
-	    		console.log("imageCount: "+images.targets.length);
-	    		console.log('totalClickCount = ' + totalClickCount);
-	   			console.log('avgClickCount = ' + (totalClickCount/images.targets.length) );
-
+	    		
 	   			console.log(gender);
 	   			console.log(age);
 	   			console.log(ethnic);
@@ -402,19 +401,19 @@
 			}		
 	    </script>
   	</head>
-  	<body>
+  	<body ng-app="myApp" ng-controller="myCtrl">
 	  	<div class="container">
 	  		<div class="row">
 		    	<div id="intro">					
 					<div class="row">
 						<div class="col-md-12">
-							<h2>study Study</h2>
+							<h2>Budget Study</h2>
 							<p class="text-justify">
-								In this HIT you will be presented with a series of images containing graphs and diagrams, and asked to describe the images in as much detail as possible.
+								In this HIT you will be presented with a tree visualization of a government budget, and asked to find at least five most interesting budget "programs" by considering the budget data is from where you live.
 								<br><br>
-								The HIT should take about 5 minutes to complete.
+								The HIT should take about 15 minutes to complete.
 							</p><br>
-							<img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/study-db/study_overview.png">
+							<img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/budget-study-overview.png">
 							<br>
 							
 							<div id="recaptcha" class="g-recaptcha" align="center" data-sitekey="6LcvMf8SAAAAAOAE34JZH6i7v_8lOrSD38mPkuGG" ></div>
@@ -432,23 +431,26 @@
 							<h2>STATEMENT OF INFORMED CONSENT</h2>
 							<p class="text-justify">								
 								<br>								
-								<strong>Purpose of research:</strong> The purpose of this study is to collect users’ interests and information navigation histories in a government budget visualization. In particular, you will be asked to use the visualization to find specific budget items of interest. 
+								<strong>Purpose of research:</strong> The purpose of this study is to collect users’ interests and histories of their navigation through a government-budget visualization. In particular, you will be asked to use the visualization to find specific budget items of interest.  This research is for a course project, and thus its result will not be published. 
 								<br><br>
 								<strong>What your participation in this study will involve:</strong><br>
-								Reading a short summary of relevant background information.<br>
-								Using a budget visualization interface to find 5 budget items of interest.<br>
+								<ul>
+									<li>Reading a short summary of relevant background information.</li>
+									<li>Using a budget visualization interface to find 5 budget items of interest.</li>
+								</ul>					
+								
 								<br><br>
-								<strong>Time required:</strong> Participation will take approximately 5 minutes.
+								<strong>Time required:</strong> Participation will take approximately 15 minutes.
 								<br><br>
-								<strong>Risks:</strong> here are no anticipated risks associated with participating in this study.
+								<strong>Risks:</strong> There are no anticipated risks associated with participating in this study.
 								<br><br>
-								<strong>Confidentiality:</strong> Your participation in this study will remain confidential, and your identity will not be stored with your data. Your responses will be assigned a code number, and the list connecting your worker ID with this code number will be kept in a locked room and will be destroyed upon completion of the project. 
+								<strong>Confidentiality:</strong> Your participation in this study will remain confidential, and your identity will not be stored with your data. Your responses will be assigned a code number, and the list connecting your worker ID with this code number will be kept in a locked room and will be destroyed upon completion of the project.  
 								<br><br>
-								<strong>Participation and withdrawal:</strong> Your participation in this study is completely voluntary, and you may withdraw at any time without penalty. You may skip any questions/tasks that you do not want to respond/participate.
+								<strong>Participation and withdrawal:</strong> Your participation in this study is completely voluntary, and you may withdraw at any time without penalty. You may skip any questions/tasks that you do not want to respond to / participate in. 
 								<br><br>
 								<strong>Researcher Contact Information:</strong> If you have questions about this research, please contact Nam Wook Kim, (Maxwell Dworkin 142, 33 Oxford St , Cambridge, MA, 02138, namwkim@seas.harvard.edu). 
 								<br><br>
-								<strong>Faculty Sponsor:</strong> Prof. Hanspeter Pfister (33 Oxford Street, Maxwell-Dworkin Rm 227, Cambridge, MA 02138, pfister@seas.harvard.edu, 617-496-8269)
+								<strong>Faculty Sponsor:</strong> Prof. Barbara J. Grosz (Maxwell-Dworkin Room 249, 33 Oxford Street, Cambridge, MA 02138, grosz@seas.harvard.edu, 617-495-3963)
 								<br><br>
 								<strong>Agreement:</strong>
 								The nature and purpose of this research have been satisfactorily explained to me and I agree to become a participant in the study as described above. I understand that I am free to discontinue participation at any time if I so choose, and that the investigator will gladly answer any questions that arise during the course of the research. 
@@ -512,20 +514,20 @@
 				<div id="prac-inst">					
 					<div class="row">
 						<div class="col-md-12">
-							<h2>study Study Instruction</h2>
+							<h2>Study Instruction</h2>
 							<p class="text-justify">
-								Welcome! In this HIT you will be presented with a series of images containing graphs and diagrams.  
+								Welcome! In this HIT you will be presented with a tree visualization of a government budget, and asked to find at least five most interesting budget "programs" by considering the budget data is from where you live.
 								<br><br>
 								<!--You will be paid <strong>$0.40</strong> for participating in this study which is expected to last about <strong>5 minutes</strong>.
 								<br><br>-->
-								For each image, you will be asked to <strong>describe the image</strong> in as much detail as possible (minimum 150 characters). The image is <strong>heavily blurred</strong> so that you can only see a rough outline of the image. However, you can <strong>click to reveal</strong> small, circular areas of the image ("studys") to inspect the full details.
+								The visualization has three levels representing the hierarchy of budget management: cabinets, departments, and programs. You need to navigate through the budget data in such hierarchical order; that is, clicking a cabinet will reveal related departments and similarly clicking a department will reveal related programs. Once a program of interest is selected, you can add the program to a list. You can finish the task only when "at least five budget programs" are added to the list.
 								<br><br>
-								We will only pay for successfully completed work.
+								We will only pay for successfully completed work, and give a bonus for good work.
 								<br><br>
 								We will start with a tutorial. Please <strong>click the button</strong> below when you are ready to begin.					
 							</p>
 							<br>
-							<img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/study-db/study_overview.png">
+							<img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/budget-study-overview.png">
 							<br>
 							<button id="practice-btn" type="button" class="btn btn-success btn-lg btn-block">
 						  		<span class="glyphicon glyphicon-play"></span> Continue
@@ -537,14 +539,14 @@
 				<div id="real-inst">					
 					<div class="row">
 						<div class="col-md-12">
-							<h2>study Study Instruction</h2>
+							<h2>Budget Study Instruction</h2>
 							<p class="text-justify">
 								Great job! Now you will start the real study. The real study will be just like the practice you just did, except a bit longer.			
 								<br><br>
 								Please <strong>click the "Start" button</strong> below when you are ready to begin.						
 							</p>
 							<br>
-							<img class="center-block thumbnail" height="350" src="/images/study-db/study_overview.png">
+							<img class="center-block thumbnail" height="350" src="/images/budget-study-overview.png">
 							<br>
 							<button id="real-btn" type="button" class="btn btn-success btn-lg btn-block">
 						  		<span class="glyphicon glyphicon-play"></span> Start
@@ -553,23 +555,76 @@
 					</div>
 				</div>
 				<div id="study">	
-					<h2><span id="tutorial-msg" class="label label-danger">Tutorial</span> Click and Describe the Image.</h2>		
+					<h2>Find Interesting Programs </h2>
+					<p id="tutorial-msg" class="lead"><span class="label label-danger">Tutorial Task</span> : Add "Parks Maintenance" to the list (Cabinet: Environment, Energy & Open Space, Department: Parks & Recreation Department).</p>		
 					<div class="row">
 						<div class="col-md-8">							
-							<canvas id="canvas" width="500" height="500"></canvas>
+							<div id="chart"></div>
 						</div>
 						<div class="col-md-4">
-							<form id="describe-form" role="form">
-								<div class="form-group">									
-								    <label for="study-vis-desc">
-								    	<span class="badge"><span id="click-count">0</span> clicks</span>
-								    	<span class="badge"><span id="char-count">0</span> characters</span></label>
-								    <textarea id="study-vis-desc" name="desc" class="form-control" rows="20" placeholder="Describe the image in as much detail as possible..."></textarea>
-							  	</div>	
-							</form>
-							<button id="study-next-btn" type="button" class="btn btn-success btn-lg btn-block">
-						  		<span class="glyphicon glyphicon-play"></span> Next
-							</button>
+							 <div class="panel panel-primary">
+								<div class="panel-heading">
+							    	<h3 class="panel-title"><% budgetname %></h3>
+							  	</div>
+								<div id="add-btn" class="panel-body">
+									<div class="panel panel-default">
+			  							<div class="panel-body">
+											<div id="addWarning" class="alert alert-danger" role="alert" ng-if="selected.program==null">
+												<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Select a Budget Program!</div>
+											<div class="alert alert-success" role="alert" ng-if="selected.program!=null">
+												<span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Good Job! If you find this program interesting, please add it to the list!</div>
+											<table class="table table-condensed">
+											  <tr>
+											  	<td>Cabinet</td>
+											  	<td><% selected.cabinet %></td>
+											  </tr>
+											  <tr>
+											  	<td>Department</td>
+											  	<td><% selected.department %></td>
+											  </tr>
+											  <tr>
+											  	<td>Program</td>
+											  	<td>
+										  			<strong><% selected.program %></strong>
+										  		</td>
+											  </tr>
+											  <tr>
+											  	<td>Budget</td>
+											  	<td>
+										  			<strong><% selected.approved | currency:"$ ":0%></strong>
+										  		</td>
+											  </tr>
+											</table>
+										    <button type="button" style="width:100%" class="btn btn-info" aria-label="Left Align" ng-click="Add()">
+											  	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add
+											</button>
+										  </div>
+										</div>
+									</div>
+									<center id="program-list" class="lead">Programs of Interest</center>
+									<table class="table" style="text-align:center"	>
+										<thead><tr><td><strong>#</strong></td><td ><strong>Program</strong></td></tr></thead>
+										<tbody>
+											<tr ng-repeat="x in programs">
+												<td><% $index+1 %></td>
+												<td><% x.program %><button type="button" class="btn btn-info btn-xs" style="float:right"  aria-label="Left Align" ng-click="Remove(x)">
+											  	<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+											</button>
+												</td>
+											</tr>
+											<tr>
+												<td id="finish-btn" colspan="2">
+													<div id="finishWarning" style="display:none" class="alert alert-danger" role="alert">
+												<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>Please add at least five programs!</div>
+													<button type="button" style="width:100%" class="btn btn-success" aria-label="Left Align" ng-click="Finish()"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Finish
+													</button>
+												</td>
+											</tr>
+										</tbody>							
+									</table
+									
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>	

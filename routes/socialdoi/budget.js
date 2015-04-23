@@ -11,6 +11,10 @@ router.get('/', function(req, res) {
 	console.log(req.params);
   	res.render('./socialdoi/budget', { title: 'Budget Study' });
 });
+router.get('/cstree', function(req, res) {
+    console.log(req.params);
+    res.render('./socialdoi/cstree', { title: 'Budget Study' });
+});
 router.get('/vistest', function(req, res) {
     console.log(req.params);
     res.render('./socialdoi/vistest', { title: 'Budget Study' });
@@ -19,7 +23,31 @@ router.get('/budgets', function(req, res){
     var db = req.socialdoi;
 
     db.collection('budgets').find().toArray(function(err, result){
-        res.json(result);
+        
+        console.log(result[0])
+        
+        var budgetname  = "Operating Budget 2015"
+        var budgets     = { name: budgetname, budgetname : budgetname, children: []};
+
+        //group by cabinet
+        var bycabinet   = _.groupBy(result, function(d){ return d.cabinet; })
+
+        for (var cabinetName in bycabinet){
+            var cabinet = { name: cabinetName, budgetname : budgetname, cabinet: cabinetName, children :[]}
+            budgets.children.push(cabinet)
+            //group by department
+            var bydept = _.groupBy(bycabinet[cabinetName], function(d) { return d.department; })
+            for (var deptName in bydept){
+                var dept = { name: deptName, budgetname : budgetname, cabinet: cabinetName, department: deptName}
+                dept.children = _.sortBy(bydept[deptName], function(d){ return -d.approved; });
+                _.each(dept.children, function(d){
+                    d.name = d.program;
+                })
+                cabinet.children.push(dept);
+            }
+        }        
+        //group by department
+        res.json(budgets);
     });
 })
 
