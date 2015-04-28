@@ -9,6 +9,7 @@
 
 	    <script src="/javascripts/turkify.js"></script>
 	    <script src="/javascripts/cstree.js"></script>
+	    <script src="/javascripts/fisheyefilter.js"></script>
 	    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
 	    <script src="/bower_components/jquery-ui/jquery-ui.min.js"></script>
 	    <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -30,30 +31,98 @@
 				//load data
 				$scope.selected = null;
 				$scope.programs = [];
+				$scope.params = {
+					isSocialOn: false,
+					isLocalOn: false,
+					isFocusOn: false,
+					weight: 5.0,
+					useDOILabel: true
+				}
 				$http.get('/socialdoi/budgets')
 				.success(function(res){
-									
+					$http.get('/socialdoi/doival')	
+					.success(function(socres){
+
+					    $scope.budgets = res;
+					    
+					    //add social interests
+					    $scope.naviHist = socres;
+					    
+					    $scope.budgets.visitCnt = $scope.naviHist.total;
+					    $scope.budgets.visitRatio = $scope.naviHist.maxRatio;
+					    $scope.budgets.visitDOI = 0;
+					    for (var i in $scope.budgets.children){
+					    	var cabinet = $scope.budgets.children[i];
+					    	if (_.has($scope.naviHist.bycabinet, cabinet.name)){
+					    		cabinet.visitCnt = $scope.naviHist.bycabinet[cabinet.name].visitCnt;
+					    		cabinet.visitDOI = $scope.naviHist.bycabinet[cabinet.name].visitDOI;
+					    		cabinet.visitRatio = $scope.naviHist.bycabinet[cabinet.name].visitRatio;
+					    	}else{
+					    		cabinet.visitCnt = cabinet.visitRatio = 0;
+					    		cabinet.visitDOI = $scope.naviHist.maxRatio;
+					    	}
+					    	for (var j in cabinet.children){
+					    		var dept = cabinet.children[j];
+						    	if (_.has($scope.naviHist.bydept, dept.name)){
+						    		dept.visitCnt = $scope.naviHist.bydept[dept.name].visitCnt;
+						    		dept.visitDOI = $scope.naviHist.bydept[dept.name].visitDOI;
+						    		dept.visitRatio = $scope.naviHist.bydept[dept.name].visitRatio;
+						    	}else{
+						    		dept.visitCnt = dept.visitRatio = 0;
+						    		dept.visitDOI = $scope.naviHist.maxRatio;
+						    	}
+						    	for (var k in dept.children){
+						    		var program = dept.children[k];
+						    		if (_.has($scope.naviHist.byprogram, program.name)){
+						    			program.visitCnt = $scope.naviHist.byprogram[program.name].visitCnt;
+						    			program.visitDOI = $scope.naviHist.byprogram[program.name].visitDOI;
+						    			program.visitRatio = $scope.naviHist.byprogram[program.name].visitRatio;
+						    		}else{
+						    			program.visitCnt = program.visitRatio = 0;
+						    			program.visitDOI = $scope.naviHist.maxRatio;
+						    		}
+						    	}
+						    }
+					    }
+
+					    $scope.fisheyefilter = FisheyeFilter($scope.params.isSocialOn,
+					    									$scope.params.isLocalOn,
+					    									$scope.params.isFocusOn,
+					    									$scope.params.weight);
+					    var config = {
+					    	container: "#chart",
+					    	data: $scope.budgets,
+					    	margin: {top: 20, right: 0, bottom: 20, left: 150},
+					    	width : 700,
+					    	height : 600,
+					    	filter : $scope.fisheyefilter,
+					    	useDOILabel: $scope.params.useDOILabel,
+					    	onClick: function(d){
+					    		$scope.$apply(function(){
+					    			$scope.selected = d;
+					    			console.log($scope.selected.name);
+					    		});
+					    	}
+					    };					    
+
+					    
+
+					    $scope.cstree = CSTree(config);
+	                	$scope.cstree.create();
+
+					});
 					
-				    $scope.budgets = res;
-				    var config = {
-				    	container: "#chart",
-				    	data: $scope.budgets,
-				    	margin: {top: 20, right: 0, bottom: 20, left: 150},
-				    	width : 700,
-				    	height : 600,
-				    	onClick: function(d){
-				    		$scope.$apply(function(){
-				    			$scope.selected = d;
-				    			console.log($scope.selected.name);
-				    		});
-				    	}
-				    };
-
-				    var cstree = CSTree(config);
-                	cstree.create();
-
 
 				});
+				$scope.OnChange = function(){
+					$scope.fisheyefilter.setParams($scope.params.isSocialOn,
+		    									$scope.params.isLocalOn,
+		    									$scope.params.isFocusOn,
+		    									$scope.params.weight);
+					$scope.cstree.useDOILabel($scope.params.useDOILabel);
+
+					$scope.cstree.update($scope.selected);
+				}
 				$scope.Add = function(){
 			    	console.log("add")
 			    	if ($scope.selected==null || $scope.selected.program==null){
@@ -92,6 +161,36 @@
 				    	<h3 class="panel-title"><% budgets.name %></h3>
 				  	</div>
 					<div class="panel-body">
+						<div class="well">
+							<strong> DOI(x,y) </strong> = API(x) <br>
+						 		<div class="checkbox">
+							    	<label>
+						      			<input type="checkbox" ng-model="params.isFocusOn" ng-change="OnChange()"> + D(x,y) 
+								    </label>
+							  	</div>
+						 		<div class="checkbox">
+							    	<label>
+						      			<input type="checkbox" ng-model="params.isLocalOn" ng-change="OnChange()"> + Local DOI (x)
+								    </label>
+							  	</div>
+					 			<form class="form-inline">
+
+							    	<div class="checkbox">
+									    <label>
+									      	<input type="checkbox" ng-model="params.isSocialOn" ng-change="OnChange()"> +  
+									    </label>
+								    </div>
+							     	<div class="form-group">
+								    	Weight (<input ng-model="params.weight" ng-change="OnChange()" type="text" size="2" class="form-control" id="weight">)
+								  	</div> x Social DOI (x)
+								  	<br>
+								    <div class="checkbox">
+										<label>
+										  	<input type="checkbox" ng-model="params.useDOILabel" ng-change="OnChange()"> Use DOI Label
+										</label>
+									</div>	
+								</form>
+						</div>
 						<div class="panel panel-default">
   							<div class="panel-body">
 								<div id="addWarning" class="alert alert-danger" role="alert" ng-if="selected.program==null">
@@ -119,6 +218,13 @@
 							  			<strong><% selected.approved | currency:"$ ":0%></strong>
 							  		</td>
 								  </tr>
+								  <tr>
+								  	<td>Visit Count</td>
+								  	<td>
+							  			<strong><% selected.visitCnt %> people visited.</strong>
+							  		</td>
+								  </tr>
+
 								</table>
 							    <button type="button" style="width:100%" class="btn btn-info" aria-label="Left Align" ng-click="Add()">
 								  	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add
