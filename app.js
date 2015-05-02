@@ -9,6 +9,8 @@ var routes          = require('./routes/index');
 var bubbleRouter    = require('./routes/bubble');
 var recallRouter    = require('./routes/recall');
 var codingRouter    = require('./routes/coding');
+var doiRouter    = require('./routes/socialdoi/index');
+
 //var users = require('./routes/users');
 
 var app = express();
@@ -19,6 +21,7 @@ var db = mongo.db("mongodb://localhost:27017/mem_study", {native_parser: true});
 var bubbledb = mongo.db("mongodb://localhost:27017/bubblestudy", {native_parser: true});
 var recalldb = mongo.db("mongodb://localhost:27017/recallstudy", {native_parser: true});
 var codingdb = mongo.db("mongodb://localhost:27017/coding", {native_parser: true});
+var socialdoidb = mongo.db("mongodb://localhost:27017/socialdoi", {native_parser: true});
 
 
 // view engine setup
@@ -41,6 +44,7 @@ app.use(function(req, res, next){
     req.codingdb = codingdb;
     req.bubbledb = bubbledb;
     req.recalldb = recalldb;
+    req.socialdoi = socialdoidb
     req.toObjectID = mongo.helper.toObjectID;
     next();
 });
@@ -49,6 +53,7 @@ app.use('/', routes);
 app.use('/coding', codingRouter);
 app.use('/bubble', bubbleRouter);
 app.use('/recall', recallRouter);
+app.use('/socialdoi', doiRouter.budgetRouter);
 //app.use('/users', users);
 
 /// catch 404 and forward to error handler
