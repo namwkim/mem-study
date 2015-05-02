@@ -8,7 +8,7 @@ router.get('/', function(req, res) {
 });
 router.get('/test', function(req, res) {
     console.log(req.params);
-  res.render('test', { title: 'Coding Test' });
+  res.render('test', { title: 'Test Page' });
 });
 router.get('/images', function(req, res){
 	var db = req.db;

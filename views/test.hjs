@@ -7,39 +7,65 @@
     <script src="/bower_components/jquery/dist/jquery.min.js"></script>
     <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="/bower_components/underscore/underscore-min.js"></script>
+    <script src="/bower_components/jsdiff/diff.js"></script>
     <style>
     	
     </style>
     <script type="text/javascript">
     
 
-
+      var original  = "";
+      var updated   = "";
     	$(document).ready(function(){
 
-    		$("#textbox").click(function(){
+    		$("#textbox").focusin(function(){
     			console.log("in focus");
-    			$("#msg").text($("#textbox").val());
+          original = $("#textbox").val();
+    			//$("#msg").text($("#textbox").val());
     		});
 
     		$("#textbox").focusout(function(){
     			console.log("out focus");
-    			$("#msg").text($("#textbox").val());
+          updated = $("#textbox").val();
+
+          
+
+          var diff = JsDiff.diffChars(original, updated);
+          console.log(diff)
+          diff.forEach(function(part){
+            // green for additions, red for deletions
+            // grey for common parts
+            var color = part.added ? 'green' :
+              part.removed ? 'red' : 'grey';
+
+            var span = $("<span>" + part.value + "</span>");
+            span.css("color", color);
+            span.appendTo("#display");
+
+          });
+          $("<br>").appendTo("#display")
+    			//$("#msg").text($("#textbox").val());
     		});
 		});
     </script>
   </head>
   <body>
-  	<h2>Code Test</h2>
+  	
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-5 col-md-offset-3">
+          <h2>{{title}}</h2>
+          
+    	   	<pre id="display"></pre>
+          
 
-	<div class="jumbotron">
-		<p id="msg"></p>
-	  
-	</div>
-
-	<textarea id="textbox" class="form-control" rows="15" cols="200" placeholder="">
-	</textarea>
-	<button type="button" class="btn btn-primary btn-lg" style="width:100%">
-	  	<span class="glyphicon glyphicon-star" aria-hidden="true"></span> Star
-	</button>
+          <textarea id="textbox" class="form-control" rows="15" cols="200" placeholder=""></textarea>
+          <br>
+          <button type="button" class="btn btn-primary btn-lg" style="width:100%">
+            <span class="glyphicon glyphicon-star" aria-hidden="true"></span> Star
+          </button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

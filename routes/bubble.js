@@ -10,6 +10,7 @@ router.get('/', function(req, res) {
 	console.log(req.params);
   	res.render('bubble', { title: 'Bubble Experiment' });
 });
+
 router.get('/admin', function(req, res) {
     console.log(req.params);
     res.render('bubble_admin', { title: 'Bubble Experiment Admin' });

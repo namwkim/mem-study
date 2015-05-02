@@ -5,10 +5,10 @@ import os, pymongo, sys, random
 
 ######  AMT CONFIGURATION PARAMETRS  ######
 
-SANDBOX = False  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
+SANDBOX = True  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 HIT_URL = "https://study.namwkim.org/bubble"  # Provide the URL that you want workers to sent sent to complete you task
 
-NUMBER_OF_HITS = 12  # Number of different HITs posted for this task
+NUMBER_OF_HITS = 17  # Number of different HITs posted for this task
 NUMBER_OF_ASSIGNMENTS = 3  # Number of tasks that DIFFERENT workers will be able to take for each HIT
 LIFETIME = 60 * 60 * 24 * 7  # How long that the task will stay visible if not taken by a worker (in seconds)
 REWARD = 0.5  # Base payment value for completing the task (in dollars)
@@ -110,15 +110,18 @@ def create_hits(keyfile):
 	hitIdx 	= 0
 	hitID 	= hitIDs[hitIdx]
 	count 	= 0
+	print("HIT ID: " + hitID)
 	for i in range(len(targets)):
 		count +=1
 		images.insert({"hit_id": hitID, "group": hitIdx, "img_url": BASE_URI+targets[i], "blur_img_url": BASE_URI_BLUR+targets_blurred[i]}) # insert an image into the db with HIT ID assigned
+		print (" - Image #"+str(count)+": "+(BASE_URI+targets[i]))
 		if count>=hitSize:
 			count   = 0
 			hitIdx += 1
 			if hitIdx>=len(hitIDs):
 				break
 			hitID 	= hitIDs[hitIdx]
+			print("HIT ID: " + hitID)
 
 	# for image in images.find():
 	# 	print image

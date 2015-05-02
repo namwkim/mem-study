@@ -45,17 +45,17 @@ def delete_all_hit(keyfile):
 		hit = conn.get_hit(hit_id=hit.HITId)[0];
 		print "HIT " + hit.HITId + "(Status: "+hit.HITStatus+")"
 		if hit.HITStatus == "Reviewable":
-			assignments = conn.get_assignments(hit_id=hit.HITId);
+			assignments = conn.get_assignments(hit_id=hit.HITId, status="Submitted");
 			i = int(assignments.NumResults);
 			while i!=0:
 				print "page# = " + assignments.PageNumber + ", # of assignments = " + assignments.NumResults	
 				for assignment in assignments:
-					print "Approving " + assignment.AssignmentId
+					print "Approving " + assignment.AssignmentId + "(Status: " + assignment.AssignmentStatus + ")"
 					conn.approve_assignment(assignment.AssignmentId);	
-					
-				assignments = conn.get_assignments(hit_id=hit.HITId);
+				# Give the HIT a moment to expire.		
+				assignments = conn.get_assignments(hit_id=hit.HITId, status="Submitted");
 				i = int(assignments.NumResults);
-
+		#conn.dispose_hit(hit.HITId);
 		conn.disable_hit(hit.HITId)
 
 		print("HIT " + hit.HITId + " was deleted!")
