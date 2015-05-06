@@ -4,8 +4,11 @@
 	    <title>{{ title }}</title>
 	    <link rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap.min.css' />
 	    <link rel='stylesheet' href='/bower_components/bootstro/bootstro.min.css' />
-	    <link rel='stylesheet' href='/stylesheets/cstree.css'/>
+	    <link rel='stylesheet' href='/stylesheets/doitree.css'/>
 	    <link rel='stylesheet' href='/bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css' />
+
+	    <script src="/bower_components/d3/d3.js"></script>	
+		<script src="/bower_components/d3-tip/index.js"></script>
 
 	    <script src="/javascripts/turkify.js"></script>
 	    <script src="/javascripts/nw.js"></script>	
@@ -19,8 +22,6 @@
 	    <script src="/bower_components/bootbox/bootbox.js"></script>
 	    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 	    <script src="/bower_components/angular/angular.min.js"></script>
-	    <script src="/bower_components/d3/d3.js"></script>	
-
 
 	    <script type="text/javascript">
 
@@ -94,9 +95,9 @@
 					    var config = {
 					    	container: "#chart",
 					    	data: $scope.budgets,
-					    	margin: {top: 20, right: 0, bottom: 20, left: 150},
+					    	margin: {top: 30, right: 0, bottom: 30, left: 150},
 					    	width : 700,
-					    	height : 600,
+					    	height : 700,
 					    	filter : $scope.fisheyefilter,
 					    	useDOILabel: $scope.params.useDOILabel,
 					    	onClick: function(d){

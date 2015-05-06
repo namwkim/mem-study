@@ -117,7 +117,7 @@ var FisheyeFilter = function (s, l, f, w) {
         	
            
         	filter.visit(c, c, globalDOI, 
-                isLocalOn? (-i/p.children.length):0,
+                isLocalOn? (-i/p.children.length)*0.1:0,
                 isSocialOn? (-c.visitDOI*weight):0);//-c.approved/p.approved);//Math.abs(lidx-i));
         	if (globalDOI > -distance) filter.visitDescendants(c, null, globalDOI-1);
         }

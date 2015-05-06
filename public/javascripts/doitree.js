@@ -9,10 +9,12 @@ var CSTree = function(config){
     root = config.data,
     nodes=null, links=null, filter=config.filter;
     var df = d3.format(".4f");
+    var currency = d3.format("$,");
 
     var size = d3.scale.linear();
     var fsize = d3.scale.linear();
     var doiLabel = config.useDOILabel;
+
 
 	var tree = nw.layout.tree()
 	.nodeSize([20,180])
@@ -24,7 +26,13 @@ var CSTree = function(config){
 
     var aggregate = d3.svg.symbol()
     	.type("triangle-down")
-    	.size(function(d){ return d._children? 8*d._children.length : 0; })
+    	.size(function(d){ return d._children? 25*Math.log(d._children.length+2) : 0; })
+
+    var tip = d3.tip().attr('class', 'd3-tip')
+		.html(function(d) {
+    		return "<div style='color:lightsteelblue;font-size:14px;margin-bottom:4px'>"+d.name+"</div>" +
+	    		"<div style='color:lightgray;font-size:12px'> " + currency(d.approved) + "</div>";
+	  	})
 
 	var svg = d3.select(config.container).append("svg")
 	    .attr("width", width + margin.right + margin.left)
@@ -34,6 +42,8 @@ var CSTree = function(config){
 
 	  root.x0 = height / 2;
 	  root.y0 = 0;
+
+  	svg.call(tip);
 
 	function chart(){
 
@@ -50,8 +60,11 @@ var CSTree = function(config){
 		// }
   // 	}
   	chart.create = function(){
-  		//backup childern
+
+  		
 		chart.visit(root, function(d){
+			
+			//backup childern
 			if (d.children) d._children = d.children.slice();
 		})
 		chart.update(root);
@@ -65,6 +78,18 @@ var CSTree = function(config){
 	        while (--n >= 0) nodes.push(children[n]);
 	      }
 	    }
+  	}
+  	chart.abbreviate = function(text, fontsize){
+  		var textwidth = text.length * fontsize;
+  		var abbrd = false;
+  		while (textwidth>250 && text.length>0){
+  			abbrd 		= true;
+  			text 		= text.slice(0, text.length-2);
+  			textwidth 	= text.length * fontsize;
+  		}
+  		console.log(text);
+  		return abbrd? text+"...": text;
+
   	}
 	//d3.select(self.frameElement).style("height", "800px");
 	chart.update = function (source) {
@@ -99,7 +124,7 @@ var CSTree = function(config){
 		var h = d3.max(nodes, function(d){ return d.x; }) - d3.min(nodes, function(d){ return d.x; });
 		var n;
 		while((h > height) && (n = sorted.pop()) ){
-			//console.log("height, limit: " +h + ", " + height);
+			console.log("height, limit: " +h + ", " + height);
 			console.log(n.doi)
 			n.filtered = true;
 			var idx = n.parent.children.indexOf(n);
@@ -136,27 +161,29 @@ var CSTree = function(config){
 		// Update the nodes…
 		var node = svg.selectAll("g.node")
 		  	.data(nodes, function(d) { return d.id || (d.id = ++i); });
-		node.transition().select("text")	
-			.text(function(d) { return doiLabel? df(d.doi) : d.name; });//return d.name + "("+nodes.indexOf(d)+", " +df(d.doi)+")"; })
+		// node.transition().select("text")	
+		// 	.text(function(d) { return doiLabel? df(d.doi) : d.name; });//return d.name + "("+nodes.indexOf(d)+", " +df(d.doi)+")"; })
 
 		// Enter any new nodes at the parent's previous position.
-		var nodeEnter = node.enter().append("g")
+		var nodeEnter = node.enter().append("g")		
 		  	.attr("class", "node")
 		  	//.style("opacity", 1e-6)
 		  	.attr("transform", function(d) { return (d.parent && d.parent.y0)? "translate(" + d.parent.y0 + "," + d.parent.x0 + ")": "translate("+root.y+","+root.x+")"; })
 		 	.on("click", chart.click)
-		 	.on('mouseover', chart.onMouseOver)
-	      	.on('mouseout', chart.onMouseOut);;
+		 	.on('mouseenter', chart.onMouseOver)
+	      	.on('mouseleave', chart.onMouseOut);;
 
 		nodeEnter.append("circle")
 		 	.attr("r", 1e-6)
-		  	.style("fill", "#fff");
+
 
 		nodeEnter.append("text")
 			.attr("x", function(d) { return -10; })
-			.attr("dy", ".35em")
+			.attr("dy", ".4em")
 			.attr("text-anchor", function(d) { return  "end" ; })
-			.text(function(d) { return doiLabel? df(d.doi) : d.name; }) //{ return d.name + "("+nodes.indexOf(d)+", " +df(d.doi)+")"; })
+			.text(function(d) { 
+				return doiLabel? df(d.doi) : chart.abbreviate(d.name, fsize(d.doi)); 
+			}) //{ return d.name + "("+nodes.indexOf(d)+", " +df(d.doi)+")"; })
 			.style("fill-opacity", 1e-6)
 			.style("font-size", "0px");
 
@@ -175,12 +202,14 @@ var CSTree = function(config){
 
 		nodeUpdate.select("circle")
 		  	.attr("r", function(d) { return size(d.doi); })
-		  	.style("fill", "#fff");
+
 
 		nodeUpdate.select("text")
+			.text(function(d) { //advanced method : https://gist.github.com/billdwhite/6243279
+				return doiLabel? df(d.doi) : chart.abbreviate(d.name, fsize(d.doi)); 
+			})
 		  	.style("fill-opacity", 1.0)
 		  	.style("font-size", function(d) { return fsize(d.doi)+"px";});
-
 	  	
 		nodeUpdate.select("path")			
 			.style("fill-opacity", function(d){ return d.collapsed? 1.0: 1e-6; })
@@ -234,6 +263,7 @@ var CSTree = function(config){
 	}
 // Toggle children on click.
 	chart.click = function (d) {
+		//d3.event.preventDefault();
 		console.log('clicked:' )
 		console.log(d)
 		// Add a focus node
@@ -262,20 +292,32 @@ var CSTree = function(config){
 	  	config.onClick.call(this, d);
 	}
 	chart.onMouseOut = function(d){
+		d3.event.stopPropagation();
+		d3.event.preventDefault();
+		
+		console.log("out")
 		if (this!= selected) chart.disableHighlight(this);
+		tip.hide(d, this);
 	}
 	chart.onMouseOver = function(d){
-		if (this!= selected) chart.enableHighlight(this);		
+		d3.event.stopPropagation();	
+		d3.event.preventDefault();	
+			
+		console.log("over")
+		if (this!= selected) chart.enableHighlight(this);	
+		tip.show(d, this);	
 	}
 	chart.enableHighlight = function(elem){
 		d3.select(elem).select("circle")
-			.style("stroke", "orange");
+			.style("stroke", "LimeGreen")
+			.style("fill", "LimeGreen");
 		d3.select(elem).select("text")
-			.style("fill", "orange");
+			.style("fill", "LimeGreen");
 	}
 	chart.disableHighlight = function(elem){
 		d3.select(elem).select("circle")
-  			.style("stroke", "steelblue");
+  			.style("stroke", "steelblue")
+  			.style("fill", "white");
 		d3.select(elem).select("text")
 			.style("fill", "black");
 	}
