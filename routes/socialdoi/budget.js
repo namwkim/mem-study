@@ -15,6 +15,10 @@ router.get('/cstree', function(req, res) {
     console.log(req.params);
     res.render('./socialdoi/cstree', { title: 'Budget Study' });
 });
+router.get('/doitree', function(req, res) {
+    console.log(req.params);
+    res.render('./socialdoi/doitree', { title: 'Budget Study' });
+});
 router.get('/vistest', function(req, res) {
     console.log(req.params);
     res.render('./socialdoi/vistest', { title: 'Budget Study' });

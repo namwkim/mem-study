@@ -45,7 +45,7 @@ var FisheyeFilter = function (s, l, f, w) {
                 filter.visitFocus(focusNodes[i], null);
             }            
         }
-        console.log("Focus")
+        //console.log("Focus")
         filter.visitFocus(root, null);
 
 		// mark unreached items
@@ -82,7 +82,7 @@ var FisheyeFilter = function (s, l, f, w) {
         // console.log("localDOI: " + localDOI);
         // console.log("visitCnt: " + (doi + localDOI+n.visitCnt));
         n.doi = doi + localDOI + socialDOI;
-        console.log(n.name + ": " + socialDOI);
+        //console.log(n.name + ": " + socialDOI);
         //console.log(n.name + ": " + doi + ", " + localDOI)
         // InEdge DOI 
         // if (c != null) {
