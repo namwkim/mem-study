@@ -26,12 +26,17 @@ var CSTree = function(config){
 
     var aggregate = d3.svg.symbol()
     	.type("triangle-down")
-    	.size(function(d){ return d._children? 25*Math.log(d._children.length+2) : 0; })
+    	.size(function(d){ return d._children? 25*Math.log(d._children.length+1) : 0; })
 
     var tip = d3.tip().attr('class', 'd3-tip')
 		.html(function(d) {
-    		return "<div style='color:lightsteelblue;font-size:14px;margin-bottom:4px'>"+d.name+"</div>" +
-	    		"<div style='color:lightgray;font-size:12px'> " + currency(d.approved) + "</div>";
+			if (!d.isElided){
+				return "<div style='color:lightsteelblue;font-size:14px;margin-bottom:4px'>"+d.name+"</div>" +
+	    			"<div style='color:lightgray;font-size:12px'> " + currency(d.approved) + "</div>";
+			}else{
+				return "<div style='color:lightsteelblue;font-size:14px;margin-bottom:4px'>"+d.elidedNodes.length+" Items filtered</div>";
+			}
+			    
 	  	})
 
 	var svg = d3.select(config.container).append("svg")
@@ -97,6 +102,8 @@ var CSTree = function(config){
 		chart.visit(root, function(d){
 			if (d._children) d.children = d._children.slice();
 			d.collapsed = false;
+			d.hasElided = false;
+			d.isElided  = false;
 		})
 		// Compute the new tree layout.
 		nodes = tree.nodes(root).reverse(),
@@ -128,21 +135,32 @@ var CSTree = function(config){
 			console.log(n.doi)
 			n.filtered = true;
 			var idx = n.parent.children.indexOf(n);
-			n.parent.children.splice(idx, 1);
+			var removed = n.parent.children.splice(idx, 1);
+			
 			//is collapsed
-			if (n.parent.children.length==0){
+			if (n.parent.children.length==0 || (n.parent.children.length==1 && n.parent.children[0].isElided==true) ){
 				n.parent.collapsed = true;
 				delete n.parent.children;
 			}
-			// if ((n.parent.children.length-1)==n.parent._children.length){//only after an element removed first time
-			// 	n.parent.children.push{
-			// 		name: "2 items",
-			// 		doi: n.doi,
-			// 		approved: 0,
-			// 		parent : n.parent,
-			// 		elided : 
-			// 	}
-			// }
+			if (n.parent.collapsed==false && n.parent.hasElided==false){//only after an element removed first time
+				n.parent.hasElided = true;
+				var elided = {
+					name: "<..1 items..>",
+					doi: n.doi, //min doi
+					approved: 0,
+					parent : n.parent,
+					isElided : true,
+					collapsed: false,
+					elidedNodes: [removed]
+				}
+				n.parent.children.push(elided);
+			}else if(n.parent.collapsed==false){
+				var elided = n.parent.children[n.parent.children.length-1];
+				console.log(elided)
+				elided.elidedNodes.push(removed);
+				elided.name = "<.." + elided.elidedNodes.length + " items..>";
+
+			}
 			
 			// Compute the new tree layout.
 			nodes = tree.nodes(root).reverse(),
@@ -178,7 +196,7 @@ var CSTree = function(config){
 
 
 		nodeEnter.append("text")
-			.attr("x", function(d) { return -10; })
+			.attr("x", function(d) { return d.isElided? 10:-10; })
 			.attr("dy", ".4em")
 			.attr("text-anchor", function(d) { return  "end" ; })
 			.text(function(d) { 
@@ -201,7 +219,7 @@ var CSTree = function(config){
 		  	.attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
 
 		nodeUpdate.select("circle")
-		  	.attr("r", function(d) { return size(d.doi); })
+		  	.attr("r", function(d) { return d.isElided? 1e-6 : size(d.doi); })
 
 
 		nodeUpdate.select("text")
