@@ -105,6 +105,7 @@ var CSTree = function(config){
 			d.collapsed = false;
 			d.hasElided = false;
 			d.isElided  = false;
+			// d.expand	= false;
 		})
 		// Calculate DOI values (TODO: removed 'nodes')
 		filter.operate(root, config.threshold, root.approved);
@@ -281,13 +282,7 @@ var CSTree = function(config){
 		// console.log('clicked:' )
 		// console.log(d)
 		// Add a focus node
-		if (filter){
-			var f = filter.focusNodes();
-			if (f.length>0)
-				f.pop();
-			f.push(d);
 
-		}
 		// if (d.children) {
 	 //    	d._children = d.children;
 	 //    	d.children = null;
@@ -295,15 +290,30 @@ var CSTree = function(config){
 	 //    	d.children = d._children;
 	 //    	d._children = null;
 	 //  	}	
+	 	if (d.isElided){
+	 		for (var i in d.elidedNodes){//temporarily show nodes
+	 			d.elidedNodes[i].expand = true;;
+	 			// console.log(d.elidedNodes[i].name)
+	 		}
+	 	}else{
+		  	//selection
+		  	if (selected){//disable highlight	
+		  		chart.disableHighlight(selected);		
+		  	}
+		  	
+	  		selected = this;
+	  		chart.enableHighlight(this);
+		  	config.onClick.call(this, d);
+			if (filter){
+				var f = filter.focusNodes();
+				if (f.length>0)
+					f.pop();
+				f.push(d);
+
+			}
+	 	}
 	  	chart.update(root);
-	  	//selection
-	  	if (selected){//disable highlight	
-	  		chart.disableHighlight(selected);		
-	  	}
-	  	
-  		selected = this;
-  		chart.enableHighlight(this);
-	  	config.onClick.call(this, d);
+
 	}
 	chart.onMouseOut = function(d){
 		d3.event.stopPropagation();

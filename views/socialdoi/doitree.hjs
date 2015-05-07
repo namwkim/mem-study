@@ -35,96 +35,143 @@
 				$scope.selected = null;
 				$scope.programs = [];
 				$scope.params = {
-					isSocialOn: false,
-					isLocalOn: false,
-					isFocusOn: false,
+					isSocialOn: true,
+					isLocalOn: true,
+					isFocusOn: true,
 					weight: 5.0,
-					useDOILabel: true
+					useDOILabel: true,
+					useNaviHist: false
 				}
 				$http.get('/socialdoi/budgets')
 				.success(function(res){
-					$http.get('/socialdoi/doival')	
-					.success(function(socres){
+					$http.get('/socialdoi/interests')	
+					.success(function(interests){
+						$http.get('/socialdoi/navihist')	
+						.success(function(nh){
 
-					    $scope.budgets = res;
-					    
-					    //add social interests
-					    $scope.naviHist = socres;
-					    
-					    $scope.budgets.visitCnt = $scope.naviHist.total;
-					    $scope.budgets.visitRatio = $scope.naviHist.maxRatio;
-					    $scope.budgets.visitDOI = 0;
-					    for (var i in $scope.budgets.children){
-					    	var cabinet = $scope.budgets.children[i];
-					    	if (_.has($scope.naviHist.bycabinet, cabinet.name)){
-					    		cabinet.visitCnt = $scope.naviHist.bycabinet[cabinet.name].visitCnt;
-					    		cabinet.visitDOI = $scope.naviHist.bycabinet[cabinet.name].visitDOI;
-					    		cabinet.visitRatio = $scope.naviHist.bycabinet[cabinet.name].visitRatio;
-					    	}else{
-					    		cabinet.visitCnt = cabinet.visitRatio = 0;
-					    		cabinet.visitDOI = $scope.naviHist.maxRatio;
-					    	}
-					    	for (var j in cabinet.children){
-					    		var dept = cabinet.children[j];
-						    	if (_.has($scope.naviHist.bydept, dept.name)){
-						    		dept.visitCnt = $scope.naviHist.bydept[dept.name].visitCnt;
-						    		dept.visitDOI = $scope.naviHist.bydept[dept.name].visitDOI;
-						    		dept.visitRatio = $scope.naviHist.bydept[dept.name].visitRatio;
-						    	}else{
-						    		dept.visitCnt = dept.visitRatio = 0;
-						    		dept.visitDOI = $scope.naviHist.maxRatio;
+						    $scope.budgets = res;
+						    $scope.naviHist 	= {};
+						    for (var i in nh){
+						    	var key = nh[i].cabinet + nh[i].department + nh[i].program;
+						    	if (_.has($scope.naviHist, key)==false){
+						    		$scope.naviHist[key] = 0	
 						    	}
-						    	for (var k in dept.children){
-						    		var program = dept.children[k];
-						    		if (_.has($scope.naviHist.byprogram, program.name)){
-						    			program.visitCnt = $scope.naviHist.byprogram[program.name].visitCnt;
-						    			program.visitDOI = $scope.naviHist.byprogram[program.name].visitDOI;
-						    			program.visitRatio = $scope.naviHist.byprogram[program.name].visitRatio;
-						    		}else{
-						    			program.visitCnt = program.visitRatio = 0;
-						    			program.visitDOI = $scope.naviHist.maxRatio;
-						    		}
-						    	}
+						    	$scope.naviHist[key] += 1;
 						    }
-					    }
+						    console.log($scope.naviHist);
+						    $scope.interests 	= interests;
 
-					    $scope.fisheyefilter = FisheyeFilter($scope.params.isSocialOn,
-					    									$scope.params.isLocalOn,
-					    									$scope.params.isFocusOn,
-					    									$scope.params.weight);
-					    var config = {
-					    	container: "#chart",
-					    	data: $scope.budgets,
-					    	margin: {top: 30, right: 0, bottom: 30, left: 150},
-					    	width : 700,
-					    	height : 700,
-					    	filter : $scope.fisheyefilter,
-					    	threshold: 1,
-					    	useDOILabel: $scope.params.useDOILabel,
-					    	onClick: function(d){
-					    		$scope.$apply(function(){
-					    			$scope.selected = d;
-					    			console.log($scope.selected.name);
-					    		});
-					    	}
-					    };					    
+						    //add social interests
+						    $scope.calcSocialDOI();
 
-					    
+						    $scope.fisheyefilter = FisheyeFilter($scope.params.isSocialOn,
+						    									$scope.params.isLocalOn,
+						    									$scope.params.isFocusOn,
+						    									$scope.params.weight);
+						    var config = {
+						    	container: "#chart",
+						    	data: $scope.budgets,
+						    	margin: {top: 30, right: 0, bottom: 30, left: 150},
+						    	width : 700,
+						    	height : 700,
+						    	filter : $scope.fisheyefilter,
+						    	threshold: 1,
+						    	useDOILabel: $scope.params.useDOILabel,
+						    	onClick: function(d){
+						    		$scope.$apply(function(){
+						    			$scope.selected = d;
+						    			console.log($scope.selected.name);
+						    		});
+						    	}
+						    };					    
 
-					    $scope.cstree = CSTree(config);
-	                	$scope.cstree.create();
+						    
 
+						    $scope.cstree = CSTree(config);
+		                	$scope.cstree.create();
+	                	});
 					});
 					
 
 				});
+				$scope.calcSocialDOI = function(){
+					if ($scope.params.useNaviHist==false){
+					    $scope.budgets.visitCnt = $scope.interests.total;
+					    $scope.budgets.visitRatio = $scope.interests.maxRatio;
+					    $scope.budgets.visitDOI = 0;
+					    for (var i in $scope.budgets.children){
+					    	var cabinet = $scope.budgets.children[i];
+					    	if (_.has($scope.interests.bycabinet, cabinet.name)){
+					    		cabinet.visitCnt = $scope.interests.bycabinet[cabinet.name].visitCnt;
+					    		cabinet.visitDOI = $scope.interests.bycabinet[cabinet.name].visitDOI;
+					    		cabinet.visitRatio = $scope.interests.bycabinet[cabinet.name].visitRatio;
+					    	}else{
+					    		cabinet.visitCnt = cabinet.visitRatio = 0;
+					    		cabinet.visitDOI = $scope.interests.maxRatio;
+					    	}
+					    	for (var j in cabinet.children){
+					    		var dept = cabinet.children[j];
+						    	if (_.has($scope.interests.bydept, dept.name)){
+						    		dept.visitCnt = $scope.interests.bydept[dept.name].visitCnt;
+						    		dept.visitDOI = $scope.interests.bydept[dept.name].visitDOI;
+						    		dept.visitRatio = $scope.interests.bydept[dept.name].visitRatio;
+						    	}else{
+						    		dept.visitCnt = dept.visitRatio = 0;
+						    		dept.visitDOI = $scope.interests.maxRatio;
+						    	}
+						    	for (var k in dept.children){
+						    		var program = dept.children[k];
+						    		if (_.has($scope.interests.byprogram, program.name)){
+						    			program.visitCnt = $scope.interests.byprogram[program.name].visitCnt;
+						    			program.visitDOI = $scope.interests.byprogram[program.name].visitDOI;
+						    			program.visitRatio = $scope.interests.byprogram[program.name].visitRatio;
+						    		}else{
+						    			program.visitCnt = program.visitRatio = 0;
+						    			program.visitDOI = $scope.interests.maxRatio;
+						    		}
+						    	}
+						    }
+					    }
+				   	}else{
+					    // $scope.budgets.visitCnt = _.values($scope.naviHist).length;
+					    // $scope.budgets.visitRatio = $scope.interests.maxRatio;
+					    var max = _.max(_.values($scope.naviHist));
+					    var sum = _.reduce(_.values($scope.naviHist), function(memo, num){ return memo + num; }, 0);
+					    $scope.budgets.visitDOI = 0;
+				   		for (var i in $scope.budgets.children){
+				   			var cabinet = $scope.budgets.children[i], key = cabinet.name;
+				   			if (_.has($scope.naviHist, key)){
+				   				cabinet.visitDOI = (max-$scope.naviHist[key])/sum;
+				   			}else{
+				   				cabinet.visitDOI	= max/sum;	
+				   			}
+				   			for (var j in cabinet.children){
+				   				var dept = cabinet.children[j], key = cabinet.name + dept.name;
+					   			if (_.has($scope.naviHist, key)){
+					   				dept.visitDOI = (max-$scope.naviHist[key])/sum;
+					   			}else{
+					   				dept.visitDOI	= max/sum;	
+					   			}
+				   				for (var k in dept.children){
+						    		var program = dept.children[k], key = cabinet.name + dept.name + program.name;
+						   			if (_.has($scope.naviHist, key)){
+						   				program.visitDOI = (max-$scope.naviHist[key])/sum;
+						   			}else{
+						   				program.visitDOI	= max/sum;	
+						   			}
+						    	}
+				   			}
+				   		}
+				   		console.log($scope.budgets);
+				   	}
+				}
 				$scope.OnChange = function(){
 					$scope.fisheyefilter.setParams($scope.params.isSocialOn,
 		    									$scope.params.isLocalOn,
 		    									$scope.params.isFocusOn,
 		    									$scope.params.weight);
 					$scope.cstree.useDOILabel($scope.params.useDOILabel);
-
+					$scope.calcSocialDOI();
 					$scope.cstree.update($scope.selected);
 				}
 				$scope.Add = function(){
@@ -191,6 +238,11 @@
 								    <div class="checkbox">
 										<label>
 										  	<input type="checkbox" ng-model="params.useDOILabel" ng-change="OnChange()"> Use DOI Label
+										</label>
+									</div>	
+								    <div class="checkbox">
+										<label>
+										  	<input type="checkbox" ng-model="params.useNaviHist" ng-change="OnChange()"> Use Navigation Histories
 										</label>
 									</div>	
 								</form>

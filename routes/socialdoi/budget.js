@@ -23,7 +23,7 @@ router.get('/vistest', function(req, res) {
     console.log(req.params);
     res.render('./socialdoi/vistest', { title: 'Budget Study' });
 });
-router.get('/doival', function(req, res){
+router.get('/interests', function(req, res){
     var db = req.socialdoi;
     db.collection('logs').find().toArray(function(err, result){
         var selected = _.chain(result)
@@ -52,6 +52,19 @@ router.get('/doival', function(req, res){
             byprogram[i] = { visitCnt:byprogram[i].length, visitRatio: byprogram[i].length/total, visitDOI: max-byprogram[i].length/total};
 
         res.json({ totalCnt: total, maxRatio: max, bycabinet: bycabinet, bydept: bydept, byprogram: byprogram });
+    });
+});
+router.get('/navihist', function(req, res){
+    var db = req.socialdoi;
+    db.collection('logs').find().toArray(function(err, result){
+        var selected = _.chain(result)
+                        .filter(function(d) { return d.action=="select" && d.data.is_practice=="false"})
+                        .map(function(d){ return d.data.selectedBudget; })
+                        .reduce(function(a, b){ return a.concat(b); }, [])     
+                        .value();  
+
+       
+        res.json(selected);
     });
 });
 router.get('/budgets', function(req, res){

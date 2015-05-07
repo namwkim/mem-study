@@ -94,7 +94,13 @@ var FisheyeFilter = function (s, l, f, w) {
         // console.log("DOI: " + doi);
         // console.log("localDOI: " + localDOI);
         // console.log("visitCnt: " + (doi + localDOI+n.visitCnt));
-        n.doi = doi + localDOI + socialDOI;
+        if (n.expand){
+            n.expand = false;  
+            n.doi = doi + localDOI + socialDOI + distance;    
+        }else{
+            n.doi = doi + localDOI + socialDOI;    
+        }
+        
         filter.setVisibility(n, true);
         //console.log(n.name + ": " + socialDOI);
         //console.log(n.name + ": " + doi + ", " + localDOI)

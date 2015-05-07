@@ -118,8 +118,8 @@
           n.block.height -= nodeSize[0];
 
            // console.log("visible chaned: " + n.name);
-          var removed = n.block.nodes.splice(n.block.nodes.indexOf(n), 1);
-
+          var removed = n.block.nodes.splice(n.block.nodes.indexOf(n), 1)[0];
+          //console.log(removed)
           //is collapsed
           if (n.block.nodes.length==0 || (n.block.nodes.length==1 && n.block.nodes[0].isElided==true) ){
             n.parent.collapsed = true;     
@@ -146,16 +146,17 @@
             n.parent.children.push(elided);
           }else if(n.parent.collapsed==false){
             var elided = n.block.nodes[n.block.nodes.length-1];
+            // console.log(removed.name);
             elided.elidedNodes.push(removed);
             elided.name = "<.." + elided.elidedNodes.length + " items..>";
           }
           
           // recalculate the height of all blocks within this depth
           h = nw.sum(depthBlocks, function(d){ return d.removed? 0: d.height; });
-          console.log("height, limit (left): " +h + ", " + height + " (" + sorted.length + " ) ");
+          //console.log("height, limit (left): " +h + ", " + height + " (" + sorted.length + " ) ");
         }
       }
-      console.log(blocks);
+      //console.log(blocks);
       //position assignments
       var nodes = [];
       for (var depth in blocks){
@@ -166,7 +167,7 @@
         // initial position set to close to the parent
         var curX = 0;
         var prevBlock = null;
-         console.log("start height(depth): " + h + " (" + depth + ")");
+         // console.log("start height(depth): " + h + " (" + depth + ")");
         for (var i in depthBlocks){
           
           var block = depthBlocks[i];
@@ -185,7 +186,7 @@
           //check remaining space
           var remaining = height - (block.x + block.height);
           var needed    = h - block.height;
-          console.log("re, ne = " + remaining + ", " + needed);
+          //console.log("re, ne = " + remaining + ", " + needed);
           if (remaining<needed){
             var diff = needed - remaining;
             block.x -=diff; //push to the edge
