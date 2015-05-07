@@ -145,7 +145,7 @@
 			    		}
 			    		
 			    		//finish task
-			    		LogAction("finish", angular.toJson($scope.programs));
+			    		LogAction("finish", {timespan: timespan, selectedPrograms: angular.toJson($scope.programs)});
 	    				$("<input type='hidden' name='programCount' value='" + $scope.programs.length + "'>").appendTo($(formSelector));
 
 			    		ChangeStage(DEBRIEF);
