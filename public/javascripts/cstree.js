@@ -162,8 +162,8 @@ var CSTree = function(config){
 	}
 // Toggle children on click.
 	chart.click = function (d) {
-		console.log('clicked:' )
-		console.log(d)
+		// console.log('clicked:' )
+		// console.log(d)
 		// Add a focus node
 		if (filter){
 			var f = filter.focusNodes();

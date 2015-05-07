@@ -17,7 +17,8 @@ var CSTree = function(config){
 
 
 	var tree = nw.layout.tree()
-	.nodeSize([20,180])
+	.nodeSize([30,180])
+	.canvasSize([height, width])
 	.separation(function(a, b) { return (a.parent == b.parent ? 1 : 2); })
 	    //.size([height, width]);
 
@@ -105,75 +106,69 @@ var CSTree = function(config){
 			d.hasElided = false;
 			d.isElided  = false;
 		})
-		// Compute the new tree layout.
-		nodes = tree.nodes(root).reverse(),
-		  	
-
-		nodes.forEach(function(d){//translate to center
-			d.x += height/2;
-		});
-		console.log(nodes.length);
 		// Calculate DOI values (TODO: removed 'nodes')
-		filter.operate(nodes, root, 5, root.approved)
-		var params = filter.getParams();
-		var min =  -d3.max(nodes, function(d){ return d.depth+1;});
-		min -= params.isLocalOn? 1: 0;
-		min -= params.isSocialOn? params.weight*root.visitRatio: 0;
+		filter.operate(root, config.threshold, root.approved);
+
+		// Compute the new tree layout.
+		nodes = tree.nodes(root);//.reverse();
+		// console.log(nodes);
+		//Size Encoding
+		//var params = filter.getParams();
+		var min =  d3.min(nodes, function(d){ return d.doi;});
 		//Update scale
 		size.domain([min, 0])
-			.range([2, 10])
+			.range([5, 15])
 		fsize.domain([min, 0])
-			.range([8, 14])
+			.range([12, 18])
 
 		// Iteratively Adjusting Layout
 		// sort by doi values
-		var sorted = nodes.sort(function(a, b){	return b.doi-a.doi; });
-		var h = d3.max(nodes, function(d){ return d.x; }) - d3.min(nodes, function(d){ return d.x; });
-		var n;
-		while((h > height) && (n = sorted.pop()) ){
-			console.log("height, limit: " +h + ", " + height);
-			console.log(n.doi)
-			n.filtered = true;
-			var idx = n.parent.children.indexOf(n);
-			var removed = n.parent.children.splice(idx, 1);
+		// var sorted = nodes.sort(function(a, b){	return b.doi-a.doi; });
+		// var h = d3.max(nodes, function(d){ return d.x; }) - d3.min(nodes, function(d){ return d.x; });
+		// var n;
+		// while((h > height) && (n = sorted.pop()) ){
+		// 	console.log("height, limit: " +h + ", " + height);
+		// 	console.log(n.doi)
+		// 	n.filtered = true;
+		// 	var idx = n.parent.children.indexOf(n);
+		// 	var removed = n.parent.children.splice(idx, 1);
 			
-			//is collapsed
-			if (n.parent.children.length==0 || (n.parent.children.length==1 && n.parent.children[0].isElided==true) ){
-				n.parent.collapsed = true;
-				delete n.parent.children;
-			}
-			if (n.parent.collapsed==false && n.parent.hasElided==false){//only after an element removed first time
-				n.parent.hasElided = true;
-				var elided = {
-					name: "<..1 items..>",
-					doi: n.doi, //min doi
-					approved: 0,
-					parent : n.parent,
-					isElided : true,
-					collapsed: false,
-					elidedNodes: [removed]
-				}
-				n.parent.children.push(elided);
-			}else if(n.parent.collapsed==false){
-				var elided = n.parent.children[n.parent.children.length-1];
-				console.log(elided)
-				elided.elidedNodes.push(removed);
-				elided.name = "<.." + elided.elidedNodes.length + " items..>";
+		// 	//is collapsed
+		// 	if (n.parent.children.length==0 || (n.parent.children.length==1 && n.parent.children[0].isElided==true) ){
+		// 		n.parent.collapsed = true;
+		// 		delete n.parent.children;
+		// 	}
+		// 	if (n.parent.collapsed==false && n.parent.hasElided==false){//only after an element removed first time
+		// 		n.parent.hasElided = true;
+		// 		var elided = {
+		// 			name: "<..1 items..>",
+		// 			doi: n.doi, //min doi
+		// 			approved: 0,
+		// 			parent : n.parent,
+		// 			isElided : true,
+		// 			collapsed: false,
+		// 			elidedNodes: [removed]
+		// 		}
+		// 		n.parent.children.push(elided);
+		// 	}else if(n.parent.collapsed==false){
+		// 		var elided = n.parent.children[n.parent.children.length-1];
+		// 		console.log(elided)
+		// 		elided.elidedNodes.push(removed);
+		// 		elided.name = "<.." + elided.elidedNodes.length + " items..>";
 
-			}
+		// 	}
 			
-			// Compute the new tree layout.
-			nodes = tree.nodes(root).reverse(),
+		// 	// Compute the new tree layout.
+		// 	nodes = tree.nodes(root).reverse(),
 			  	
 
-			nodes.forEach(function(d){//translate to center
-				d.x += height/2;
-			});
-			var h = d3.max(nodes, function(d){ return d.x; }) - d3.min(nodes, function(d){ return d.x; });
-		}
+		// 	// nodes.forEach(function(d){//translate to center
+		// 	// 	d.x += height/2;
+		// 	// });
+		// 	h = d3.max(nodes, function(d){ return d.x; }) - d3.min(nodes, function(d){ return d.x; });
+		// }
 
 		links = tree.links(nodes);
-		
 		
 
 		// Update the nodes…
@@ -206,7 +201,7 @@ var CSTree = function(config){
 			.style("font-size", "0px");
 
 		nodeEnter.append("path")
-		 	.attr("transform", function(d) { return "translate(" + 2*size(d.doi) + "," + 0 + ") rotate(90)"; })
+		 	.attr("transform", function(d) { return "translate(" + (2*size(d.doi)+2) + "," + 0 + ") rotate(90)"; })
 			.attr("fill", "gray")
 			.style("fill-opacity", 1e-6)
 		 	.attr("d", aggregate);
@@ -256,6 +251,7 @@ var CSTree = function(config){
 		  	.attr("class", "link")
 		  	.attr("d", function(d) {
 		    	var o = d.source.y0? {x: d.source.x0, y: d.source.y0} : {x:root.x, y:root.y};
+		    	// console.log(d.target.parent.name + ", " + d.target.name + ", " + d.target.x);
 		    	return diagonal({source: o, target: o});
 		  	});
 
@@ -282,8 +278,8 @@ var CSTree = function(config){
 // Toggle children on click.
 	chart.click = function (d) {
 		//d3.event.preventDefault();
-		console.log('clicked:' )
-		console.log(d)
+		// console.log('clicked:' )
+		// console.log(d)
 		// Add a focus node
 		if (filter){
 			var f = filter.focusNodes();
@@ -313,7 +309,7 @@ var CSTree = function(config){
 		d3.event.stopPropagation();
 		d3.event.preventDefault();
 		
-		console.log("out")
+		// console.log("out")
 		if (this!= selected) chart.disableHighlight(this);
 		tip.hide(d, this);
 	}
@@ -321,7 +317,7 @@ var CSTree = function(config){
 		d3.event.stopPropagation();	
 		d3.event.preventDefault();	
 			
-		console.log("over")
+		// console.log("over")
 		if (this!= selected) chart.enableHighlight(this);	
 		tip.show(d, this);	
 	}

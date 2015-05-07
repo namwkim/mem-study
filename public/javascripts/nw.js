@@ -4,28 +4,235 @@
   };
   nw.layout = {};
   nw.layout.tree = function() {
-    var hierarchy = nw.layout.hierarchy().sort(null).value(null), separation = nw_layout_treeSeparation, size = [ 1, 1 ], nodeSize = null;
+    var hierarchy = nw.layout.hierarchy().sort(null).value(null), separation = nw_layout_treeSeparation, size = [ 1, 1 ], nodeSize = [ 1, 1 ], canvasSize = [ 1, 1 ];
     function tree(d, i) {
-      var nodes = hierarchy.call(this, d, i), root0 = nodes[0], root1 = wrapTree(root0);
-      nw_layout_hierarchyVisitAfter(root1, firstWalk), root1.parent.m = -root1.z;
-      nw_layout_hierarchyVisitBefore(root1, secondWalk);
-      if (nodeSize) 
-        nw_layout_hierarchyVisitBefore(root0, sizeNode); 
-      else {
-        var left = root0, right = root0, bottom = root0;
-        nw_layout_hierarchyVisitBefore(root0, function(node) {
-          if (node.x < left.x) left = node;
-          if (node.x > right.x) right = node;
-          if (node.depth > bottom.depth) bottom = node;
-        });
-        var tx = separation(left, right) / 2 - left.x, kx = size[0] / (right.x + separation(right, left) / 2 + tx), ky = size[1] / (bottom.depth || 1);
-        nw_layout_hierarchyVisitBefore(root0, function(node) {
-          node.x = (node.x + tx) * kx;
-          node.y = node.depth * ky;
-        });
-      }
+      var nodes = hierarchy.call(this, d, i);//, root0 = nodes[0], root1 = wrapTree(root0);
+      console.log("before filtering:" + nodes.length);
+      nodes = doilayout(nodes[0]);
+      // nw_layout_hierarchyVisitAfter(root1, firstWalk), root1.parent.m = -root1.z;
+      // nw_layout_hierarchyVisitBefore(root1, secondWalk);
+      // if (nodeSize) 
+      //   nw_layout_hierarchyVisitBefore(root0, sizeNode); 
+      // else {
+      //   var left = root0, right = root0, bottom = root0;
+      //   nw_layout_hierarchyVisitBefore(root0, function(node) {
+      //     if (node.x < left.x) left = node;
+      //     if (node.x > right.x) right = node;
+      //     if (node.depth > bottom.depth) bottom = node;
+      //   });
+      //   var tx = separation(left, right) / 2 - left.x, kx = size[0] / (right.x + separation(right, left) / 2 + tx), ky = size[1] / (bottom.depth || 1);
+      //   nw_layout_hierarchyVisitBefore(root0, function(node) {
+      //     node.x = (node.x + tx) * kx;
+      //     node.y = node.depth * ky;
+      //   });
+      // }
+      console.log("after filtering:" + nodes.length);
       return nodes;
     }
+    function doilayout(root){
+      // construct blocks **********************************************************************
+      // var offsets = [0];
+      var block = { //centering the root block
+        //x0: canvasSize[0]/2,
+        height: nodeSize[0],
+        // y0: 0,
+        parent: null,
+        removed:false,
+        //childBlocks: [],
+        nodes: [root]
+      };
+      root.block = block;
+      var blocks = [[block]];
+      root.x = canvasSize[0]/2;
+      root.y = 0;
+      var stack = [ root ];
+      var n; 
+      while ((n = stack.shift()) != null) {
+        //construct a child block 
+        var cDepth = n.depth+1;
+
+        block = {
+            //x0: offsets[cDepth],
+            height: 0,
+            // y0: cDepth*nodeSize[1],
+            parent: n,
+            removed:false,
+            nodes: []
+          };   
+        for (var i in n.children){
+          //position inner nodes
+          if (n.children[i].visible==false) continue;
+          n.children[i].block = block;
+          block.height += nodeSize[0];
+          block.nodes.push(n.children[i]);
+          if (n.children[i].children) stack.push(n.children[i]); // save for next travesal
+        }
+        if (block.nodes.length==0) continue;
+        block.height += nodeSize[0];
+        //block.height += nodeSize[0]; //padding
+        //offsets[cDepth] += (block.height + 2*nodeSize[0])//space between blocks        
+        if (blocks.length<=cDepth){//create a new list for a new depth level
+          blocks.push([]);
+          //offsets.push(0);
+        }
+        blocks[cDepth].push(block);       
+
+      }
+      console.log(blocks);
+      
+      var height = canvasSize[0];
+      // fitting a screen size *****************************************************************************
+      for (var depth in blocks){
+        var depthBlocks = blocks[depth];//retrieve blocks for the depth
+        //readjust blocks
+        var depthNodes = [];
+        // if parent node has been collapsed
+        for (var i in depthBlocks){
+          var block = depthBlocks[i];
+          // console.log(block.parent)
+          if (block.parent && (block.parent.collapsed==true || block.parent.visible==false)){
+            //remove blocks
+            block.nodes.forEach(function(d){
+               // console.log("child visible changed: " + d.name)
+              d.visible = false;
+            })
+            // console.log("parent block not visible: " + block.parent.name);
+            //depthBlocks.splice(depthBlocks.indexOf(block), 1);  
+            block.removed = true;  
+            continue;    
+          }
+          if (block.removed) continue;
+          depthNodes = depthNodes.concat(block.nodes);//contain visible nodes.
+        }
+
+        // filter lowest doi nodes 
+        var sorted = depthNodes.sort(function(a, b){  return b.doi-a.doi; });
+        var h = nw.sum(depthBlocks, function(d){ return d.removed? 0: d.height; }); //nw.max(depthBlocks, function(d){ return d.x1; }) - nw.min(depthBlocks, function(d){ return d.x0; });
+        var n;
+        console.log("height, limit: " +h + ", " + height);
+        while((h > height) && (n = sorted.pop()) ){
+          
+
+          n.visible = false; // n's child block will be removed above
+          // recalculate the block height
+          n.block.height -= nodeSize[0];
+
+           // console.log("visible chaned: " + n.name);
+          var removed = n.block.nodes.splice(n.block.nodes.indexOf(n), 1);
+
+          //is collapsed
+          if (n.block.nodes.length==0 || (n.block.nodes.length==1 && n.block.nodes[0].isElided==true) ){
+            n.parent.collapsed = true;     
+            if (n.block.nodes.length==1) n.block.nodes[0].visible = false; //elided node
+            //depthBlocks.splice(depthBlocks.indexOf(n.block), 1);  //this block needs to be removed
+            //delete n.parent.children;
+            n.block.removed = true;
+          }
+          if (n.parent.collapsed==false && n.parent.hasElided==false){//only after an element removed first time
+            n.parent.hasElided = true;
+            var elided = {
+              name: "<..1 items..>",
+              doi: n.doi, //min doi
+              approved: 0,
+              parent : n.parent,
+              isElided : true,
+              collapsed: false,
+              visible: true,
+              depth:n.depth,
+              elidedNodes: [removed]
+            }
+            n.block.height += nodeSize[0];
+            n.block.nodes.push(elided); //add it to block
+            n.parent.children.push(elided);
+          }else if(n.parent.collapsed==false){
+            var elided = n.block.nodes[n.block.nodes.length-1];
+            elided.elidedNodes.push(removed);
+            elided.name = "<.." + elided.elidedNodes.length + " items..>";
+          }
+          
+          // recalculate the height of all blocks within this depth
+          h = nw.sum(depthBlocks, function(d){ return d.removed? 0: d.height; });
+          console.log("height, limit (left): " +h + ", " + height + " (" + sorted.length + " ) ");
+        }
+      }
+      console.log(blocks);
+      //position assignments
+      var nodes = [];
+      for (var depth in blocks){
+        var depthBlocks = blocks[depth];//retrieve blocks for the depth
+        
+        h = nw.sum(depthBlocks, function(d){ return d.removed? 0: d.height; });
+
+        // initial position set to close to the parent
+        var curX = 0;
+        var prevBlock = null;
+         console.log("start height(depth): " + h + " (" + depth + ")");
+        for (var i in depthBlocks){
+          
+          var block = depthBlocks[i];
+          if (block.removed) continue;
+          if (block.parent){
+            // console.log("width: " + block.width);
+            block.x = block.parent.x - block.height/2 + nodeSize[0]/2;
+            if (block.x<0) block.x = 0;
+          }else{
+            block.x = canvasSize[0]/2; //centering if no parent (= root)
+          }
+          if (prevBlock && (prevBlock.x+prevBlock.height)>block.x){//overlap with previous one
+            var diff = (prevBlock.x+prevBlock.height)-block.x;
+            block.x += diff; //avoid overlap by pushing downward
+          }
+          //check remaining space
+          var remaining = height - (block.x + block.height);
+          var needed    = h - block.height;
+          console.log("re, ne = " + remaining + ", " + needed);
+          if (remaining<needed){
+            var diff = needed - remaining;
+            block.x -=diff; //push to the edge
+          }
+          // console.log(block.x);
+          curX = block.x + nodeSize[0]/2;
+          for (var i in block.nodes){
+            block.nodes[i].x = curX;
+            block.nodes[i].y = block.nodes[i].depth*nodeSize[1];
+            curX += nodeSize[0];
+            // if (block.nodes[i].visible==false) console.log('non-visible node found: ' + block.nodes[i].name);
+          }
+          //curX += nodeSize[0];
+          nodes = nodes.concat(block.nodes);
+          prevBlock = block;
+          h-=block.height; //update remaining height
+          // console.log("height: " + h);
+        }
+      }
+
+      return nodes;
+      // var queue = [];
+      // queue.push(root);
+
+      // offsets = [0];
+      
+      // while (queue.length>0){
+      //   var n = queue.shift();
+      //   //console.log(n)
+      //   if (offsets.length <= n.depth){
+      //     offsets.push(0);
+      //   }
+      //   //console.log(offsets)
+      //   n.x = offsets[n.depth];
+      //   n.y = n.depth * nodeSize[1];
+      //   //console.log(n.name);
+      //   offsets[n.depth]+=nodeSize[0];
+      //   if (n.children ){
+      //     for (var i in n.children){
+      //       queue.push(n.children[i]);
+      //     }
+      //   }        
+      // }
+
+
+    }
+
     function wrapTree(root0) {
       var root1 = {
         A: null,
@@ -110,13 +317,18 @@
       return tree;
     };
     tree.size = function(x) {
-      if (!arguments.length) return nodeSize ? null : size;
-      nodeSize = (size = x) == null ? sizeNode : null;
-      return tree;
+      // if (!arguments.length) return nodeSize ? null : size;
+      // nodeSize = (size = x) == null ? sizeNode : null;
+      // return tree;
     };
+    tree.canvasSize = function(x){
+      canvasSize = x;
+      return tree;
+    }
     tree.nodeSize = function(x) {
-      if (!arguments.length) return nodeSize ? size : null;
-      nodeSize = (size = x) == null ? null : sizeNode;
+      // if (!arguments.length) return nodeSize ? size : null;
+      // nodeSize = (size = x) == null ? null : sizeNode;
+      nodeSize = x;
       return tree;
     };
     return nw_layout_hierarchyRebind(tree, hierarchy);
@@ -250,7 +462,7 @@
   }
   function nw_layout_hierarchyLinks(nodes) {
     return nw.merge(nodes.map(function(parent) {
-      return (parent.children || []).map(function(child) {
+      return (parent.children || []).filter(function(c){ return c.visible; }).map(function(child) {
         return {
           source: parent,
           target: child
@@ -258,6 +470,49 @@
       });
     }));
   }
+  nw.min = function(array, f) {
+    var i = -1, n = array.length, a, b;
+    if (arguments.length === 1) {
+      while (++i < n) if ((b = array[i]) != null && b >= b) {
+        a = b;
+        break;
+      }
+      while (++i < n) if ((b = array[i]) != null && a > b) a = b;
+    } else {
+      while (++i < n) if ((b = f.call(array, array[i], i)) != null && b >= b) {
+        a = b;
+        break;
+      }
+      while (++i < n) if ((b = f.call(array, array[i], i)) != null && a > b) a = b;
+    }
+    return a;
+  };
+  nw.max = function(array, f) {
+    var i = -1, n = array.length, a, b;
+    if (arguments.length === 1) {
+      while (++i < n) if ((b = array[i]) != null && b >= b) {
+        a = b;
+        break;
+      }
+      while (++i < n) if ((b = array[i]) != null && b > a) a = b;
+    } else {
+      while (++i < n) if ((b = f.call(array, array[i], i)) != null && b >= b) {
+        a = b;
+        break;
+      }
+      while (++i < n) if ((b = f.call(array, array[i], i)) != null && b > a) a = b;
+    }
+    return a;
+  };
+  nw.sum = function(array, f) {
+    var s = 0, n = array.length, a, i = -1;
+    if (arguments.length === 1) {
+      while (++i < n) if (nw_numeric(a = +array[i])) s += a;
+    } else {
+      while (++i < n) if (nw_numeric(a = +f.call(array, array[i], i))) s += a;
+    }
+    return s;
+  };
   nw.merge = function(arrays) {
     var n = arrays.length, m, i = -1, j = 0, merged, array;
     while (++i < n) j += arrays[i].length;
@@ -282,5 +537,9 @@
       return value === source ? target : value;
     };
   }
+  function nw_numeric(x) {
+    return !isNaN(x);
+  }
+
   this.nw = nw;
 }();

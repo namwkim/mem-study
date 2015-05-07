@@ -26,8 +26,21 @@ var FisheyeFilter = function (s, l, f, w) {
 
         }
     }
-	filter.operate = function(ns, r, d, dsr){
-		nodes 		= ns;
+
+
+	filter.operate = function(r, d, dsr){
+		var stack = [r];
+        nodes = [r];
+        while ((node = stack.pop()) != null) {
+          if ((children = node.children) && (n = children.length)) {
+            var n, children;
+            while (--n >= 0) {
+                stack.push(children[n]);
+                nodes.push(children[n])
+            }
+          }
+        }
+
 		root 		= r;
 		distance 	= d;
 		divisor = dsr;
@@ -57,7 +70,7 @@ var FisheyeFilter = function (s, l, f, w) {
 	}
 	filter.setVisibility = function(node, visible){
 		//expanded?
-		node.expanded 	= (node.doi > -distance);
+		node.collapsed 	= (node.doi <= -distance);
 		node.visible 	= visible;
 	}
 	/**
@@ -76,12 +89,13 @@ var FisheyeFilter = function (s, l, f, w) {
      */
     filter.visit = function(n, c, doi, localDOI, socialDOI)
     {
-    	filter.setVisibility(n, true);
+    	
         //var localDOI = -ldist;//Math.min(1000.0, divisor);
         // console.log("DOI: " + doi);
         // console.log("localDOI: " + localDOI);
         // console.log("visitCnt: " + (doi + localDOI+n.visitCnt));
         n.doi = doi + localDOI + socialDOI;
+        filter.setVisibility(n, true);
         //console.log(n.name + ": " + socialDOI);
         //console.log(n.name + ": " + doi + ", " + localDOI)
         // InEdge DOI 

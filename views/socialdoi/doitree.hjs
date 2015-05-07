@@ -99,6 +99,7 @@
 					    	width : 700,
 					    	height : 700,
 					    	filter : $scope.fisheyefilter,
+					    	threshold: 1,
 					    	useDOILabel: $scope.params.useDOILabel,
 					    	onClick: function(d){
 					    		$scope.$apply(function(){
