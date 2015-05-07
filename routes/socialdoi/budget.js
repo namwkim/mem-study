@@ -11,6 +11,10 @@ router.get('/', function(req, res) {
 	console.log(req.params);
   	res.render('./socialdoi/budget', { title: 'Budget Study' });
 });
+router.get('/control', function(req, res) {
+    console.log(req.params);
+    res.render('./socialdoi/control', { title: 'Budget Study' });
+});
 router.get('/cstree', function(req, res) {
     console.log(req.params);
     res.render('./socialdoi/cstree', { title: 'Budget Study' });

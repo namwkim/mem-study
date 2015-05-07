@@ -96,7 +96,8 @@ var FisheyeFilter = function (s, l, f, w) {
         // console.log("visitCnt: " + (doi + localDOI+n.visitCnt));
         if (n.expand){
             n.expand = false;  
-            n.doi = doi + localDOI + socialDOI + distance;    
+            n.doi = n.oldDOI + distance/2; 
+            console.log("dist " + n.doi);   
         }else{
             n.doi = doi + localDOI + socialDOI;    
         }

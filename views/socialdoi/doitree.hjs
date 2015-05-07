@@ -71,8 +71,8 @@
 						    var config = {
 						    	container: "#chart",
 						    	data: $scope.budgets,
-						    	margin: {top: 30, right: 0, bottom: 30, left: 150},
-						    	width : 700,
+						    	margin: {top: 30, right: 0, bottom: 30, left: 210},
+						    	width : 840,
 						    	height : 700,
 						    	filter : $scope.fisheyefilter,
 						    	threshold: 1,
@@ -203,10 +203,10 @@
   	<body ng-app="myApp" ng-controller="myCtrl">
   		<div class="container" style="margin:10px">
   		<div class="row">
-  			<div class="col-md-8">
+  			<div class="col-md-9">
 				<div id="chart"></div>	
   			</div>
-  			<div class="col-md-4">
+  			<div class="col-md-3">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
 				    	<h3 class="panel-title"><% budgets.name %></h3>

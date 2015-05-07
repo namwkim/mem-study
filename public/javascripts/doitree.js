@@ -14,10 +14,10 @@ var CSTree = function(config){
     var size = d3.scale.linear();
     var fsize = d3.scale.linear();
     var doiLabel = config.useDOILabel;
-
+    var dummyLabel = config.useDummyLabel;
 
 	var tree = nw.layout.tree()
-	.nodeSize([30,180])
+	.nodeSize([30,200])
 	.canvasSize([height, width])
 	.separation(function(a, b) { return (a.parent == b.parent ? 1 : 2); })
 	    //.size([height, width]);
@@ -58,6 +58,9 @@ var CSTree = function(config){
 	chart.useDOILabel = function(enabled){
 		doiLabel = enabled;
 	}
+	chart.useDummyLabel = function(enabled){
+		dummyLabel = enabled;
+	}
   // 	chart.collapse = function (d) {
 		// if (d.children) {
 		// 	d._children = d.children;
@@ -67,12 +70,26 @@ var CSTree = function(config){
   // 	}
   	chart.create = function(){
 
-  		
+  		var i=1;
 		chart.visit(root, function(d){
 			
 			//backup childern
+			d.dummyLabel = d.program? "Program": d.department? "Department": d.cabinet? "Cabinet": "Budget";
+			d.dummyLabel += " " + (i++);
 			if (d.children) d._children = d.children.slice();
 		})
+	  	//selection
+	  	if (selected){//disable highlight	
+	  		chart.disableHighlight(selected);		
+	  		selected = null;
+	  	}
+	  	
+		if (filter){
+			var f = filter.focusNodes();
+			while (f.length>0)
+				f.pop();
+		}
+		filter.focusNodes
 		chart.update(root);
   	}
   	chart.visit = function(node, callback){
@@ -88,7 +105,7 @@ var CSTree = function(config){
   	chart.abbreviate = function(text, fontsize){
   		var textwidth = text.length * fontsize;
   		var abbrd = false;
-  		while (textwidth>250 && text.length>0){
+  		while (textwidth>325 && text.length>0){
   			abbrd 		= true;
   			text 		= text.slice(0, text.length-2);
   			textwidth 	= text.length * fontsize;
@@ -196,7 +213,7 @@ var CSTree = function(config){
 			.attr("dy", ".4em")
 			.attr("text-anchor", function(d) { return  "end" ; })
 			.text(function(d) { 
-				return doiLabel? df(d.doi) : chart.abbreviate(d.name, fsize(d.doi)); 
+				return doiLabel? df(d.doi) : dummyLabel? d.dummyLabel : chart.abbreviate(d.name, fsize(d.doi)); 
 			}) //{ return d.name + "("+nodes.indexOf(d)+", " +df(d.doi)+")"; })
 			.style("fill-opacity", 1e-6)
 			.style("font-size", "0px");
@@ -220,7 +237,7 @@ var CSTree = function(config){
 
 		nodeUpdate.select("text")
 			.text(function(d) { //advanced method : https://gist.github.com/billdwhite/6243279
-				return doiLabel? df(d.doi) : chart.abbreviate(d.name, fsize(d.doi)); 
+				return doiLabel? df(d.doi) : dummyLabel? d.dummyLabel : chart.abbreviate(d.name, fsize(d.doi)); 
 			})
 		  	.style("fill-opacity", 1.0)
 		  	.style("font-size", function(d) { return fsize(d.doi)+"px";});
@@ -292,7 +309,8 @@ var CSTree = function(config){
 	 //  	}	
 	 	if (d.isElided){
 	 		for (var i in d.elidedNodes){//temporarily show nodes
-	 			d.elidedNodes[i].expand = true;;
+	 			d.elidedNodes[i].expand = true;
+	 			d.elidedNodes[i].oldDOI = d.elidedNodes[i].doi;
 	 			// console.log(d.elidedNodes[i].name)
 	 		}
 	 	}else{
