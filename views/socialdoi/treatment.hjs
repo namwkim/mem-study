@@ -518,7 +518,9 @@
 								In this HIT you will be presented with a tree visualization of a government budget and asked to find <strong>three</strong> budget programs <strong>as fast as possible</strong>.
 								<br><br>
 								The HIT should take about 5 ~ 10 minutes to complete. Your screen size should be at least "1280x1024".
-							</p><br>
+								</p><br>
+								<strong class="alert-danger"> If you have taken a variant of this study, please do not participate! </strong>
+								</p><br>
 							<img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/budget-study-overview-treatment.png">
 							<br>
 							
