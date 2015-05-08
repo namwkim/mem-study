@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from scipy import stats
 from collections import Counter
 
-def rank(key, data):
+def rank(key, data):list
 	result = []
 
 	data = sorted(filter(lambda x : x.has_key(key) and x[key]!='' , data), key=lambda x : x[key])

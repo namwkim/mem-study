@@ -50,14 +50,32 @@
 						.success(function(nh){
 
 						    $scope.budgets = res;
-						    $scope.naviHist 	= {};
+						     //add social interests
+							$scope.naviHist 	= {};	
 						    for (var i in nh){
-						    	var key = nh[i].cabinet + nh[i].department + nh[i].program;
-						    	if (_.has($scope.naviHist, key)==false){
-						    		$scope.naviHist[key] = 0	
+						    	if (nh[i].program!=""){
+							    	var key = nh[i].cabinet + nh[i].department + nh[i].program;
+							    	if (_.has($scope.naviHist, key)==false){
+							    		$scope.naviHist[key] = 0	
+							    	}
+							    	$scope.naviHist[key] += 1;					    		
 						    	}
-						    	$scope.naviHist[key] += 1;
+						    	if (nh[i].department!=""){
+							    	var key = nh[i].cabinet + nh[i].department;
+							    	if (_.has($scope.naviHist, key)==false){
+							    		$scope.naviHist[key] = 0	
+							    	}
+							    	$scope.naviHist[key] += 1;					    		
+						    	}
+						    	if (nh[i].cabinet!=""){
+							    	var key = nh[i].cabinet;
+							    	if (_.has($scope.naviHist, key)==false){
+							    		$scope.naviHist[key] = 0	
+							    	}
+							    	$scope.naviHist[key] += 1;					    		
+						    	}
 						    }
+
 						    console.log($scope.naviHist);
 						    $scope.interests 	= interests;
 

@@ -61,11 +61,27 @@
 					     //add social interests
 						$scope.naviHist 	= {};	
 					    for (var i in nh){
-					    	var key = nh[i].cabinet + nh[i].department + nh[i].program;
-					    	if (_.has($scope.naviHist, key)==false){
-					    		$scope.naviHist[key] = 0	
+					    	if (nh[i].program!=""){
+						    	var key = nh[i].cabinet + nh[i].department + nh[i].program;
+						    	if (_.has($scope.naviHist, key)==false){
+						    		$scope.naviHist[key] = 0	
+						    	}
+						    	$scope.naviHist[key] += 1;					    		
 					    	}
-					    	$scope.naviHist[key] += 1;
+					    	if (nh[i].department!=""){
+						    	var key = nh[i].cabinet + nh[i].department;
+						    	if (_.has($scope.naviHist, key)==false){
+						    		$scope.naviHist[key] = 0	
+						    	}
+						    	$scope.naviHist[key] += 1;					    		
+					    	}
+					    	if (nh[i].cabinet!=""){
+						    	var key = nh[i].cabinet;
+						    	if (_.has($scope.naviHist, key)==false){
+						    		$scope.naviHist[key] = 0	
+						    	}
+						    	$scope.naviHist[key] += 1;					    		
+					    	}
 					    }
 					    $scope.calcSocialDOI();
 					    $scope.fisheyefilter = FisheyeFilter($scope.params.isSocialOn,
@@ -632,7 +648,7 @@
 								<br><br>-->
 								The visualization has three levels representing the hierarchy of budget management: cabinets, departments, and programs. You need to navigate through the budget data in such hierarchical order; that is, clicking a cabinet will reveal related departments and similarly clicking a department will reveal related programs. Once a target program is selected, you can add the program to a list. <strong> You can finish the task only when "correct five target budget programs" are added to the list</strong>.
 								<br><br>
-								<strong class="alert-info">The size of each circle</strong> represents <strong>the degree of interestingness</strong> of each item.
+								<strong class="alert-info">The size of each circle</strong> represents <strong>the degree of interestingness</strong> of each item. It would be useful, or not, to find the programs.
 								<br><br>
 								We will only pay for successfully completed work, and provide you a bonus based on performance.
 								<br><br>
