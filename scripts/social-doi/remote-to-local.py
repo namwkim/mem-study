@@ -10,7 +10,7 @@ if __name__ == "__main__":
 	# open remote database
 	client 	= pymongo.MongoClient('54.69.103.85', 27017)
 	db 		= client.socialdoi
-	allLogs 	= db.logs.find({})
+	allLogs 	= db.naviHistLogsCtrl2.find({})
 
 	localClient = pymongo.MongoClient('localhost', 27017)
 	localDb 	= localClient.socialdoi
