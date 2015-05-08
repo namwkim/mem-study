@@ -5,26 +5,26 @@ import matplotlib.pyplot as plt
 from scipy import stats
 from collections import Counter
 
-def rank(key, data):list
-	result = []
+# def rank(key, data):list
+# 	result = []
 
-	data = sorted(filter(lambda x : x.has_key(key) and x[key]!='' , data), key=lambda x : x[key])
-	for k, g in itertools.groupby(data, lambda x : x[key]):
-		result.append({ "key" : k, 'size': len(list(g))})
-	result = sorted(result, key=lambda x: x['size'], reverse=True);	
-	return result
-def compare(data1, data2, upto):
-	if len(data1)!=len(data2):
-		print "fucked up"
-	l = max(len(data1), len(data2))
-	for i in xrange(l):
-		if (i+1)>upto: 
-			continue
-		print 'rank ------------------------------------ ', i+1
-		if i<len(data1):
-			print data1[i]['key'], ": ", data1[i]['size']
-		if i<len(data2):
-			print data2[i]['key'], ": ", data2[i]['size']
+# 	data = sorted(filter(lambda x : x.has_key(key) and x[key]!='' , data), key=lambda x : x[key])
+# 	for k, g in itertools.groupby(data, lambda x : x[key]):
+# 		result.append({ "key" : k, 'size': len(list(g))})
+# 	result = sorted(result, key=lambda x: x['size'], reverse=True);	
+# 	return result
+# def compare(data1, data2, upto):
+# 	if len(data1)!=len(data2):
+# 		print "fucked up"
+# 	l = max(len(data1), len(data2))
+# 	for i in xrange(l):
+# 		if (i+1)>upto: 
+# 			continue
+# 		print 'rank ------------------------------------ ', i+1
+# 		if i<len(data1):
+# 			print data1[i]['key'], ": ", data1[i]['size']
+# 		if i<len(data2):
+# 			print data2[i]['key'], ": ", data2[i]['size']
 
 if __name__ == "__main__":
 	# open remote database
@@ -69,7 +69,6 @@ if __name__ == "__main__":
 	for log in interestsTrmt:
 		if surveyTrmt.has_key(log['hit_id']+'/'+log['assignment_id'])==False: # if no survey exists, discard this data
 			continue
-		print int(log['data']['timespan'])
 		treatment.append(int(log['data']['timespan']));	
 
 	#print size;
@@ -77,23 +76,33 @@ if __name__ == "__main__":
 	cmd 	= np.median(control)
 	ciqr75 	= np.percentile(control, 75)
 	ciqr25 	= np.percentile(control, 25)
-	print cmd
-	print "iqr 75: ", ciqr75
-	print "iqr 25: ", ciqr25
+	ciqr 	= (ciqr75-ciqr25);
+	print "median: ", cmd
+	print "1.5*iqr: ", 1.5*ciqr
 
 
-	# for val in control:
-	# 	if val<(ciqr25
+
+	for val in control:
+		if val<(cmd-1.5*ciqr) or val>(cmd+1.5*ciqr):
+			print val
+			control.remove(val);
+	print "meam: ", np.mean(control)
+	print "std: ", np.std(control)
+	print control
 	print "--------- Treatment ---------"
 	tmd 	= np.median(treatment)
 	tiqr75 	= np.percentile(treatment, 75)
 	tiqr25 	= np.percentile(treatment, 25)
-	print tmd
-	print "iqr 75: ", tiqr75
-	print "iqr 25: ", tiqr25
-
-	print 'iqr', (tiqr75-tiqr25)
-
+	tiqr 	= (tiqr75-tiqr25)
+	print "median: ", tmd
+	print "1.5*iqr: ", 1.5*(tiqr75-tiqr25)
+	for val in treatment:
+		if val<(tmd-1.5*tiqr) or tmd>(cmd+1.5*tiqr):
+			print val
+			treatment.remove(val);
+	print "meam: ", np.mean(treatment)
+	print "std: ", np.std(treatment)
+	print treatment
 	# # ranking programs
 	# autoCabinet = rank('cabinet', autoLogged)
 	# autoDept	= rank('department', autoLogged)
