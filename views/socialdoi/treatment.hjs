@@ -36,7 +36,9 @@
 				$scope.solution = [
 					"Homeland Security",
 					"Public Health Services",
-					"Housing Development"
+					"Housing Development",
+					"Revenue Monitoring",
+					"Small & Local Business"
 				]
 				$scope.programs = [];
 				$scope.params = {
@@ -517,7 +519,7 @@
 							<p class="text-justify">
 								In this HIT you will be presented with a tree visualization of a government budget and asked to find <strong>three</strong> budget programs <strong>as fast as possible</strong>.
 								<br><br>
-								The HIT should take about 5 ~ 10 minutes to complete. Your screen size should be at least "1280x1024".
+								The HIT should take about 5 ~ 10 minutes to complete. Your screen size should be at least "1280x1024". We will provide you a bonus based on performance.
 								</p><br>
 								<strong class="alert-danger"> If you have taken a variant of this study, please do not participate! </strong>
 								</p><br>
@@ -630,9 +632,9 @@
 								<br><br>-->
 								The visualization has three levels representing the hierarchy of budget management: cabinets, departments, and programs. You need to navigate through the budget data in such hierarchical order; that is, clicking a cabinet will reveal related departments and similarly clicking a department will reveal related programs. Once a target program is selected, you can add the program to a list. <strong> You can finish the task only when "correct three target budget programs" are added to the list</strong>.
 								<br><br>
-								<strong>The size of each circle</strong> represents <strong>the degree of interestingness</strong> of each item.
+								<strong class="alert-danger">The size of each circle</strong> represents <strong>the degree of interestingness</strong> of each item.
 								<br><br>
-								We will only pay for successfully completed work.
+								We will only pay for successfully completed work, and provide you a bonus based on performance.
 								<br><br>
 								We will start with a tutorial. Please <strong>click the button</strong> below when you are ready to begin.					
 							</p>

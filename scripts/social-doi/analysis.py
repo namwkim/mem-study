@@ -11,21 +11,28 @@ def rank(key, data):
 	data = sorted(filter(lambda x : x.has_key(key) and x[key]!='' , data), key=lambda x : x[key])
 	for k, g in itertools.groupby(data, lambda x : x[key]):
 		result.append({ "key" : k, 'size': len(list(g))})
-	result = sorted(result, key=lambda x: x['size']);	
+	result = sorted(result, key=lambda x: x['size'], reverse=True);	
 	return result
-def compare(data1, data2):
+def compare(data1, data2, upto):
 	if len(data1)!=len(data2):
 		print "fucked up"
-	for d0, d1 in zip(data1, data2):
-		# print t
-		print d0['key'], ", ", d0['size'] ,", ", d0['key'], ", ",  d1['size']
+	l = max(len(data1), len(data2))
+	for i in xrange(l):
+		if (i+1)>upto: 
+			continue
+		print 'rank ------------------------------------ ', i+1
+		if i<len(data1):
+			print data1[i]['key'], ": ", data1[i]['size']
+		if i<len(data2):
+			print data2[i]['key'], ": ", data2[i]['size']
+
 if __name__ == "__main__":
 	# open remote database
 	client 	= pymongo.MongoClient('54.69.103.85', 27017)
 	db 		= client.socialdoi
-	filtered 	= db.naviHistLogsCtrl.find({'action':'survey'})
-	interests 	= db.naviHistLogsCtrl.find({'action':'finish'});
-	navigation 	= db.naviHistLogsCtrl.find({'action':'select'});
+	filtered 	= db.naviHistLogs.find({'action':'survey'})
+	interests 	= db.naviHistLogs.find({'action':'finish'});
+	navigation 	= db.naviHistLogs.find({'action':'select'});
 
 	#collect survey data
 	survey = {}
@@ -42,7 +49,7 @@ if __name__ == "__main__":
 	for log in interests:
 		if survey.has_key(log['hit_id']+'/'+log['assignment_id'])==False: # if no survey exists, discard this data
 			continue	
-		userSpecified = userSpecified + json.loads(log['data']['selectedPrograms']);
+		userSpecified = userSpecified + json.loads(log['data']);
 	autoLogged = [];	
 	for log in navigation:
 		if survey.has_key(log['hit_id']+'/'+log['assignment_id'])==False: # if no survey exists, discard this data
@@ -62,13 +69,14 @@ if __name__ == "__main__":
 	userCabinet = rank('cabinet', userSpecified)
 	userDept	= rank('department', autoLogged)
 	userProgram = rank('program', userSpecified)	
-	print "Cabinet =============="
-	compare(userCabinet[-10:], autoCabinet[-10:])
-	print "Department =============="
-	compare(userDept[-10:], autoDept[-10:])
-	print "Program =============="
-	compare(userProgram[-3:], autoProgram[-3:])
-	print userProgram[-10:]
+	print "Cabinet ===================================================================================="
+	# compare(userCabinet, autoCabinet, 10)
+	print "Department ===================================================================================="
+	# compare(userDept, autoDept, 10)
+	print "Program ===================================================================================="
+	# compare(userProgram, autoProgram, 10)
+	
+	# print userProgram[-10:]
 	# print autoProgram;
 	# localClient = pymongo.MongoClient('localhost', 27017)
 	# localDb 	= localClient.socialdoi
