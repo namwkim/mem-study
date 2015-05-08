@@ -53,27 +53,27 @@
 						     //add social interests
 							$scope.naviHist 	= {};	
 						    for (var i in nh){
-						    	if (nh[i].program!=""){
+						    	// if (nh[i].program!=""){
 							    	var key = nh[i].cabinet + nh[i].department + nh[i].program;
 							    	if (_.has($scope.naviHist, key)==false){
 							    		$scope.naviHist[key] = 0	
 							    	}
 							    	$scope.naviHist[key] += 1;					    		
-						    	}
-						    	if (nh[i].department!=""){
-							    	var key = nh[i].cabinet + nh[i].department;
-							    	if (_.has($scope.naviHist, key)==false){
-							    		$scope.naviHist[key] = 0	
-							    	}
-							    	$scope.naviHist[key] += 1;					    		
-						    	}
-						    	if (nh[i].cabinet!=""){
-							    	var key = nh[i].cabinet;
-							    	if (_.has($scope.naviHist, key)==false){
-							    		$scope.naviHist[key] = 0	
-							    	}
-							    	$scope.naviHist[key] += 1;					    		
-						    	}
+						    	// }
+						    	// if (nh[i].department!=""){
+							    // 	var key = nh[i].cabinet + nh[i].department;
+							    // 	if (_.has($scope.naviHist, key)==false){
+							    // 		$scope.naviHist[key] = 0	
+							    // 	}
+							    // 	$scope.naviHist[key] += 1;					    		
+						    	// }
+						    	// if (nh[i].cabinet!=""){
+							    // 	var key = nh[i].cabinet;
+							    // 	if (_.has($scope.naviHist, key)==false){
+							    // 		$scope.naviHist[key] = 0	
+							    // 	}
+							    // 	$scope.naviHist[key] += 1;					    		
+						    	// }
 						    }
 
 						    console.log($scope.naviHist);
@@ -159,23 +159,23 @@
 				   		for (var i in $scope.budgets.children){
 				   			var cabinet = $scope.budgets.children[i], key = cabinet.name;
 				   			if (_.has($scope.naviHist, key)){
-				   				cabinet.visitDOI = (max-$scope.naviHist[key])/sum;
+				   				cabinet.visitDOI = (max-$scope.naviHist[key])/max;
 				   			}else{
-				   				cabinet.visitDOI	= max/sum;	
+				   				cabinet.visitDOI	= max/max;	
 				   			}
 				   			for (var j in cabinet.children){
 				   				var dept = cabinet.children[j], key = cabinet.name + dept.name;
 					   			if (_.has($scope.naviHist, key)){
-					   				dept.visitDOI = (max-$scope.naviHist[key])/sum;
+					   				dept.visitDOI = (max-$scope.naviHist[key])/max;
 					   			}else{
-					   				dept.visitDOI	= max/sum;	
+					   				dept.visitDOI	= max/max;	
 					   			}
 				   				for (var k in dept.children){
 						    		var program = dept.children[k], key = cabinet.name + dept.name + program.name;
 						   			if (_.has($scope.naviHist, key)){
-						   				program.visitDOI = (max-$scope.naviHist[key])/sum;
+						   				program.visitDOI = (max-$scope.naviHist[key])/max;
 						   			}else{
-						   				program.visitDOI	= max/sum;	
+						   				program.visitDOI	= max/max;	
 						   			}
 						    	}
 				   			}
