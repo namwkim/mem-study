@@ -632,7 +632,7 @@
 								<br><br>-->
 								The visualization has three levels representing the hierarchy of budget management: cabinets, departments, and programs. You need to navigate through the budget data in such hierarchical order; that is, clicking a cabinet will reveal related departments and similarly clicking a department will reveal related programs. Once a target program is selected, you can add the program to a list. <strong> You can finish the task only when "correct five target budget programs" are added to the list</strong>.
 								<br><br>
-								<strong class="alert-info">The size of each circle</strong> represents <strong>the degree of interestingness</strong> of each item. It might indicate <strong> the location of target programs </strong>.
+								<strong class="alert-info">The size of each circle</strong> represents <strong>the degree of interestingness</strong> of each item. It might indicate <strong class="alert-danger"> the location of target programs </strong>.
 								<br><br>
 								We will only pay for successfully completed work, and provide you a bonus based on performance.
 								<br><br>

@@ -90,10 +90,10 @@
 						    	container: "#chart",
 						    	data: $scope.budgets,
 						    	margin: {top: 30, right: 0, bottom: 30, left: 210},
-						    	width : 840,
-						    	height : 700,
+						    	width : 900,
+						    	height : 600,
 						    	filter : $scope.fisheyefilter,
-						    	threshold: 1,
+						    	threshold: 5,
 						    	useDOILabel: $scope.params.useDOILabel,
 						    	onClick: function(d){
 						    		$scope.$apply(function(){
