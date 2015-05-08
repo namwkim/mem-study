@@ -15,6 +15,11 @@ router.get('/control', function(req, res) {
     console.log(req.params);
     res.render('./socialdoi/control', { title: 'Budget Study' });
 });
+router.get('/treatment', function(req, res) {
+    console.log(req.params);
+    res.render('./socialdoi/treatment', { title: 'Budget Study' });
+});
+
 router.get('/cstree', function(req, res) {
     console.log(req.params);
     res.render('./socialdoi/cstree', { title: 'Budget Study' });
@@ -29,10 +34,10 @@ router.get('/vistest', function(req, res) {
 });
 router.get('/interests', function(req, res){
     var db = req.socialdoi;
-    db.collection('logs').find().toArray(function(err, result){
+    db.collection('naviHistLogsCtrl').find().toArray(function(err, result){
         var selected = _.chain(result)
                         .filter(function(d) { return d.action=="finish"})
-                        .map(function(d){ return JSON.parse(d.data); })
+                        .map(function(d){ return JSON.parse(d.data.selectedPrograms); })
                         .reduce(function(a, b){ return a.concat(b); }, [])     
                         .value();  
 
@@ -60,7 +65,7 @@ router.get('/interests', function(req, res){
 });
 router.get('/navihist', function(req, res){
     var db = req.socialdoi;
-    db.collection('logs').find().toArray(function(err, result){
+    db.collection('naviHistLogsCtrl').find().toArray(function(err, result){
         var selected = _.chain(result)
                         .filter(function(d) { return d.action=="select" && d.data.is_practice=="false"})
                         .map(function(d){ return d.data.selectedBudget; })
@@ -158,6 +163,7 @@ router.post('/log', function(req, res){
     });
 
 });
+
 router.post('/recaptcha', function(req, res){
     
     var postData = {

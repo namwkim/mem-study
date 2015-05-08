@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html>
+  	<head>
+	    <title>{{ title }}</title>
+	    <link rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap.min.css' />
+	    <link rel='stylesheet' href='/bower_components/bootstro/bootstro.min.css' />
+	    <link rel='stylesheet' href='/stylesheets/doitree.css'/>
+	    <link rel='stylesheet' href='/stylesheets/budget.css'/>
+	    <link rel='stylesheet' href='/bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css' />
+
+	    <script src="/bower_components/d3/d3.js"></script>	
+		<script src="/bower_components/d3-tip/index.js"></script>
+
+	    <script src="/javascripts/turkify.js"></script>
+	    <script src="/javascripts/nw.js"></script>	
+	    <script src="/javascripts/doitree.js"></script>
+	    <script src="/javascripts/fisheyefilter.js"></script>
+	    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+	    <script src="/bower_components/jquery-ui/jquery-ui.min.js"></script>
+	    <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+	    <script src="/bower_components/bootstro/bootstro.min.js"></script>
+	    <script src="/bower_components/underscore/underscore-min.js"></script>
+	    <script src="/bower_components/bootbox/bootbox.js"></script>
+	    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+	    <script src="/bower_components/angular/angular.min.js"></script>
+	    <script type="text/javascript">
+	    	var app = angular.module('myApp', [], function($interpolateProvider) {
+				$interpolateProvider.startSymbol('<%');
+				$interpolateProvider.endSymbol('%>');
+			});
+
+			app.controller('myCtrl', function($scope, $http, $interval) {
+
+				//load data
+				$scope.selected = null;
+				$scope.solution = [
+					"Homeland Security",
+					"Public Health Services",
+					"Housing Development"
+				]
+				$scope.programs = [];
+				$scope.params = {
+					isSocialOn: true,
+					isLocalOn: true,
+					isFocusOn: true,
+					weight: 18.0,
+					useDOILabel: false,
+					useNaviHist: false,
+					useDummyLabel: true
+				}
+				$http.get('/socialdoi/budgets')
+				.success(function(res){
+					$http.get('/socialdoi/navihist')	
+						.success(function(nh){
+ 						
+					    $scope.budgetname 	= res.name;
+					    $scope.budgets 		= res;
+
+					     //add social interests
+						$scope.naviHist 	= {};	
+					    for (var i in nh){
+					    	var key = nh[i].cabinet + nh[i].department + nh[i].program;
+					    	if (_.has($scope.naviHist, key)==false){
+					    		$scope.naviHist[key] = 0	
+					    	}
+					    	$scope.naviHist[key] += 1;
+					    }
+					    $scope.calcSocialDOI();
+					    $scope.fisheyefilter = FisheyeFilter($scope.params.isSocialOn,
+					    									$scope.params.isLocalOn,
+					    									$scope.params.isFocusOn,
+					    									$scope.params.weight);
+					    $scope.config = {
+					    	container: "#chart",
+					    	data: $scope.budgets,
+					    	margin: {top: 30, right: 0, bottom: 30, left: 200},
+					    	width : 840,
+					    	height : 700,
+					    	filter : $scope.fisheyefilter,
+					    	threshold: 1,
+					    	useDOILabel: $scope.params.useDOILabel,
+					    	useDummyLabel: $scope.params.useDummyLabel,
+					    	onClick: function(d){
+					    		$scope.$apply(function(){
+					    			$scope.selected = d;
+					    			console.log($scope.selected);
+					    		});
+					    		LogAction("select", {
+					    			is_practice: isPractice,
+					    			selectedBudget: $scope.ExtractBudgetInfo(d)
+					    		});
+					    	}
+					    };
+
+					    $scope.cstree = CSTree($scope.config);
+					    $scope.cstree.create();					
+					});
+				});	
+				$scope.calcSocialDOI = function(){				
+				    // $scope.budgets.visitCnt = _.values($scope.naviHist).length;
+				    // $scope.budgets.visitRatio = $scope.interests.maxRatio;
+				    var max = _.max(_.values($scope.naviHist));
+				    var sum = _.reduce(_.values($scope.naviHist), function(memo, num){ return memo + num; }, 0);
+				    $scope.budgets.visitDOI = 0;
+			   		for (var i in $scope.budgets.children){
+			   			var cabinet = $scope.budgets.children[i], key = cabinet.name;
+			   			if (_.has($scope.naviHist, key)){
+			   				cabinet.visitDOI = (max-$scope.naviHist[key])/sum;
+			   			}else{
+			   				cabinet.visitDOI	= max/sum;	
+			   			}
+			   			for (var j in cabinet.children){
+			   				var dept = cabinet.children[j], key = cabinet.name + dept.name;
+				   			if (_.has($scope.naviHist, key)){
+				   				dept.visitDOI = (max-$scope.naviHist[key])/sum;
+				   			}else{
+				   				dept.visitDOI	= max/sum;	
+				   			}
+			   				for (var k in dept.children){
+					    		var program = dept.children[k], key = cabinet.name + dept.name + program.name;
+					   			if (_.has($scope.naviHist, key)){
+					   				program.visitDOI = (max-$scope.naviHist[key])/sum;
+					   			}else{
+					   				program.visitDOI	= max/sum;	
+					   			}
+					    	}
+			   			}
+			   		}
+				}
+				$scope.ExtractBudgetInfo = function(node){
+					return isPractice? {
+	    				program: node.program? node.program: null,
+	    				department: node.department? node.department: null,
+	    				cabinet: node.cabinet? node.cabinet: null,
+	    				dummyLabel: node.dummyLabel
+	    			}:{
+	    				program: node.program? node.program: null,
+	    				department: node.department? node.department: null,
+	    				cabinet: node.cabinet? node.cabinet: null
+	    			};
+				}
+				$scope.Add = function(){
+			    	console.log("add")
+			    	if ($scope.selected==null || $scope.selected.program==null){
+			    		$("#addWarning").show().effect( "shake" ).delay(1000).toggle( "fade" );
+			    		return;
+			    	}
+			    	var contain=false;
+			    	for (var i in $scope.programs){
+			    		if ($scope.selected.program==$scope.programs[i].program &&
+			    			$scope.selected.department==$scope.programs[i].department &&
+			    			$scope.selected.cabinet ==$scope.programs[i].cabinet){
+			    			contain = true;
+			    			break;
+			    		}
+			    	}
+
+			    	if (contain){
+			    		bootbox.alert("WARNING: The selected program already exists!");
+			    		return;
+			    	}
+			    	$scope.programs.push($scope.ExtractBudgetInfo($scope.selected));
+			    	console.log($scope.programs);
+			    }
+			    $scope.Remove = function(idx) {
+			    	$scope.programs.splice(idx, 1);
+			    }
+				$scope.Finish = function(){
+					if (isPractice==false){
+				    	if ($scope.programs.length<3){
+			    			$("#finishWarning").show().effect( "shake" ).delay(1000).toggle( "fade" );
+			    			return;
+			    		}
+			    		console.log($scope.programs)
+			    		console.log($scope.solution)
+			    		for (var i in $scope.programs){
+			    			var found = false;
+			    			for (var j in $scope.solution){
+			    				if ($scope.programs[i].program==$scope.solution[j]){
+			    					found = true;
+			    					break;
+			    				}
+			    			}
+			    			if (!found){
+			    				$("#finishWarning").show().effect( "shake" ).delay(1000).toggle( "fade" );
+			    				return;
+			    			}
+			    			
+
+			    		}
+			    		
+			    		//finish task
+			    		LogAction("finish", {timespan: timespan, selectedPrograms: angular.toJson($scope.programs)});
+	    				$("<input type='hidden' name='programCount' value='" + $scope.programs.length + "'>").appendTo($(formSelector));
+
+			    		ChangeStage(DEBRIEF);
+					}else{
+						var success = false;
+						for (var i in $scope.programs){
+							if ($scope.programs[i].dummyLabel == "Program 200")
+								success = true;
+						}
+						if (success==false){
+							bootbox.alert("Add 'Program 200' to the list (Cabinet 168 -> Department 195).");
+							return;
+						}
+						$scope.selected = null
+						$scope.programs = []
+						$scope.params.useDummyLabel = false;
+						$scope.cstree.useDummyLabel(false);						
+						//$scope.cstree = CSTree($scope.config);
+			    		$scope.cstree.create();					
+
+						ChangeStage(REAL_INST);	
+					}
+			    	console.log($scope.programs);
+			    	
+			    }
+		    	$scope.LogAction = function (action, data, callback){
+		    		var log = { 
+		    			timestamp: $.now(),
+		    			hitId: hitId,
+		    			assignmentId: assignmentId,
+		    			workerId: workerId,
+		    			action: action,
+		    			data: data
+		    		};
+		    		$http.post("/socialdoi/log", log)
+			    		.success(function(res){
+			    			if (res.code!=0){
+			    				bootbox.alert("Failed to log a worker action!");
+			    			}else{
+			    				if (callback)	callback.call();
+			    			}
+			    		});
+
+		    	}
+			});
+
+	    	var INTRO = 0, CONSENT = 1, PRAC_INST = 2, REAL_INST = 3, STUDY = 4, DEBRIEF = 5;
+	    	var stage = INTRO;
+	    	var formSelector = "#mturk-form";
+
+    		var logs = null;
+    		var isPractice = false;
+    		var budgets = null;
+
+    		var curIdx = 0;
+    		var curImg = null;
+    		var curBlurImg = null;
+    		var size = {width:0, height:0, screenWidth: 0, screenHeight: 0};
+    		var assignmentId, hitId, workerId;
+    		var clickCount = 0, totalClickCount = 0, charCount = 0;
+    		var timespan = 0;
+
+	    	$(document).ready(function(){
+	    		Initialize();
+			});
+			function Initialize(){
+				size.width 			= window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+				size.height 		= window.innerHeight || document.documentElement.clientHeight ||document.body.clientHeight;
+				size.screenWidth 	= screen.width;
+				size.screenHeight 	= screen.height;
+
+				$("#consent").hide();
+				$("#prac-inst").hide();
+				$("#real-inst").hide();
+				$("#study").hide();
+				$("#debrief").hide();
+
+				// set up AMT form								
+				assignmentId 	= gup("assignmentId");
+				hitId 			= gup("hitId");
+				workerId 		= gup("workerId");
+				console.log(hitId);
+				console.log(assignmentId);
+				console.log(workerId);
+				if (assignmentId=="ASSIGNMENT_ID_NOT_AVAILABLE"){//preview mode
+					$('#intro-start-button').hide();//do not allow a worker to proceed
+					$('#recaptcha').hide();
+					return;
+				}else if (assignmentId=="" || hitId=="" || workerId==""){	// invalid access
+					bootbox.alert("You must visit this website through Amazon Mechanical Turk!");
+					$("#intro").hide();
+					return;
+				}
+				turkify(formSelector);
+
+
+				//Set up callback functions
+				// $(document).keydown(OnKeyPress);
+
+				$(".next-btn").click(function(){
+    				ChangeStage(stage+1);
+    			});
+    			
+    			$("#submit-btn").click(SubmitForm);
+
+    			$('#intro-start-button').click(ConfirmRecaptcha);
+    			$('#consent-btn').click(ConsentForm);
+
+    			$('#practice-btn').click(StartPractice);
+    			$('#real-btn').click(StartExperiment);
+
+    			$('#study-vis-desc').keyup(function(){
+    				$('#char-count').text($('#study-vis-desc').val().length);
+    			})
+
+    			//bootstro initialization (tutorial)
+    			$('#chart').addClass("bootstro")
+	                .attr("data-bootstro-title", "Explore a Government Budget")
+	                .attr("data-bootstro-content", "Explore a government budget, and find target programs. You need to click an item to reveal or hide budget details. ")
+	                .attr("data-bootstro-placement", "right")
+	                .attr("data-bootstro-step", 0)
+                $('#add-btn').addClass("bootstro")
+	                .attr("data-bootstro-title", "Add a Program to Your List")
+	                .attr("data-bootstro-content", "Details for a selected program will appear here. If you find a target program, click 'Add' button to add to the list below.")
+	                .attr("data-bootstro-placement", "left")
+	                .attr("data-bootstro-step", 1)
+                $('#program-list').addClass("bootstro")
+	                .attr("data-bootstro-title", "Your Selection of Programs")
+	                .attr("data-bootstro-content", "This list should contain required target programs you found.")
+	                .attr("data-bootstro-placement", "left")
+	                .attr("data-bootstro-step", 2)
+                $('#finish-btn').addClass("bootstro")
+	                .attr("data-bootstro-title", "Finish the Task")
+	                .attr("data-bootstro-content", "You will need to find three programs to finish the task.")
+	                .attr("data-bootstro-placement", "left")
+	                .attr("data-bootstro-step", 3)
+
+                setInterval(function(){ 
+                	timespan++;
+                	$("#timer").text(d3.format(".2f")(timespan/10.0));
+                }, 100);
+
+			}
+			function ConfirmRecaptcha(){
+				//check reCAPTCHA
+				//console.log(grecaptcha.getResponse());
+				$.post('/socialdoi/recaptcha', {
+					recaptcha_response: grecaptcha.getResponse()
+				},function(res){
+					console.log(res);
+					if (res.code!=0){
+						console.log("reCAPTCHA failed!");
+						bootbox.alert("Verification Failed! Please Try Again...");
+					}else{
+						console.log("reCAPTCHA success!");
+						ChangeStage(stage+1);
+
+					}
+				})
+
+			}
+			function ConsentForm(){
+				var first 	= $("input:radio[name=radioFirst]:checked").val();
+				var second 	= $("input:radio[name=radioSecond]:checked").val();
+				var third 	= $("input:radio[name=radioThird]:checked").val();
+
+				if (first == "no" || second == "no" || third == "no"){
+					bootbox.alert("Sorry, You are not allowed to participate in this study.", function(){
+						$("#submit-btn").trigger("click", [true]);
+					});
+					
+				}else{
+					ChangeStage(stage+1);
+				}
+			}
+			function StartPractice(){
+				console.log("StartPractice");				
+				isPractice 	= true;
+				LogAction("start-practice", size);			
+				ChangeStage(STUDY);
+
+
+				$("#tutorial-msg").show();
+				$("#target-programs").hide();
+				bootstro.start(".bootstro",{
+					nextButtonText: "Next »",
+					prevButtonText: "Prev »"
+				});
+			}
+			function StartExperiment(){
+				console.log("StartExperiment");				
+				isPractice 	= false;
+				LogAction("start-experiment", size);
+				ChangeStage(STUDY);
+
+				$("#tutorial-msg").hide();
+				$("#target-programs").show();
+			}
+			function Setup(){
+				
+			}
+			
+	    	function ChangeStage(newStage){
+	    		HideStage(stage);
+	    		stage = newStage;
+	    		switch(stage){
+	    			case INTRO:
+	    				LogAction("introduction", null);
+	    				console.log("INTRO");
+	    			break;
+	    			case CONSENT:
+	    				LogAction("consent-form", null);
+	    				console.log("CONSENT");
+	    				$("#consent").show();
+	    			break;
+	    			case PRAC_INST:
+    					LogAction("practice-instruction", null);
+	    				console.log("PRAC_INST");
+	    				$("#prac-inst").show();
+    				break;
+	    			case REAL_INST:
+    					LogAction("realstudy-instruction", null);
+	    				console.log("REAL_INST");
+	    				$("#real-inst").show();
+    				break;
+	    			case STUDY:
+	    				console.log("STUDY");
+	    				timespan = 0
+	    				$("#study").show();
+	    				Setup();
+	    			break;
+	    			case DEBRIEF:
+	    				console.log("DEBRIEF");
+	    				$("#debrief").show();
+	    				LogAction("end", null);
+	    		}
+
+	    	}	
+	    	function HideStage(prevStage){
+	    		switch(prevStage){
+	    			case INTRO: 	$("#intro").hide(); 	break;
+	    			case CONSENT:	$("#consent").hide();	break;
+	    			case PRAC_INST:	$("#prac-inst").hide();	break;
+	    			case REAL_INST:	$("#real-inst").hide();	break;
+	    			case STUDY: 	$("#study").hide();	break;
+	    			case DEBRIEF: 	$("#debrief").hide(); 	break;
+	    		}
+	    	}
+	    	function LogAction(action, data, callback){
+	    		var log = { 
+	    			timestamp: $.now(),
+	    			hitId: hitId,
+	    			assignmentId: assignmentId,
+	    			workerId: workerId,
+	    			action: action,
+	    			data: data
+	    		};
+	    		$.post("/socialdoi/log", log, function(res){
+	    			if (res.code!=0){
+	    				bootbox.alert("Failed to log a worker action!");
+	    			}else{
+	    				if (callback)	callback.call();
+	    			}
+	    		});
+
+	    	}
+	    	function SubmitForm (e, notQualified) {
+	    		if (notQualified==true){//failed to pass the consent form
+	    			$("<input type='hidden' name='consentForm' value='notQualified'>");
+	    			$(formSelector).submit();	
+	    			return;
+	    		}
+	   			//generating answer data (name-value pairs)
+	   			
+	    		
+
+	    		var gender 	= $("input:radio[name=gender]:checked").val();
+	    		var age 	= $("input:radio[name=ageGroup]:checked").val();
+	    		var ethnic 	= "";
+	    		if ($("#ethnicAsian").prop('checked'))		ethnic += "/" + $("#ethnicAsian").val();
+	    		if ($("#ethnicLatino").prop('checked'))		ethnic += "/" + $("#ethnicLatino").val();
+	    		if ($("#ethnicPacific").prop('checked'))	ethnic += "/" + $("#ethnicPacific").val();
+	    		if ($("#ethnicAfrican").prop('checked'))	ethnic += "/" + $("#ethnicAfrican").val();
+	    		if ($("#ethnicMiddle").prop('checked'))		ethnic += "/" + $("#ethnicMiddle").val();
+	    		if ($("#ethnicWhite").prop('checked'))		ethnic += "/" + $("#ethnicWhite").val();
+	    		if ($("#ethnicEastInd").prop('checked'))	ethnic += "/" + $("#ethnicEastInd").val();
+	    		if ($("#ethnicNative").prop('checked'))		ethnic += "/" + $("#ethnicNative").val();
+	    		if ($("#ethnicOther").prop('checked'))		ethnic += "/" + $("#ethnicOther").val();
+	    		if ($("#ethnicNotToSay").prop('checked'))	ethnic += "/" + $("#ethnicNotToSay").val();
+	    		
+				var feedback = $("#survey-feedback").val();
+
+	    		// // submit the form to the mturk site
+	    		console.log("Submiting mturk-form...");
+	    		
+	   			console.log(gender);
+	   			console.log(age);
+	   			console.log(ethnic);
+	   			console.log(feedback);
+
+	   			LogAction("survey", {
+	   				gender : gender,
+	   				age : age,
+	   				ethnic: ethnic,
+	   				feedback: feedback
+	   			}, function(){
+	   				$(formSelector).submit();	    					
+	   			});
+
+	    		// console.log("assignmentId: " + $("#mturk-form input[name=assignmentId]").val());
+	    		// console.log("targetNumber: " + $("#mturk-form input[name=targetNumber]").val());
+	    		// console.log("correctNumber: " + $("#mturk-form input[name=correctNumber]").val());
+	    		
+			}		
+	    </script>
+  	</head>
+  	<body ng-app="myApp" ng-controller="myCtrl">
+	  	<div class="container">
+	  		<div class="row">
+		    	<div id="intro">					
+					<div class="row">
+						<div class="col-md-12">
+							<h2>Budget Challenge</h2>
+							<p class="text-justify">
+								In this HIT you will be presented with a tree visualization of a government budget and asked to find <strong>three</strong> budget programs <strong>as fast as possible</strong>.
+								<br><br>
+								The HIT should take about 5 ~ 10 minutes to complete. Your screen size should be at least "1280x1024".
+							</p><br>
+							<img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/budget-study-overview-treatment.png">
+							<br>
+							
+							<div id="recaptcha" class="g-recaptcha" align="center" data-sitekey="6LcvMf8SAAAAAOAE34JZH6i7v_8lOrSD38mPkuGG" ></div>
+							<br>
+							<button id="intro-start-button" type="button" class="btn btn-success btn-lg btn-block">
+					  			<span class="glyphicon glyphicon-play"></span> Start
+							</button>
+						
+						</div>	
+					</div>
+				</div>	  
+				<div id="consent">
+					<div class="row">
+						<div class="col-md-12">
+							<h2>STATEMENT OF INFORMED CONSENT</h2>
+							<p class="text-justify">								
+								<br>								
+								<strong>Purpose of research:</strong> The purpose of this study is to measure how fast users find specific budget programs provided. This research is for a course project, and thus its result will not be published. 
+								<br><br>
+								<strong>What your participation in this study will involve:</strong><br>
+								<ul>
+									<li>Reading a short summary of relevant background information.</li>
+									<li>Using a budget visualization interface to find three budget items.</li>
+								</ul>					
+								
+								<br>
+								<strong>Time required:</strong> Participation will take approximately 5 ~ 10 minutes.
+								<br><br>
+								<strong>Risks:</strong> There are no anticipated risks associated with participating in this study.
+								<br><br>
+								<strong>Confidentiality:</strong> Your participation in this study will remain confidential, and your identity will not be stored with your data. Your responses will be assigned a code number, and the list connecting your worker ID with this code number will be kept in a locked room and will be destroyed upon completion of the project.  
+								<br><br>
+								<strong>Participation and withdrawal:</strong> Your participation in this study is completely voluntary, and you may withdraw at any time without penalty. You may skip any questions/tasks that you do not want to respond to / participate in. 
+								<br><br>
+								<strong>Researcher Contact Information:</strong> If you have questions about this research, please contact Nam Wook Kim, (Maxwell Dworkin 142, 33 Oxford St , Cambridge, MA, 02138, namwkim@seas.harvard.edu). 
+								<br><br>
+								<strong>Faculty Sponsor:</strong> Prof. Barbara J. Grosz (Maxwell-Dworkin Room 249, 33 Oxford Street, Cambridge, MA 02138, grosz@seas.harvard.edu, 617-495-3963)
+								<br><br>
+								<strong>Agreement:</strong>
+								The nature and purpose of this research have been satisfactorily explained to me and I agree to become a participant in the study as described above. I understand that I am free to discontinue participation at any time if I so choose, and that the investigator will gladly answer any questions that arise during the course of the research. 
+								<br><br>
+
+							</p>
+							<div class="panel panel-default">
+  								<div class="panel-body">
+									<table class="table table-hover">
+										<thead>
+											<tr>
+												<th colspan="2">
+													The experimenter will now verify the following information:
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>1. You are age 18 or older.</td>
+												<td>
+													<label class="radio-inline text-right" align="right">
+													  <input type="radio" name="radioFirst" id="radioFirst1" value="yes"> Yes
+													</label>
+													<label class="radio-inline">
+													  <input type="radio" name="radioFirst" id="radioFirst2" value="no" checked> No
+													</label>
+												</td>
+											</tr>
+											<tr>
+												<td>2. You have read and understand the information above.</td>
+												<td>
+													<label class="radio-inline">
+													  <input type="radio" name="radioSecond" id="radioSecond1" value="yes"> Yes
+													</label>
+													<label class="radio-inline">
+													  <input type="radio" name="radioSecond" id="radioSecond2" value="no" checked> No
+													</label>				
+												</td>
+											</tr>
+											<tr>
+												<td>3. You want to participate in this research and continue with the research activity</td>
+												<td>
+													<label class="radio-inline">
+													  <input type="radio" name="radioThird" id="radioThird1" value="yes"> Yes
+													</label>
+													<label class="radio-inline">
+													  <input type="radio" name="radioThird" id="radioThird2" value="no" checked> No
+													</label>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+							<button id="consent-btn" type="button" class="btn btn-success btn-lg btn-block">
+					  			<span class="glyphicon glyphicon-ok"></span> Confirm
+							</button>							
+						</div>
+					</div>
+				</div>	
+				<div id="prac-inst">					
+					<div class="row">
+						<div class="col-md-12">
+							<h2>Budget Challenge Instruction</h2>
+							<p class="text-justify">
+								In this HIT you will be presented with a tree visualization of a government budget and asked to find <strong>three</strong> budget programs <strong>as fast as possible</strong>.
+								<br><br>
+								<!--You will be paid <strong>$0.40</strong> for participating in this study which is expected to last about <strong>5 minutes</strong>.
+								<br><br>-->
+								The visualization has three levels representing the hierarchy of budget management: cabinets, departments, and programs. You need to navigate through the budget data in such hierarchical order; that is, clicking a cabinet will reveal related departments and similarly clicking a department will reveal related programs. Once a target program is selected, you can add the program to a list. <strong> You can finish the task only when "correct three target budget programs" are added to the list</strong>.
+								<br><br>
+								<strong>The size of each circle</strong> represents <strong>the degree of interestingness</strong> of each item.
+								<br><br>
+								We will only pay for successfully completed work.
+								<br><br>
+								We will start with a tutorial. Please <strong>click the button</strong> below when you are ready to begin.					
+							</p>
+							<br>
+							<img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/budget-study-overview-treatment.png">
+							<br>
+							<button id="practice-btn" type="button" class="btn btn-success btn-lg btn-block">
+						  		<span class="glyphicon glyphicon-play"></span> Continue
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<div id="real-inst">					
+					<div class="row">
+						<div class="col-md-12">
+							<h2>Budget Challenge Instruction</h2>
+							<p class="text-justify">
+								Great job! Now you will start the real study. The real study will be just like the practice you just did, except a bit longer and <strong>a real task of finding three budget programs </strong>  provided.			
+								<br><br>
+								Please <strong>click the "Start" button</strong> below when you are ready to begin.						
+							</p>
+							<br>
+							<img class="center-block thumbnail" height="350" src="/images/budget-study-overview-treatment.png">
+							<br>
+							<button id="real-btn" type="button" class="btn btn-success btn-lg btn-block">
+						  		<span class="glyphicon glyphicon-play"></span> Start
+							</button>							
+						</div>
+					</div>
+				</div>
+				<div id="study">		
+					<div class="row">
+						<div class="col-md-9">	
+							<h2>Find Budget Programs! <small> Time: <span id="timer" class="danger text-center"></span> sec</small>  </h2>
+							<p id="tutorial-msg" class="lead"><span class="label label-danger">Tutorial Task</span> : Add "Program 200" to the list (Cabinet 168 -> Department 195).</p>							
+							<div id="chart"></div>
+						</div>
+						<div class="col-md-3">
+							<br><br>
+							 <div class="panel panel-primary">
+								<div class="panel-heading">
+							    	<h3 class="panel-title"><% budgetname %></h3>
+							  	</div>
+								<div id="add-btn" class="panel-body">
+									<div class="well" style="padding:7px;" id="target-programs">
+										<strong> Find These Programs : </strong>
+											<div ng-repeat=" x in solution">
+												<% ($index+1) + ") " + x %>
+											</div>
+									</div>
+									<div class="well" style="padding:5px;" ng-show="params.useDummyLabel"> 
+										<strong>This is Tutorial (Task Hidden)</strong><br>
+									</div>
+									<div class="panel panel-default">
+			  							<div class="panel-body">
+			  								<div id="addWarning" class="alert alert-danger" role="alert" style="display:none;"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Select a target!</div>
+											<!--<div id="addWarning" class="alert alert-danger" role="alert" ng-if="selected.program==null">
+												<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Select a target!</div>
+											<div class="alert alert-success" role="alert" ng-if="selected.program!=null">
+												<span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Add to the list below.</div>-->
+											<table class="table table-condensed">
+											  <tr>
+											  	<td>Cabinet</td>
+											  	<td><% params.useDummyLabel? (selected.depth==1? selected.dummyLabel : (selected.depth==2? selected.parent.dummyLabel : (selected.depth==3? selected.parent.parent.dummyLabel : "" ) ) ) : selected.cabinet %></td>
+											  </tr>
+											  <tr>
+											  	<td>Department</td>
+											  	<td><% params.useDummyLabel? (selected.depth==1? "" : (selected.depth==2? selected.dummyLabel : (selected.depth==3? selected.parent.dummyLabel : "" ) ) ) : selected.department %></td>
+											  </tr>
+											  <tr>
+											  	<td>Program</td>
+											  	<td>
+										  			<strong><% params.useDummyLabel? (selected.depth==1? "" : (selected.depth==2? "" : (selected.depth==3? selected.dummyLabel : "" ) ) )  : selected.program %></strong>
+										  		</td>
+											  </tr>
+											  <tr>
+											  	<td>Budget</td>
+											  	<td>
+										  			<strong><% selected.approved | currency:"$ ":0%></strong>
+										  		</td>
+											  </tr>
+											</table>
+										    <button type="button" style="width:100%" class="btn btn-info" aria-label="Left Align" ng-click="Add()">
+											  	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add
+											</button>
+										  </div>
+										</div>
+									</div>
+									<!--<center id="program-list" class="lead">Programs of Interest</center>-->
+									<table class="table" style="text-align:center"	>
+										<thead><tr><td><strong>#</strong></td><td ><strong>Targets Found</strong></td></tr></thead>
+										<tbody>
+											<tr ng-repeat="x in programs">
+												<td><% $index+1 %></td>
+												<td><% params.useDummyLabel? x.dummyLabel : x.program %><button type="button" class="btn btn-info btn-xs" style="float:right"  aria-label="Left Align" ng-click="Remove($index)">
+											  	<span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+											</button>
+												</td>
+											</tr>
+											<tr>
+												<td id="finish-btn" colspan="2">
+													<div id="finishWarning" style="display:none" class="alert alert-danger" role="alert">
+												<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>Please add "correct" three target programs!</div>
+													<button type="button" style="width:100%" class="btn btn-success" aria-label="Left Align" ng-click="Finish()"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Finish
+													</button>
+												</td>
+											</tr>
+										</tbody>							
+									</table
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>	
+				<div id="debrief">
+					<h2>Completed!</h2>
+					<div class="row">
+						<div class="col-md-12">
+							<p class="text-justify">
+								Thanks for your participation! Upon our confirming your completion of the study, payment will be deposited in your Amazon Payments account.<br><br>
+							</p>
+							<div class="panel panel-default">
+  								<div class="panel-body">
+									<table class="table table-hover">
+										<thead>
+											<tr>
+												<th colspan="2">
+													Survey
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>Gender</td>
+												<td>
+													<label class="radio-inline text-right" align="right">
+													  <input type="radio" name="gender" id="genderMale" value="female"> Female
+													</label>
+													<label class="radio-inline">
+													  <input type="radio" name="gender" id="genderFemale" value="male"> Male
+													</label>
+													<label class="radio-inline">
+													  <input type="radio" name="gender" id="genderOther" value="other"> Prefer not to say
+													</label>
+												</td>
+											</tr>
+											<tr>
+												<td>Age</td>
+												<td>
+													<div class="radio">
+														<label class="radio-inline">
+														  <input type="radio" name="ageGroup" id="ageGroup1" value="ageGroup18"> 18 to 24
+														</label>
+														<label class="radio-inline">
+														  <input type="radio" name="ageGroup" id="ageGroup2" value="ageGroup25"> 25 to 34
+														</label>
+														<label class="radio-inline">
+														  <input type="radio" name="ageGroup" id="ageGroup3" value="ageGroup35"> 35 to 44
+														</label>
+													</div>
+													<div class="radio">
+														<label class="radio-inline">
+														  <input type="radio" name="ageGroup" id="ageGroup4" value="ageGroup45"> 45 to 54
+														</label>
+														<label class="radio-inline">
+														  <input type="radio" name="ageGroup" id="ageGroup5" value="ageGroup55"> 55 to 64
+														</label>
+														<label class="radio-inline">
+														  <input type="radio" name="ageGroup" id="ageGroup6" value="ageGroup65"> 65 and over
+														</label>
+													</div>
+												</td>
+											</tr>
+											<tr>
+												<td>Ethnicity</td>
+												<td>
+													<div class="checkbox">
+														<label class="checkbox-inline">
+														  	<input type="checkbox" id="ethnicAsian" value="Asian"> Asian
+														</label>
+														<label class="checkbox-inline">
+														  	<input type="checkbox" id="ethnicLatino" value="Latino_Hispanic"> Latino / Hispanic
+														</label>
+														<label class="checkbox-inline">
+														  	<input type="checkbox" id="ethnicPacific" value="Pacific_Islander"> Pacific Islander
+														</label>
+													</div>
+													<div class="checkbox">
+														<label class="checkbox-inline">
+														  	<input type="checkbox" id="ethnicAfrican" value="Black_African"> Black / African Descent
+														</label>
+														<label class="checkbox-inline">
+														  	<input type="checkbox" id="ethnicMiddle" value="Middle_Eastern"> Middle Eastern
+														</label>
+														<label class="checkbox-inline">
+														  	<input type="checkbox" id="ethnicWhite" value="White_Caucasian"> White / Caucasian
+														</label>
+													</div>	
+													<div class="checkbox">
+														<label class="checkbox-inline">
+														  	<input type="checkbox" id="ethnicEastInd" value="East_Indian"> East Indian
+														</label>
+														<label class="checkbox-inline">
+														  	<input type="checkbox" id="ethnicNative" value="Native_American"> Native American
+														</label>
+														<label class="checkbox-inline">
+														  	<input type="checkbox" id="ethnicOther" value="Other"> Other
+														</label>
+														<label class="checkbox-inline">
+														  	<input type="checkbox" id="ethnicNotToSay" value="NotToSay"> Prefer not to say
+														</label>
+													</div>																																						
+												</td>
+											</tr>
+											<tr>
+												<td>Feedback</td>
+												<td>
+													<textarea id="survey-feedback" name="feedback" class="form-control" rows="3" placeholder="If you have any feedback, comments, or suggestions, please describe them here."></textarea>
+												</td>
+											</tr>
+
+										</tbody>
+									</table>
+								</div>
+							</div>							
+						</div>	
+						<!--<div class="col-md-4">	
+							<img src="/images/teaser.png" class="img-responsive img-rounded">
+						</div>-->
+					</div>
+					<form id="mturk-form">
+						<button id="submit-btn" type="button" class="btn btn-success btn-lg btn-block">
+					  		<span class="glyphicon glyphicon-send"></span> Submit
+						</button>
+					</form>				
+				</div>
+			</div>
+		<div>
+  	</body>
+</html>
