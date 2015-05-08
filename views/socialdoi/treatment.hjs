@@ -42,48 +42,109 @@
 				]
 				$scope.programs = [];
 				$scope.params = {
-					isSocialOn: false,
+					isSocialOn: true,
 					isLocalOn: true,
 					isFocusOn: true,
-					weight: 50.0,
+					weight: 18.0,
 					useDOILabel: false,
 					useNaviHist: false,
 					useDummyLabel: true
 				}
 				$http.get('/socialdoi/budgets')
 				.success(function(res){
-				    $scope.budgetname 	= res.name;
-				    $scope.budgets 		= res;
-				    $scope.fisheyefilter = FisheyeFilter($scope.params.isSocialOn,
-				    									$scope.params.isLocalOn,
-				    									$scope.params.isFocusOn,
-				    									$scope.params.weight);
-				    $scope.config = {
-				    	container: "#chart",
-				    	data: $scope.budgets,
-				    	margin: {top: 30, right: 0, bottom: 30, left: 200},
-				    	width : 840,
-				    	height : 700,
-				    	filter : $scope.fisheyefilter,
-				    	threshold: 1,
-				    	useDOILabel: $scope.params.useDOILabel,
-				    	useDummyLabel: $scope.params.useDummyLabel,
-				    	onClick: function(d){
-				    		$scope.$apply(function(){
-				    			$scope.selected = d;
-				    			console.log($scope.selected);
-				    		});
-				    		LogAction("select", {
-				    			is_practice: isPractice,
-				    			selectedBudget: $scope.ExtractBudgetInfo(d)
-				    		});
-				    	}
-				    };
+					$http.get('/socialdoi/navihist')	
+						.success(function(nh){
+ 						
+					    $scope.budgetname 	= res.name;
+					    $scope.budgets 		= res;
 
-				    $scope.cstree = CSTree($scope.config);
-				    $scope.cstree.create();					
+					     //add social interests
+						$scope.naviHist 	= {};	
+					    for (var i in nh){
+					    	if (nh[i].program!=""){
+						    	var key = nh[i].cabinet + nh[i].department + nh[i].program;
+						    	if (_.has($scope.naviHist, key)==false){
+						    		$scope.naviHist[key] = 0	
+						    	}
+						    	$scope.naviHist[key] += 1;					    		
+					    	}
+					    	if (nh[i].department!=""){
+						    	var key = nh[i].cabinet + nh[i].department;
+						    	if (_.has($scope.naviHist, key)==false){
+						    		$scope.naviHist[key] = 0	
+						    	}
+						    	$scope.naviHist[key] += 1;					    		
+					    	}
+					    	if (nh[i].cabinet!=""){
+						    	var key = nh[i].cabinet;
+						    	if (_.has($scope.naviHist, key)==false){
+						    		$scope.naviHist[key] = 0	
+						    	}
+						    	$scope.naviHist[key] += 1;					    		
+					    	}
+					    }
+					    $scope.calcSocialDOI();
+					    $scope.fisheyefilter = FisheyeFilter($scope.params.isSocialOn,
+					    									$scope.params.isLocalOn,
+					    									$scope.params.isFocusOn,
+					    									$scope.params.weight);
+					    $scope.config = {
+					    	container: "#chart",
+					    	data: $scope.budgets,
+					    	margin: {top: 30, right: 0, bottom: 30, left: 200},
+					    	width : 840,
+					    	height : 700,
+					    	filter : $scope.fisheyefilter,
+					    	threshold: 1,
+					    	useDOILabel: $scope.params.useDOILabel,
+					    	useDummyLabel: $scope.params.useDummyLabel,
+					    	onClick: function(d){
+					    		$scope.$apply(function(){
+					    			$scope.selected = d;
+					    			console.log($scope.selected);
+					    		});
+					    		LogAction("select", {
+					    			is_practice: isPractice,
+					    			selectedBudget: $scope.ExtractBudgetInfo(d)
+					    		});
+					    	}
+					    };
 
-				});
+					    $scope.cstree = CSTree($scope.config);
+					    $scope.cstree.create();					
+					});
+				});	
+				$scope.calcSocialDOI = function(){				
+				    // $scope.budgets.visitCnt = _.values($scope.naviHist).length;
+				    // $scope.budgets.visitRatio = $scope.interests.maxRatio;
+				    var max = _.max(_.values($scope.naviHist));
+				    var sum = _.reduce(_.values($scope.naviHist), function(memo, num){ return memo + num; }, 0);
+				    $scope.budgets.visitDOI = 0;
+			   		for (var i in $scope.budgets.children){
+			   			var cabinet = $scope.budgets.children[i], key = cabinet.name;
+			   			if (_.has($scope.naviHist, key)){
+			   				cabinet.visitDOI = (max-$scope.naviHist[key])/sum;
+			   			}else{
+			   				cabinet.visitDOI	= max/sum;	
+			   			}
+			   			for (var j in cabinet.children){
+			   				var dept = cabinet.children[j], key = cabinet.name + dept.name;
+				   			if (_.has($scope.naviHist, key)){
+				   				dept.visitDOI = (max-$scope.naviHist[key])/sum;
+				   			}else{
+				   				dept.visitDOI	= max/sum;	
+				   			}
+			   				for (var k in dept.children){
+					    		var program = dept.children[k], key = cabinet.name + dept.name + program.name;
+					   			if (_.has($scope.naviHist, key)){
+					   				program.visitDOI = (max-$scope.naviHist[key])/sum;
+					   			}else{
+					   				program.visitDOI	= max/sum;	
+					   			}
+					    	}
+			   			}
+			   		}
+				}
 				$scope.ExtractBudgetInfo = function(node){
 					return isPractice? {
 	    				program: node.program? node.program: null,
@@ -475,10 +536,10 @@
 								In this HIT you will be presented with a tree visualization of a government budget and asked to find <strong>five</strong> budget programs <strong>as fast as possible</strong>.
 								<br><br>
 								The HIT should take about 5 ~ 10 minutes to complete. Your screen size should be at least "1280x1024". We will provide you a bonus based on performance.
-								<br><br>
+								</p><br>
 								<strong class="alert-danger"> If you have taken a variant of this study, please do not participate! </strong>
-							</p><br>
-							<img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/budget-study-overview-control.png">
+								</p><br>
+							<img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/budget-study-overview-treatment.png">
 							<br>
 							
 							<div id="recaptcha" class="g-recaptcha" align="center" data-sitekey="6LcvMf8SAAAAAOAE34JZH6i7v_8lOrSD38mPkuGG" ></div>
@@ -594,7 +655,7 @@
 								We will start with a tutorial. Please <strong>click the button</strong> below when you are ready to begin.					
 							</p>
 							<br>
-							<img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/budget-study-overview-control.png">
+							<img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/budget-study-overview-treatment.png">
 							<br>
 							<button id="practice-btn" type="button" class="btn btn-success btn-lg btn-block">
 						  		<span class="glyphicon glyphicon-play"></span> Continue
@@ -613,7 +674,7 @@
 								Please <strong>click the "Start" button</strong> below when you are ready to begin.						
 							</p>
 							<br>
-							<img class="center-block thumbnail" height="350" src="/images/budget-study-overview-control.png">
+							<img class="center-block thumbnail" height="350" src="/images/budget-study-overview-treatment.png">
 							<br>
 							<button id="real-btn" type="button" class="btn btn-success btn-lg btn-block">
 						  		<span class="glyphicon glyphicon-play"></span> Start

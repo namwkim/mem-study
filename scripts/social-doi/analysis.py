@@ -11,14 +11,21 @@ def rank(key, data):
 	data = sorted(filter(lambda x : x.has_key(key) and x[key]!='' , data), key=lambda x : x[key])
 	for k, g in itertools.groupby(data, lambda x : x[key]):
 		result.append({ "key" : k, 'size': len(list(g))})
-	result = sorted(result, key=lambda x: x['size']);	
+	result = sorted(result, key=lambda x: x['size'], reverse=True);	
 	return result
-def compare(data1, data2):
-	combined = zip(data1, data2)
-	for t in combined:
-		d1 = t[0]
-		d0 = t[1]
-		print d0['key'], ", ", d0['size'] ,", ", d0['key'], ", ",  d1['size']
+def compare(data1, data2, upto):
+	if len(data1)!=len(data2):
+		print "fucked up"
+	l = max(len(data1), len(data2))
+	for i in xrange(l):
+		if (i+1)>upto: 
+			continue
+		print 'rank ------------------------------------ ', i+1
+		if i<len(data1):
+			print data1[i]['key'], ": ", data1[i]['size']
+		if i<len(data2):
+			print data2[i]['key'], ": ", data2[i]['size']
+
 if __name__ == "__main__":
 	# open remote database
 	client 	= pymongo.MongoClient('54.69.103.85', 27017)
@@ -58,15 +65,18 @@ if __name__ == "__main__":
 	autoCabinet = rank('cabinet', autoLogged)
 	autoDept	= rank('department', autoLogged)
 	autoProgram = rank('program', autoLogged)
+
 	userCabinet = rank('cabinet', userSpecified)
 	userDept	= rank('department', autoLogged)
 	userProgram = rank('program', userSpecified)	
-	print "Cabinet =============="
-	compare(userCabinet[-10:], autoCabinet[-10:])
-	print "Department =============="
-	compare(userDept[-10:], autoDept[-10:])
-	print "Program =============="
-	compare(userProgram[-10:], autoProgram[-10:])
+	print "Cabinet ===================================================================================="
+	# compare(userCabinet, autoCabinet, 10)
+	print "Department ===================================================================================="
+	# compare(userDept, autoDept, 10)
+	print "Program ===================================================================================="
+	# compare(userProgram, autoProgram, 10)
+	
+	# print userProgram[-10:]
 	# print autoProgram;
 	# localClient = pymongo.MongoClient('localhost', 27017)
 	# localDb 	= localClient.socialdoi

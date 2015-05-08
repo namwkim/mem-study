@@ -10,10 +10,12 @@ if __name__ == "__main__":
 	# open remote database
 	client 	= pymongo.MongoClient('54.69.103.85', 27017)
 	db 		= client.socialdoi
+
 	allLogs 	= db.naviHistLogsCtrl2.find({})
 
 	localClient = pymongo.MongoClient('localhost', 27017)
 	localDb 	= localClient.socialdoi
+	localDb.logs.remove({})
 	print 'Start copying records'
 	i=0
 	for log in allLogs:
