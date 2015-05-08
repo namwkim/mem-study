@@ -281,7 +281,7 @@
 	                .attr("data-bootstro-step", 2)
                 $('#finish-btn').addClass("bootstro")
 	                .attr("data-bootstro-title", "Finish the Task")
-	                .attr("data-bootstro-content", "You will need to find three programs to finish the task.")
+	                .attr("data-bootstro-content", "You will need to find five programs to finish the task.")
 	                .attr("data-bootstro-placement", "left")
 	                .attr("data-bootstro-step", 3)
 
@@ -472,9 +472,11 @@
 						<div class="col-md-12">
 							<h2>Budget Challenge</h2>
 							<p class="text-justify">
-								In this HIT you will be presented with a tree visualization of a government budget and asked to find <strong>three</strong> budget programs <strong>as fast as possible</strong>.
+								In this HIT you will be presented with a tree visualization of a government budget and asked to find <strong>five</strong> budget programs <strong>as fast as possible</strong>.
 								<br><br>
 								The HIT should take about 5 ~ 10 minutes to complete. Your screen size should be at least "1280x1024". We will provide you a bonus based on performance.
+								<br><br>
+								<strong class="alert-danger"> If you have taken a variant of this study, please do not participate! </strong>
 							</p><br>
 							<img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/budget-study-overview-control.png">
 							<br>
@@ -499,7 +501,7 @@
 								<strong>What your participation in this study will involve:</strong><br>
 								<ul>
 									<li>Reading a short summary of relevant background information.</li>
-									<li>Using a budget visualization interface to find three budget items.</li>
+									<li>Using a budget visualization interface to find five budget items.</li>
 								</ul>					
 								
 								<br>
@@ -579,11 +581,11 @@
 						<div class="col-md-12">
 							<h2>Budget Challenge Instruction</h2>
 							<p class="text-justify">
-								In this HIT you will be presented with a tree visualization of a government budget and asked to find <strong>three</strong> budget programs <strong>as fast as possible</strong>.
+								In this HIT you will be presented with a tree visualization of a government budget and asked to find <strong>five</strong> budget programs <strong>as fast as possible</strong>.
 								<br><br>
 								<!--You will be paid <strong>$0.40</strong> for participating in this study which is expected to last about <strong>5 minutes</strong>.
 								<br><br>-->
-								The visualization has three levels representing the hierarchy of budget management: cabinets, departments, and programs. You need to navigate through the budget data in such hierarchical order; that is, clicking a cabinet will reveal related departments and similarly clicking a department will reveal related programs. Once a target program is selected, you can add the program to a list. <strong> You can finish the task only when "correct three target budget programs" are added to the list</strong>.
+								The visualization has three levels representing the hierarchy of budget management: cabinets, departments, and programs. You need to navigate through the budget data in such hierarchical order; that is, clicking a cabinet will reveal related departments and similarly clicking a department will reveal related programs. Once a target program is selected, you can add the program to a list. <strong> You can finish the task only when "correct five target budget programs" are added to the list</strong>.
 								<br><br>
 								<strong class="alert-info">The size of each circle</strong> represents <strong>the degree of interestingness</strong> of each item.
 								<br><br>
@@ -606,7 +608,7 @@
 						<div class="col-md-12">
 							<h2>Budget Challenge Instruction</h2>
 							<p class="text-justify">
-								Great job! Now you will start the real study. The real study will be just like the practice you just did, except a bit longer and <strong>a real task of finding three budget programs </strong>  provided.			
+								Great job! Now you will start the real study. The real study will be just like the practice you just did, except a bit longer and <strong>a real task of finding five budget programs </strong>  provided.			
 								<br><br>
 								Please <strong>click the "Start" button</strong> below when you are ready to begin.						
 							</p>
@@ -691,7 +693,7 @@
 											<tr>
 												<td id="finish-btn" colspan="2">
 													<div id="finishWarning" style="display:none" class="alert alert-danger" role="alert">
-												<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>Please add "correct" three target programs!</div>
+												<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>Please add "correct" five target programs!</div>
 													<button type="button" style="width:100%" class="btn btn-success" aria-label="Left Align" ng-click="Finish()"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Finish
 													</button>
 												</td>
