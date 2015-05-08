@@ -35,8 +35,8 @@
 				$scope.selected = null;
 				$scope.solution = [
 					"Homeland Security",
-					"Public Health Services",
-					"Housing Development",
+					"Employee Assistance",
+					"Voter Registration",
 					"Revenue Monitoring",
 					"Small & Local Business"
 				]
