@@ -34,7 +34,7 @@ router.get('/vistest', function(req, res) {
 });
 router.get('/interests', function(req, res){
     var db = req.socialdoi;
-    db.collection('naviHistLogsCtrl').find().toArray(function(err, result){
+    db.collection('naviHistLogsCtrl2').find().toArray(function(err, result){
         var selected = _.chain(result)
                         .filter(function(d) { return d.action=="finish"})
                         .map(function(d){ return JSON.parse(d.data.selectedPrograms); })
@@ -65,7 +65,7 @@ router.get('/interests', function(req, res){
 });
 router.get('/navihist', function(req, res){
     var db = req.socialdoi;
-    db.collection('naviHistLogsCtrl').find().toArray(function(err, result){
+    db.collection('naviHistLogsCtrl2').find().toArray(function(err, result){
         var selected = _.chain(result)
                         .filter(function(d) { return d.action=="select" && d.data.is_practice=="false"})
                         .map(function(d){ return d.data.selectedBudget; })

@@ -49,6 +49,7 @@ if __name__ == "__main__":
 	for log in interests:
 		if survey.has_key(log['hit_id']+'/'+log['assignment_id'])==False: # if no survey exists, discard this data
 			continue	
+
 		userSpecified = userSpecified + json.loads(log['data']);
 	autoLogged = [];	
 	for log in navigation:
@@ -70,11 +71,11 @@ if __name__ == "__main__":
 	userDept	= rank('department', autoLogged)
 	userProgram = rank('program', userSpecified)	
 	print "Cabinet ===================================================================================="
-	# compare(userCabinet, autoCabinet, 10)
+	compare(userCabinet, autoCabinet, 10)
 	print "Department ===================================================================================="
-	# compare(userDept, autoDept, 10)
+	compare(userDept, autoDept, 10)
 	print "Program ===================================================================================="
-	# compare(userProgram, autoProgram, 10)
+	compare(userProgram, autoProgram, 10)
 	
 	# print userProgram[-10:]
 	# print autoProgram;
