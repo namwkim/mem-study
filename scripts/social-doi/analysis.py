@@ -68,7 +68,7 @@ if __name__ == "__main__":
 	autoProgram = rank('program', autoLogged)
 
 	userCabinet = rank('cabinet', userSpecified)
-	userDept	= rank('department', autoLogged)
+	userDept	= rank('department', userSpecified)
 	userProgram = rank('program', userSpecified)	
 	print "Cabinet ===================================================================================="
 	compare(userCabinet, autoCabinet, 10)
@@ -76,7 +76,14 @@ if __name__ == "__main__":
 	compare(userDept, autoDept, 10)
 	print "Program ===================================================================================="
 	compare(userProgram, autoProgram, 10)
+
+	print "userCabinet/autoCabinet = ", len(userCabinet)*1.0/len(autoCabinet)*100.0
+	print "userDept/autoDept = ", len(userDept)*1.0/len(autoDept)*100.0
+	print "userProgram/autoProgram = ", len(userProgram)*1.0/len(autoProgram)*100.0
 	
+	print "mean of visits in auto program: ", np.mean(map(lambda x: x['size'], autoProgram)),", ", np.std(map(lambda x: x['size'], autoProgram))
+	print "mean of visits in auto dept: ", np.mean(map(lambda x: x['size'], autoDept)),", ", np.std(map(lambda x: x['size'], autoDept))
+	print "mean of visits in auto cabinet: ", np.mean(map(lambda x: x['size'], autoCabinet)), ", ", np.std(map(lambda x: x['size'], autoCabinet))
 	# print userProgram[-10:]
 	# print autoProgram;
 	# localClient = pymongo.MongoClient('localhost', 27017)

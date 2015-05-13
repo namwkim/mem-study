@@ -28,6 +28,10 @@ router.get('/doitree', function(req, res) {
     console.log(req.params);
     res.render('./socialdoi/doitree', { title: 'Budget Study' });
 });
+router.get('/doitree2', function(req, res) {
+    console.log(req.params);
+    res.render('./socialdoi/doitree2', { title: 'Budget Study' });
+});
 router.get('/vistest', function(req, res) {
     console.log(req.params);
     res.render('./socialdoi/vistest', { title: 'Budget Study' });

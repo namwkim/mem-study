@@ -30,13 +30,13 @@ if __name__ == "__main__":
 	# open remote database
 	client 	= pymongo.MongoClient('54.69.103.85', 27017)
 	db 		= client.socialdoi
-	filteredCtrl 	= db.naviHistLogsCtrl.find({'action':'survey'})
-	interestsCtrl 	= db.naviHistLogsCtrl.find({'action':'finish'});
-	navigationCtrl 	= db.naviHistLogsCtrl.find({'action':'select'});
+	filteredCtrl 	= db.naviHistLogsCtrl2.find({'action':'survey'})
+	interestsCtrl 	= db.naviHistLogsCtrl2.find({'action':'finish'});
+	navigationCtrl 	= db.naviHistLogsCtrl2.find({'action':'select'});
 
-	filteredTrmt 	= db.naviHistLogsTreatment.find({'action':'survey'})
-	interestsTrmt 	= db.naviHistLogsTreatment.find({'action':'finish'});
-	navigationTrmt 	= db.naviHistLogsTreatment.find({'action':'select'});
+	filteredTrmt 	= db.naviHistLogsTreatment2.find({'action':'survey'})
+	interestsTrmt 	= db.naviHistLogsTreatment2.find({'action':'finish'});
+	navigationTrmt 	= db.naviHistLogsTreatment2.find({'action':'select'});
 	
 
 
@@ -95,14 +95,16 @@ if __name__ == "__main__":
 	tiqr25 	= np.percentile(treatment, 25)
 	tiqr 	= (tiqr75-tiqr25)
 	print "median: ", tmd
-	print "1.5*iqr: ", 1.5*(tiqr75-tiqr25)
+	print "1.5*iqr: ", 1.5*tiqr
 	for val in treatment:
-		if val<(tmd-1.5*tiqr) or tmd>(cmd+1.5*tiqr):
+		if val<(tmd-1.5*tiqr) or val>(tmd+1.5*tiqr):
 			print val
 			treatment.remove(val);
 	print "meam: ", np.mean(treatment)
 	print "std: ", np.std(treatment)
 	print treatment
+
+	print stats.ttest_ind(treatment, control)
 	# # ranking programs
 	# autoCabinet = rank('cabinet', autoLogged)
 	# autoDept	= rank('department', autoLogged)
