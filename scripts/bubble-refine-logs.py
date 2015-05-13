@@ -5,8 +5,9 @@ if __name__ == "__main__":
 	#client 	= pymongo.MongoClient('54.69.103.85', 27017)
 	client 	= pymongo.MongoClient('localhost', 27017)
 	db 		= client.bubblestudy
-	logs 	= db.logs
-
+	logs 	= db.logs24
+	toCopy 	= db.refinedLogs24
+	toCopy.remove({})
 
 	#collect survey data
 	filtered 	= logs.find({'action':'survey'})
@@ -46,8 +47,21 @@ if __name__ == "__main__":
 		 	clicks.append(x)
 	#print clicks
 
+	#collect desc-change data
+	filtered 	= logs.find({'action':'desc-change', 'data.is_practice':'false'})
+	descChanges = {}
+	for x in filtered:
+		if survey.has_key(x['hit_id']+'/'+x['assignment_id']) and \
+		 	desc.has_key(x['hit_id']+'/'+x['assignment_id']+ '/' + x['data']['image']):
+		 	if descChanges.has_key(x['data']['image']))==False:
+				descChanges[x['data']['image'])] = {}
+			if descChanges[x['data']['image'])].has_key(x['hit_id']+'/'+x['assignment_id']):
+				descChanges[x['data']['image'])][x['hit_id']+'/'+x['assignment_id']] = []
+		 	descChanges[x['data']['image'])][x['hit_id']+'/'+x['assignment_id']].append(x);
+
+
 	#clear existing collection
-	db.refinedLogs.remove({})
+	
 
 
 	#group by images 
@@ -64,18 +78,23 @@ if __name__ == "__main__":
 		for ak, ag in itertools.groupby(sortedByAsmt, key=lambda x : x['hit_id']+'/'+x['assignment_id']):
 	    	#sort clicks
 			sortedClicks = sorted(ag, key=lambda x: x['timestamp'])	    	
+
+			#sort desc-changes
+			sortedDescChgs = sorted(descChanges[k][ak], key=lambda x: x['timestamp'])
 			asmt = {}
 			asmt["id"]		= ak
 			asmt["clicks"] 	= sortedClicks
 			asmt["desc"] 	= desc[ak+'/'+k]
 			asmt["survey"] 	= survey[ak]
+			asmt["desc_change"] = sortedDescChgs
+
 			assignments.append(asmt)
 			print 'assignment ID: ', ak, ', click counts: ', len(asmt["clicks"])
 
 		
 
 		print len(assignments)
-		db.refinedLogs.insert({ "image": imageName, "logs": assignments }) 
+		toCopy.insert({ "image": imageName, "logs": assignments }) 
 	
 
 	
