@@ -98,6 +98,7 @@ if __name__ == "__main__":
 						'survey': survey
 					})
 	for image, imageData in images.iteritems():
+		print image , "' asmt size: ", len(imageData['logs'])
 		# print len(imageData['logs'])
 		toCopy.insert(imageData) 
 	
