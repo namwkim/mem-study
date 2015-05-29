@@ -95,7 +95,7 @@ if __name__ == "__main__":
 						'diffs': diffs,
 						'desc': e,
 						'clicks': clicks,
-						'survey': survey
+						'survey': survey[0]
 					})
 	for image, imageData in images.iteritems():
 		print image , "' asmt size: ", len(imageData['logs'])
