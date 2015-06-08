@@ -116,8 +116,8 @@
 					if ($scope.imageType=="blurred")
 						imagePath = $scope.blurredImage
 					console.log($scope.slider)
-					var date = new Date(parseInt($scope.slider.value));
-					var diff = new Date(date.getTime() - $scope.minDate.getTime())
+					var max = new Date(parseInt($scope.slider.value));
+					var diff = new Date(max.getTime() - $scope.minDate.getTime())
 					
 					drawImage(imagePath, function(){
 						$scope.$apply(function(){
@@ -128,6 +128,27 @@
 						})
 
 			    	});		
+			    	//update description
+			    	var diffDesc = $scope.desc;
+			    	for (var i in $scope.diffs){
+			    		var d = new Date(parseInt($scope.diffs[i].timestamp));
+			    		if (d.getTime()<=max.getTime())
+			    			diffDesc = $scope.diffs[i]
+			    	}
+			    	if (diffDesc!=null){
+				    	$('#bubble-desc').empty();
+						diffDesc['data']['desc_log'].forEach(function(part){
+				            // green for additions, red for deletions
+				            // grey for common parts
+				            var color = part.added ? 'green' :
+				              part.removed ? 'red' : 'grey';
+
+				            var span = $("<span>" + part.value + "</span>");
+				            span.css("color", color);
+				            span.appendTo("#bubble-desc");
+
+			          	});			    		
+			    	}
 				}
 				$scope.onImageTypeChange = function(){
 					if (loadComplete!=1)
@@ -178,6 +199,7 @@
 			    	}	
 			    	
 			    	$scope.desc = x.desc.data.desc;
+			    	$scope.diffs = x.diffs;
 			    	$scope.survey = x.survey;
 
 			    	$scope.clickData = x.clicks;
@@ -186,15 +208,17 @@
 			    	   	
 			    	//set a time slider
 			    	$scope.minDate = new Date(parseInt($scope.clickData[0].timestamp));
-			    	$scope.slider = {}
-			    	$scope.slider.min = parseInt($scope.clickData[0].timestamp);
-			    	$scope.slider.max = parseInt($scope.clickData[$scope.clickData.length-1].timestamp);
-			    	$scope.slider.value = $scope.slider.max;
-			    	
-
-			    	console.log("mindate" + $scope.minDate);
-			    	console.log("maxdate" + new Date(parseInt($scope.clickData[$scope.clickData.length-1].timestamp)));
-			    	console.log($scope.slider)
+			    	clickMin = parseInt($scope.clickData[0].timestamp);
+			    	diffMin  = parseInt($scope.diffs[0].timestamp);
+			    	clickMax = parseInt($scope.clickData[$scope.clickData.length-1].timestamp)
+			    	diffMax = parseInt($scope.diffs[$scope.diffs.length-1].timestamp)
+			    	$scope.slider = {
+			    		min : Math.min(clickMin, diffMin),
+			    		max : Math.max(clickMax, diffMax),
+			    		value: Math.max(clickMax, diffMax)
+			    		
+			    	}
+			    	console.log($scope.slider);
 			    	//console.log(new Date(parseInt($scope.slider.value)))
 			    	// set up rating form
 			    	var imageName 		= x.clicks[0].data.image.replace(/^.*[\\\/]/, '').slice(0,-4);

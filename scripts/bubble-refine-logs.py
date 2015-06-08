@@ -73,7 +73,7 @@ if __name__ == "__main__":
 			# diffs  = filter(lambda x: x['action'] == "desc-change" and x['data']['is_practice'] == "false", asmtData)
 			
 			survey = filter(lambda x: x['action'] == "survey", asmtData)
-
+			print survey
 			marks = start + descs
 			for s, e in pairwise(marks):
 				imageName = e['data']['image'].split("/")[-1].split(".")[0]	
