@@ -1,5 +1,7 @@
 import os, pymongo, sys, datetime, csv, itertools
 from itertools import tee, izip
+import numpy as np
+
 def pairwise(iterable):
     "s -> (s0,s1), (s1,s2), (s2, s3), ..."
     a, b = tee(iterable)
@@ -15,31 +17,36 @@ if __name__ == "__main__":
 	#client 	= pymongo.MongoClient('54.69.103.85', 27017)
 	client 	= pymongo.MongoClient('localhost', 27017)
 	db 		= client.bubblestudy	
-	toCopy 	= db.refinedLogs24
-	toCopy.remove({})
+	fromCol = db.logs24
+	toCol 	= db.refinedLogs
+	toCol.remove({})
 
 	# filter data
 
 	# 1. create temp database containing filtered data
-	# open remote database
+	
 	tempHits = {}
-	sortedLogs = sorted(db.logs24.find({}), key=lambda x: x['hit_id'])
+	# sort and group by hit id
+	sortedLogs = sorted(fromCol.find({}), key=lambda x: x['hit_id'])
 	for k, g in itertools.groupby(sortedLogs, key=lambda x: x['hit_id']):
 		tempHits[k] = list(g)
 
 	print "# of HITs: ", len(tempHits.values())
+
 	print 'filtering bad data...'
 	hits = {}
-	for hitID, hitData in tempHits.iteritems():
+	
+
+	for hitID, hitData in tempHits.iteritems(): # loop over hit
 		sortedLogs = sorted(hitData, key=lambda x: x['assignment_id'])
 		print "============== ", hitID, " =============="
 		assignments = {}
-		for k, g in itertools.groupby(sortedLogs, key=lambda x: x['assignment_id']):
+		for k, g in itertools.groupby(sortedLogs, key=lambda x: x['assignment_id']): # loop over assignment
 			# print "----------- ", k, "-----------"
 			sortedLogs = sorted(list(g), key=lambda x: x['worker_id'])
 			workers = {}
 
-			for wk, wg in itertools.groupby(sortedLogs, key=lambda x: x['assignment_id']):
+			for wk, wg in itertools.groupby(sortedLogs, key=lambda x: x['worker_id']): # loop over worker
 				sortedLogs = sorted(list(wg), key=lambda x: x['timestamp'])
 				survey = filter(lambda x: x['action'] == "survey", sortedLogs)
 				start  = filter(lambda x: x['action'] == "start-experiment", sortedLogs)
@@ -63,6 +70,8 @@ if __name__ == "__main__":
 
 	print 'constructing refined logs...'
 	images = {}
+	descMap = {} # to find duplicate description
+	CLICK_THRESHOLD = 10
 	for hitID, hitData in hits.iteritems():
 		for asmtID, asmtData in hitData.iteritems():
 			# for workerID, workerData in asmtData.iteritems():
@@ -73,22 +82,34 @@ if __name__ == "__main__":
 			# diffs  = filter(lambda x: x['action'] == "desc-change" and x['data']['is_practice'] == "false", asmtData)
 			
 			survey = filter(lambda x: x['action'] == "survey", asmtData)
-			print survey
+			# print survey
 			marks = start + descs
 			for s, e in pairwise(marks):
 				imageName = e['data']['image'].split("/")[-1].split(".")[0]	
 				
+				# 1) there should not be duplicate descritions (other option: remove all asmts when duplicate found)
+				desc = e['data']['desc']
+				if descMap.has_key(desc)==True:
+					print "duplicate description found"
+					continue
 
 				if images.has_key(imageName)==False:
 					images[imageName] = { 'image': imageName, 'logs': [] }
 
 
-				# filter diffs data
+				# filter diffs data based on start and end timestamp
 				diffs = filter(lambda x: x['action'] == "desc-change" and x['data']['is_practice'] == "false" \
 					and s['timestamp']<= x['timestamp'] and x['timestamp']<e['timestamp'], asmtData)
 
 				clicks = filter(lambda x: x['action'] == "click" and x['data']['is_practice'] == "false"\
 					and x['data']['image'] == e['data']['image'], asmtData)
+
+				# 2) too small clicks (how can they describe without revealing images, suspicious!)
+				if len(clicks)<=CLICK_THRESHOLD:
+					print asmtID, ", ", imageName, " has too small click counts (=", len(clicks), ")"
+					continue
+
+
 				print 'saving... ', imageName, " (diffs, clicks = ", len(diffs), ", ", len(clicks), ")"
 				images[imageName]['logs'].append({
 						'id': hitID+"/"+asmtID,
@@ -98,9 +119,30 @@ if __name__ == "__main__":
 						'survey': survey[0]
 					})
 	for image, imageData in images.iteritems():
+		# 3) outlier removal
+		# calc stats
+		clickCounts = []
+		for log in imageData['logs']:
+			clickCounts.append(len(log['clicks']))
+		median 	= np.median(clickCounts)
+		iqr75 	= np.percentile(clickCounts, 75)
+		iqr25   = np.percentile(clickCounts, 25)
+		iqr 	= iqr75-iqr25;
+
+		filtered = []
+		for log in imageData['logs']:
+			val = len(log['clicks'])
+			if val<(iqr25-3*iqr) or val>(iqr75+3*iqr):
+				print log['id'], " is removed as an outlier! (clickCount: ", val, ")"
+			else:
+				filtered.append(log)
+
+		imageData['logs'] = filtered
+
 		print image , "' asmt size: ", len(imageData['logs'])
+		print "median click count: ", median, ", iqr range: ", iqr25, " ~ ", iqr75
 		# print len(imageData['logs'])
-		toCopy.insert(imageData) 
+		toCol.insert(imageData) 
 	
 	print len(images), " images saved."
 				
@@ -204,7 +246,7 @@ if __name__ == "__main__":
 		
 
 	# 	print len(assignments)
-	# 	toCopy.insert({ "image": imageName, "logs": assignments }) 
+	# 	toCol.insert({ "image": imageName, "logs": assignments }) 
 	
 
 	

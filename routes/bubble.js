@@ -94,12 +94,13 @@ router.get('/ratings', function(req, res){
 router.post('/rating', function(req, res){
     var db      = req.bubbledb;
     var rating  = {};
-    rating.hit_id            = req.body.hit_id;
-    rating.assignment_id     = req.body.assignment_id;
-    rating.image              = req.body.image;
-    rating.rater              = req.body.rater;  
-    rating.quality            = req.body.quality;
-    rating.suspicious         = req.body.suspicious;   
+    rating.hit_id               = req.body.hit_id;
+    rating.assignment_id        = req.body.assignment_id;
+    rating.image                = req.body.image;
+    rating.rater                = req.body.rater;  
+    rating.relevancy            = req.body.relevancy;
+    rating.accuracy             = req.body.accuracy;  
+    rating.comprehensive        = req.body.comprehensive;
     console.log(rating);
     db.collection('expertRatings').update(
         {image: rating.image, assignment_id: rating.assignment_id, rater: rating.rater}, 

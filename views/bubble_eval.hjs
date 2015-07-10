@@ -18,7 +18,6 @@
 	    <script src="/bower_components/angular/angular.min.js"></script>	    
 	    <script src="/bower_components/spinjs/spin.js"></script>
 	    <script src="/bower_components/seiyria-bootstrap-slider/dist/bootstrap-slider.min.js"></script>
-	    <script src="/bower_components/angular-bootstrap-slider/slider.js"></script>
 	    <script src="/javascripts/turkify.js"></script>
 	    
 	    <script type="text/javascript">
@@ -56,7 +55,7 @@
 					LoadMore(res.lastID, callback)
 				});
 			}*/
-	    	var app = angular.module('myApp', ['ui.bootstrap-slider'], function($interpolateProvider) {
+	    	var app = angular.module('myApp', [], function($interpolateProvider) {
 				$interpolateProvider.startSymbol('<%');
 				$interpolateProvider.endSymbol('%>');
 			});
@@ -73,27 +72,38 @@
 	            };
 	        });
 	    	app.controller('imageCtrl', function($scope, $http) {
+
 			    $scope.pages = {};
 			    $scope.totalPage = 4;
 			    $scope._ = window._;
 			    $scope.imageType = "original";
 			    $scope.seeBubbles = true;
-			    //$scope.totalBubbles = 0;
+			    $scope.evalMode = true;
+			    //scrollbar
+			    var slider = new Slider("#bSlider", {
+			    	formatter: function(value) {
+						if ($scope.minDate==undefined)
+							return value
+						
+						var date = new Date(parseInt(value));
+						var diff = new Date(date.getTime() - $scope.minDate.getTime())
+						return  diff.getMinutes() + ":" + diff.getSeconds();
+					}
+			    });
+			    slider.on("change", function(oldVal, newVal){
+						if (loadComplete!=1)
+							return;
+
+						console.log("onSlide" + newVal);
+						$scope.updateCanvas();							
+				})
 
 			    $scope.rater = gup("rater")
 			    if ($scope.rater!="Michelle" && $scope.rater!="Zoya" && $scope.rater!="Nam"){
-			    	alert("Invalid Access!")
-			    	return;
+			    	$scope.rater= "Nam";
+			    	$scope.evalMode = false;
 			    }
 
-				$scope.formaterFn = function(value) {
-					if ($scope.minDate==undefined)
-						return value
-					
-					var date = new Date(parseInt(value));
-					var diff = new Date(date.getTime() - $scope.minDate.getTime())
-					return  diff.getMinutes() + ":" + diff.getSeconds();
-				};
 				$scope.updateRemaining = function(){
 					$scope.doneImages = 0;
 					for (var i in $scope.images){
@@ -104,19 +114,13 @@
 						if ($scope.assignments[i].rating && $scope.assignments[i].rating.quality!=null) $scope.doneAssignments++;
 					}
 				}
-				$scope.onSlide = function(e, value){
-					if (loadComplete!=1)
-						return;
-
-					console.log("onSlide" + value);
-					$scope.updateCanvas();
-				};
 				$scope.updateCanvas = function(){					
 					var imagePath = $scope.imagePath
 					if ($scope.imageType=="blurred")
 						imagePath = $scope.blurredImage
-					console.log($scope.slider)
-					var max = new Date(parseInt($scope.slider.value));
+					console.log(slider)
+					var max = new Date(parseInt(slider.getValue()));
+
 					var diff = new Date(max.getTime() - $scope.minDate.getTime())
 					
 					drawImage(imagePath, function(){
@@ -129,7 +133,7 @@
 
 			    	});		
 			    	//update description
-			    	var diffDesc = $scope.desc;
+			    	var diffDesc = null;//$scope.desc;
 			    	for (var i in $scope.diffs){
 			    		var d = new Date(parseInt($scope.diffs[i].timestamp));
 			    		if (d.getTime()<=max.getTime())
@@ -137,6 +141,7 @@
 			    	}
 			    	if (diffDesc!=null){
 				    	$('#bubble-desc').empty();
+				    	console.log($scope.diffs)
 						diffDesc['data']['desc_log'].forEach(function(part){
 				            // green for additions, red for deletions
 				            // grey for common parts
@@ -162,7 +167,7 @@
 					console.log("onSeeBubblesCheck");
 					$scope.updateCanvas();	
 					//$("#bSlider").attr("enabled", $scope.seeBubbles);
-					console.log($("#bSlider").attr("enabled"));
+					// console.log($("#bSlider").attr("enabled"));
 				}
 				$scope.onRating = function(){
 					//update rating status for image
@@ -198,7 +203,7 @@
 						$(e.currentTarget).addClass("active");			    		
 			    	}	
 			    	
-			    	$scope.desc = x.desc.data.desc;
+			    	//$scope.desc = x.desc.data.desc;
 			    	$scope.diffs = x.diffs;
 			    	$scope.survey = x.survey;
 
@@ -212,13 +217,18 @@
 			    	diffMin  = parseInt($scope.diffs[0].timestamp);
 			    	clickMax = parseInt($scope.clickData[$scope.clickData.length-1].timestamp)
 			    	diffMax = parseInt($scope.diffs[$scope.diffs.length-1].timestamp)
-			    	$scope.slider = {
-			    		min : Math.min(clickMin, diffMin),
-			    		max : Math.max(clickMax, diffMax),
-			    		value: Math.max(clickMax, diffMax)
+
+			    	slider.setAttribute("min", Math.min(clickMin, diffMin));
+			    	slider.setAttribute("max", Math.max(clickMax, diffMax));
+			    	slider.setValue(Math.max(clickMax, diffMax), false, true);
+			    	console.log("slider max: "+ slider.getAttribute("max", Math.min(clickMin, diffMin)))
+			    	// $scope.slider = {
+			    	// 	max : Math.min(clickMin, diffMin),
+			    	// 	min : Math.max(clickMax, diffMax),
+			    	// 	value: Math.max(clickMax, diffMax)
 			    		
-			    	}
-			    	console.log($scope.slider);
+			    	// }
+			    	// console.log($scope.slider);
 			    	//console.log(new Date(parseInt($scope.slider.value)))
 			    	// set up rating form
 			    	var imageName 		= x.clicks[0].data.image.replace(/^.*[\\\/]/, '').slice(0,-4);
@@ -233,11 +243,11 @@
 			    			assignment_id: assignment_id,
 			    			image: imageName,
 			    			rater: $scope.rater,
-			    			suspicious: null,
-			    			quality: null
+			    			accuracy: null,
+			    			relevancy: null,
+			    			comprehensive: null
 			    		}
 			    	}
-		    		
 			    	//console.log($scope.rating);
 
 
@@ -283,15 +293,15 @@
 						loadComplete = 0;
 			    		$http.get('/bubble/pagelogs', {params: query})
 		    			.success(function(res){
-
-							//load ratings (TODO: improve duplicate loadings)
+    						    						//update image list
+							$scope.totalPage = res.totalPage;
+							
+							$scope.images = $scope.pages[pageNum] = res.logs;	
+							console.log($scope.images);
+								//load ratings (TODO: improve duplicate loadings)
 		    				$http.get('/bubble/ratings', {params: {rater: $scope.rater}})
 	    					.success(function(ratings){
-	    						
-	    						//update image list
-								$scope.totalPage = res.totalPage;
-								
-								$scope.images = $scope.pages[pageNum] = res.logs;	
+	    						console.log(ratings);
 
 	    						if (ratings.length>0){
 	    							$scope.ratings = {};
@@ -329,9 +339,8 @@
 	    						$('#image-list').fadeTo("fast", 1.0);	
 	    						loadComplete = 1;
 	    						
-	    					})	
-							
-												
+	    						
+	    					})		
 							
 		    			})
 
@@ -523,7 +532,7 @@
 		    </div>
 		</div>
 	  	<div class="container">
-	  		<h3><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Bubble Monitoring Interface <small>(<% rater %>)</small></h3>
+	  		<h3><span class="glyphicon glyphicon-search" aria-hidden="true"></span> Bubble Monitoring Interface <small ng-if="evalMode">(<% rater %>)</small></h3>
 	  		<div class="row">
 	  			<div class="col-md-2">
 	  				<div  id="image-panel" class="panel panel-default">
@@ -533,7 +542,7 @@
 						<!-- Pagination -->
 						
 						<nav class="text-center">
-							<div><% doneImages %>/<% images.length %></div>
+							<div ng-if="evalMode"><% doneImages %>/<% images.length %></div>
 						  	<ul class="pagination pagination-sm" style="margin:5px 0">						    
 						    <li class="animate-repeat" ng-repeat="x in _.range(1,totalPage+1)" ng-class="{active: $first}" ng-click="onClickPage($event, x)" repeat-end>
 						    	<a href="#"><% x %></a>
@@ -551,7 +560,7 @@
 	  				<div class="panel panel-default">
 						<!-- Default panel contents -->
 						<div class="panel-heading">AssignmentID</div>
-						<div align="center"><% doneAssignments %>/<% assignments.length %></div>
+						<div ng-if="evalMode" align="center"><% doneAssignments %>/<% assignments.length %></div>
 						<!-- List group -->
 						<div id="assignment-list" class="list-group" style="max-height:600px;overflow-y:scroll;">
 							<a href="#" class='list-group-item' ng-repeat="x in assignments" ng-class="{active: $first}" ng-click="onClickAssmt($event, x)" style="word-break: break-all;" repeat-end><span class="glyphicon glyphicon-ok text-success" style="margin-right:8px;" aria-hidden="true" ng-show="x.rating?x.rating.quality!=null:false"></span><% x.survey.assignment_id %></a>
@@ -574,34 +583,40 @@
 						    	<div role="tabpanel" class="tab-pane fade in active" id="bubble">
 						    		<div class="well">
 						    			<p id="bubble-desc" ><% desc %></p>
-						    			<div class="row">
+						    			<div class="row" ng-if="evalMode">
 						    				<div class="col-md-11">
-								    		<div class="input-group">
-								    			<label class="radio-inline" ><input type="radio" name="rating" ng-model="rating.quality" value="1" ng-change="onRating()">Poor</label>
-												<label class="radio-inline" ><input type="radio" name="rating" ng-model="rating.quality" value="2" ng-change="onRating()">Fair</label>													
-												<label class="radio-inline" ><input type="radio" name="rating" ng-model="rating.quality" value="3" ng-change="onRating()">Good</label>													
-												<label class="radio-inline" ><input type="radio" name="rating" ng-model="rating.quality" value="4" ng-change="onRating()">Very Good</label>													
-												<label class="radio-inline" ><input type="radio" name="rating" ng-model="rating.quality" value="5" ng-change="onRating()">Excellent</label>	
-											</div>
-											<label class="checkbox-inline"><input type="checkbox" ng-model="rating.suspicious" ng-change="onSuspicious()">Suspicious (e.g., bubbles and descriptions do not match each other.)</label>	
+									    		<div class="input-group">
+									    			<strong>Relevancy: </strong><br>
+									    			<span style="margin-left:20px;" ></span>
+									    			<label class="radio-inline" ><input type="radio" name="relevancy" ng-model="rating.relevancy" value="1" ng-change="onRating()">Mostly Relevant</label>
+													<label class="radio-inline" ><input type="radio" name="relevancy" ng-model="rating.relevancy" value="2" ng-change="onRating()">Mostly Irrelevant</label>													
+
+												</div>
+												<div class="input-group">
+													<strong>Accuracy: </strong><br>
+													<span style="margin-left:20px;" ></span>
+													<label class="radio-inline" ><input type="radio" name="accuracy" ng-model="rating.accuracy" value="3" ng-change="onRating()">Mostly Accurate</label>													
+													<label class="radio-inline" ><input type="radio" name="accuracy" ng-model="rating.accuracy" value="4" ng-change="onRating()">Mostly Inaccurate</label>	
+												</div>	
+												<div class="input-group">
+													<strong>Comprehensiveness: </strong><br>
+													<span style="margin-left:20px;" ></span>
+													<label class="radio-inline" ><input type="radio" name="comprehensive" ng-model="rating.comprehensive" value="3" ng-change="onRating()">Comprehensive</label>													
+													<label class="radio-inline" ><input type="radio" name="comprehensive" ng-model="rating.comprehensive" value="4" ng-change="onRating()">Incomprehensive</label>	
+												</div>	
 											</div>
 											<div class="col-md-1">
 												<a id="helpPopover" data-html="true" href="" data-toggle="popover" data-placement="left" title="Help" 
 												data-content="
 													<div>
 														<p>
-															<strong>Poor</strong>: Not correct, gibberish, or irrelevant <br>
-															<strong>Fair</strong>: Relevant, but incoherent description or incorrect interpretation<br>
-															<strong>Good</strong>: Main trend described, or just title or paragraph<br>
-															<strong>Very Good</strong>: Main trend with some additional details<br>
-															<strong>Excellent</strong>: Thourougly described<br>
+															<strong>Relevancy</strong>: whether text description is relevant to the image. <br>
+															<strong>Correctness</strong>: whether text description is correct in terms of information presented in the image.
 														</p>
 													<div>
 												"><span class="glyphicon glyphicon-question-sign lead" style="margin-right:8px;font-size:24px" aria-hidden="true"></a>	
 											</div>		
-										</div>							
-									
-
+										</div>	
 						    		</div>
 						    		<div class="panel panel-default">
 										<div class="panel-body">
@@ -614,7 +629,9 @@
 												</div>
 												<div class="col-md-8">
 													<label class="checkbox-inline"><input type="checkbox" ng-model="seeBubbles" ng-change="onSeeBubblesCheck()">See Bubbles (<span><% totalBubbles %>/<% clickData.length %></span>)</label>
-													<slider id="bSlider" ng-model="slider.value" min="slider.min" step="slider.step" max="slider.max" formater="formaterFn" on-slide="onSlide($event, slider.value)" ></slider>		
+													<input id="bSlider" ng-model="slider.value" type="text" data-slider-min="0" data-slider-max="0" data-slider-value="0"/>
+
+													<!-- <slider id="bSlider" ng-model="slider.value" min="slider.min" step="slider.step" max="slider.max" formater="formaterFn" on-slide="onSlide($event, slider.value)" ></slider>	 -->	
 												</div>
 								    		</div>
 								    		<br>
