@@ -122,7 +122,7 @@
 					var max = new Date(parseInt(slider.getValue()));
 
 					var diff = new Date(max.getTime() - $scope.minDate.getTime())
-					
+					console.log(diff);
 					drawImage(imagePath, function(){
 						$scope.$apply(function(){
 							if ($scope.seeBubbles)
