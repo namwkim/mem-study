@@ -629,7 +629,7 @@
 												</div>
 												<div class="col-md-8">
 													<label class="checkbox-inline"><input type="checkbox" ng-model="seeBubbles" ng-change="onSeeBubblesCheck()">See Bubbles (<span><% totalBubbles %>/<% clickData.length %></span>)</label>
-													<input id="bSlider" ng-model="slider.value" type="text" data-slider-min="0" data-slider-max="0" data-slider-value="0"/>
+													<input id="bSlider" type="text"/>
 
 													<!-- <slider id="bSlider" ng-model="slider.value" min="slider.min" step="slider.step" max="slider.max" formater="formaterFn" on-slide="onSlide($event, slider.value)" ></slider>	 -->	
 												</div>
