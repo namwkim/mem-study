@@ -13,11 +13,11 @@ router.get('/', function(req, res) {
 
 router.get('/admin', function(req, res) {
     console.log(req.params);
-    res.render('bubble_admin', { title: 'Bubble Experiment Admin' });
+    res.render('bubble_eval', { title: 'Bubble Experiment Admin' });
 });
 router.get('/eval', function(req, res) {
     console.log(req.params);
-    res.render('bubble_eval', { title: 'Bubble Evaluation' });
+    res.render('bubble_eval', { title: 'Bubble Evaluation Admin' });
 });
 
 router.get('/images', function(req, res){
@@ -87,7 +87,7 @@ router.get('/ratings', function(req, res){
     var db = req.bubbledb;
     var rater = req.query.rater;
     console.log(rater);
-    db.collection('expertRatings').find({ rater: rater}).toArray(function(err, result){
+    db.collection('expertRatings24').find({ rater: rater}).toArray(function(err, result){
         res.json(result);
     });
 })
@@ -102,7 +102,7 @@ router.post('/rating', function(req, res){
     rating.accuracy             = req.body.accuracy;  
     rating.comprehensive        = req.body.comprehensive;
     console.log(rating);
-    db.collection('expertRatings').update(
+    db.collection('expertRatings24').update(
         {image: rating.image, assignment_id: rating.assignment_id, rater: rating.rater}, 
         rating, 
         { upsert: true }, 
@@ -129,8 +129,8 @@ router.get('/pagelogs', function(req, res){
     // if (lastID!=''){
     //     query._id = { '$gt':req.toObjectID(lastID) };
     // }
-    db.collection('refinedLogs').count(function(err, count){
-        db.collection('refinedLogs').find({}, null, {
+    db.collection('refinedLogs24').count(function(err, count){
+        db.collection('refinedLogs24').find({}, null, {
             limit:  pageSize,
             skip:   pageNum > 1 ? ((pageNum - 1) * pageSize) : 0,
             sort: {
