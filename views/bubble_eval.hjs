@@ -614,7 +614,7 @@
 													<div>
 														<p>
 															<strong>Relevancy</strong>: whether text description is relevant to the image. <br>
-															<strong>Correctness</strong>: whether text description is correct in terms of information presented in the image.
+															<strong>Accuracy</strong>: whether text description is correct in terms of information presented in the image.
 														</p>
 													<div>
 												"><span class="glyphicon glyphicon-question-sign lead" style="margin-right:8px;font-size:24px" aria-hidden="true"></a>	
