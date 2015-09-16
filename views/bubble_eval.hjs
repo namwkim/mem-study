@@ -293,12 +293,7 @@
 						loadComplete = 0;
 			    		$http.get('/bubble/pagelogs', {params: query})
 		    			.success(function(res){
-    						    						//update image list
-							$scope.totalPage = res.totalPage;
-							
-							$scope.images = $scope.pages[pageNum] = res.logs;	
-							console.log($scope.images);
-								//load ratings (TODO: improve duplicate loadings)
+
 		    				$http.get('/bubble/ratings', {params: {rater: $scope.rater}})
 	    					.success(function(ratings){
 	    						console.log(ratings);
@@ -338,7 +333,12 @@
 	    						$("#image-panel").find('.spinner').remove();
 	    						$('#image-list').fadeTo("fast", 1.0);	
 	    						loadComplete = 1;
-	    						
+	    						//update image list
+								$scope.totalPage = res.totalPage;
+								
+								$scope.images = $scope.pages[pageNum] = res.logs;	
+								console.log($scope.images);
+								//load ratings (TODO: improve duplicate loadings)
 	    						
 	    					})		
 							
