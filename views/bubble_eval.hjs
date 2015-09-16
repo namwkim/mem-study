@@ -111,7 +111,7 @@
 					}
 					$scope.doneAssignments = 0;
 					for (var i in $scope.assignments){
-						if ($scope.assignments[i].rating && $scope.assignments[i].rating.relevancy!=null && $scope.assignments[i].rating.accuracy!=null&& $scope.assignments[i].rating.comprehensive!=null) $scope.doneAssignments++;
+						if ($scope.assignments[i].rating && $scope.assignments[i].rating.relevancy!=null && $scope.assignments[i].rating.accuracy!=null) $scope.doneAssignments++;
 					}
 				}
 				$scope.updateCanvas = function(){					
@@ -175,10 +175,11 @@
 					if (img.doneRating==false){
 						var hasAll = 0;
 						for (var j in img.logs){
-							if (img.logs[j].rating && img.logs[j].rating.relevancy!=null && img.logs[j].rating.accuracy!=null && img.logs[j].rating.comprehensive!=null){
+							if (img.logs[j].rating && img.logs[j].rating.relevancy!=null && img.logs[j].rating.accuracy!=null){//&& img.logs[j].rating.comprehensive!=null
 								hasAll+=1;
 							}
 						}
+						// console.log("rating done? " + (hasAll==img.logs.length));
 						if (hasAll==img.logs.length)
 							img.doneRating = true;
 					}
@@ -244,8 +245,7 @@
 			    			image: imageName,
 			    			rater: $scope.rater,
 			    			accuracy: null,
-			    			relevancy: null,
-			    			comprehensive: null
+			    			relevancy: null
 			    		}
 			    	}
 			    	//console.log($scope.rating);
@@ -302,7 +302,7 @@
 								$scope.totalPage = res.totalPage;
 								
 								$scope.images = $scope.pages[pageNum] = res.logs;	
-								
+
 								console.log($scope.images);
 								console.log(ratings);
 	    						if (ratings.length>0){
@@ -322,7 +322,7 @@
 		    								if (_.has($scope.ratings, img) && _.has($scope.ratings[img], assID)){
 		    									
 		    									$scope.images[i].logs[j].rating = $scope.ratings[img][assID][0];	
-		    									if ($scope.images[i].logs[j].rating.relevancy!=null && $scope.images[i].logs[j].rating.accuracy!=null && $scope.images[i].logs[j].rating.comprehensive!=null) 
+		    									if ($scope.images[i].logs[j].rating.relevancy!=null && $scope.images[i].logs[j].rating.accuracy!=null) 
 		    										hasAll+=1;
 		    									console.log("rating:")
 		    									console.log($scope.images[i].logs[j].rating);
@@ -545,7 +545,7 @@
 						<!-- Pagination -->
 						
 						<nav class="text-center">
-							<div ng-if="evalMode"><% doneImages %>/<% images.length %></div>
+							<div ng-if="evalMode">Progress: <% doneImages %>/<% images.length %></div>
 						  	<ul class="pagination pagination-sm" style="margin:5px 0">						    
 						    <li class="animate-repeat" ng-repeat="x in _.range(1,totalPage+1)" ng-class="{active: $first}" ng-click="onClickPage($event, x)" repeat-end>
 						    	<a href="#"><% x %></a>
@@ -563,10 +563,10 @@
 	  				<div class="panel panel-default">
 						<!-- Default panel contents -->
 						<div class="panel-heading">AssignmentID</div>
-						<div ng-if="evalMode" align="center"><% doneAssignments %>/<% assignments.length %></div>
+						<div ng-if="evalMode" align="center">Progress: <% doneAssignments %>/<% assignments.length %></div>
 						<!-- List group -->
 						<div id="assignment-list" class="list-group" style="max-height:600px;overflow-y:scroll;">
-							<a href="#" class='list-group-item' ng-repeat="x in assignments" ng-class="{active: $first}" ng-click="onClickAssmt($event, x)" style="word-break: break-all;" repeat-end><span class="glyphicon glyphicon-ok text-success" style="margin-right:8px;" aria-hidden="true" ng-show="x.rating?(x.rating.relevancy!=null && x.rating.accuracy!=null && x.rating.comprehensive!=null):false"></span><% x.survey.assignment_id %></a>
+							<a href="#" class='list-group-item' ng-repeat="x in assignments" ng-class="{active: $first}" ng-click="onClickAssmt($event, x)" style="word-break: break-all;" repeat-end><span class="glyphicon glyphicon-ok text-success" style="margin-right:8px;" aria-hidden="true" ng-show="x.rating?(x.rating.relevancy!=null && x.rating.accuracy!=null):false"></span><% x.survey.assignment_id %></a>
 						</div>
 					</div>
 	  			</div>
@@ -601,12 +601,12 @@
 													<label class="radio-inline" ><input type="radio" name="accuracy" ng-model="rating.accuracy" value="3" ng-change="onRating()">Mostly Accurate</label>													
 													<label class="radio-inline" ><input type="radio" name="accuracy" ng-model="rating.accuracy" value="4" ng-change="onRating()">Mostly Inaccurate</label>	
 												</div>	
-												<div class="input-group">
+												<!-- <div class="input-group">
 													<strong>Comprehensiveness: </strong><br>
 													<span style="margin-left:20px;" ></span>
 													<label class="radio-inline" ><input type="radio" name="comprehensive" ng-model="rating.comprehensive" value="3" ng-change="onRating()">Comprehensive</label>													
 													<label class="radio-inline" ><input type="radio" name="comprehensive" ng-model="rating.comprehensive" value="4" ng-change="onRating()">Incomprehensive</label>	
-												</div>	
+												</div>	 -->
 											</div>
 											<div class="col-md-1">
 												<a id="helpPopover" data-html="true" href="" data-toggle="popover" data-placement="left" title="Help" 
