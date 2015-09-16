@@ -111,7 +111,7 @@
 					}
 					$scope.doneAssignments = 0;
 					for (var i in $scope.assignments){
-						if ($scope.assignments[i].rating && $scope.assignments[i].rating.quality!=null) $scope.doneAssignments++;
+						if ($scope.assignments[i].rating && $scope.assignments[i].rating.relevancy!=null && $scope.assignments[i].rating.accuracy!=null&& $scope.assignments[i].rating.comprehensive!=null) $scope.doneAssignments++;
 					}
 				}
 				$scope.updateCanvas = function(){					
@@ -175,7 +175,7 @@
 					if (img.doneRating==false){
 						var hasAll = 0;
 						for (var j in img.logs){
-							if (img.logs[j].rating && img.logs[j].rating.quality!=null){
+							if (img.logs[j].rating && img.logs[j].rating.relevancy!=null && img.logs[j].rating.accuracy!=null && img.logs[j].rating.comprehensive!=null){
 								hasAll+=1;
 							}
 						}
@@ -296,8 +296,15 @@
 
 		    				$http.get('/bubble/ratings', {params: {rater: $scope.rater}})
 	    					.success(function(ratings){
-	    						console.log(ratings);
-
+	    						
+	    						loadComplete = 1;
+	    						//update image list
+								$scope.totalPage = res.totalPage;
+								
+								$scope.images = $scope.pages[pageNum] = res.logs;	
+								
+								console.log($scope.images);
+								console.log(ratings);
 	    						if (ratings.length>0){
 	    							$scope.ratings = {};
 	    							//group by images
@@ -306,6 +313,7 @@
 	    								var g = imageGroup[img];
 	    								$scope.ratings[img] = _.groupBy(g, function(r){ return r.assignment_id })
 	    							}
+	    							console.log($scope.ratings)
 									for (var i in $scope.images){
 		    							var img = $scope.images[i].image;
 		    							var hasAll = 0;
@@ -314,10 +322,10 @@
 		    								if (_.has($scope.ratings, img) && _.has($scope.ratings[img], assID)){
 		    									
 		    									$scope.images[i].logs[j].rating = $scope.ratings[img][assID][0];	
-		    									if ($scope.images[i].logs[j].rating.quality!=null) 
+		    									if ($scope.images[i].logs[j].rating.relevancy!=null && $scope.images[i].logs[j].rating.accuracy!=null && $scope.images[i].logs[j].rating.comprehensive!=null) 
 		    										hasAll+=1;
-		    									//console.log("rating:")
-		    									//console.log($scope.images[i].logs[j].rating);
+		    									console.log("rating:")
+		    									console.log($scope.images[i].logs[j].rating);
 		    								}		    								
 		    							}
 
@@ -328,18 +336,13 @@
 		    							//console.log("done: " + $scope.images[i].doneRating);
 		    						}
 		    						$scope.updateRemaining();
+	    						}else{
 	    						}
 								//remove spinner
 	    						$("#image-panel").find('.spinner').remove();
 	    						$('#image-list').fadeTo("fast", 1.0);	
-	    						loadComplete = 1;
-	    						//update image list
-								$scope.totalPage = res.totalPage;
-								
-								$scope.images = $scope.pages[pageNum] = res.logs;	
-								console.log($scope.images);
-								//load ratings (TODO: improve duplicate loadings)
 	    						
+
 	    					})		
 							
 		    			})
@@ -563,7 +566,7 @@
 						<div ng-if="evalMode" align="center"><% doneAssignments %>/<% assignments.length %></div>
 						<!-- List group -->
 						<div id="assignment-list" class="list-group" style="max-height:600px;overflow-y:scroll;">
-							<a href="#" class='list-group-item' ng-repeat="x in assignments" ng-class="{active: $first}" ng-click="onClickAssmt($event, x)" style="word-break: break-all;" repeat-end><span class="glyphicon glyphicon-ok text-success" style="margin-right:8px;" aria-hidden="true" ng-show="x.rating?x.rating.quality!=null:false"></span><% x.survey.assignment_id %></a>
+							<a href="#" class='list-group-item' ng-repeat="x in assignments" ng-class="{active: $first}" ng-click="onClickAssmt($event, x)" style="word-break: break-all;" repeat-end><span class="glyphicon glyphicon-ok text-success" style="margin-right:8px;" aria-hidden="true" ng-show="x.rating?(x.rating.relevancy!=null && x.rating.accuracy!=null && x.rating.comprehensive!=null):false"></span><% x.survey.assignment_id %></a>
 						</div>
 					</div>
 	  			</div>
