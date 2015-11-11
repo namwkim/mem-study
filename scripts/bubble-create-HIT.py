@@ -5,7 +5,7 @@ import os, pymongo, sys, random
 
 ######  AMT CONFIGURATION PARAMETRS  ######
 
-SANDBOX = False  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
+SANDBOX = True  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 HIT_URL = "https://study.namwkim.org/bubble"  # Provide the URL that you want workers to sent sent to complete you task
 
 NUMBER_OF_HITS = 17  # Number of different HITs posted for this task
@@ -55,15 +55,15 @@ def create_hits(keyfile):
 
 	# collect target image filenames
 	targets = []
-	for root, dirs, files in os.walk("../public/images/bubble-db-pilot/targets"):		
-		for file in files:		
+	for root, dirs, files in os.walk("../public/images/bubble-db-pilot/targets"):
+		for file in files:
 			if file.startswith('.'):
 				continue
 			targets.append(file)
 
 	targets_blurred = []
-	for root, dirs, files in os.walk("../public/images/bubble-db-pilot/targets_blurred"):		
-		for file in files:		
+	for root, dirs, files in os.walk("../public/images/bubble-db-pilot/targets_blurred"):
+		for file in files:
 			if file.startswith('.'):
 				continue
 			targets_blurred.append(file)
@@ -89,7 +89,7 @@ def create_hits(keyfile):
 		print("HIT ID: " + create_hit_rs[0].HITId)
 
 		# save HIT IDs
-		hitIDs.append(create_hit_rs[0].HITId); 
+		hitIDs.append(create_hit_rs[0].HITId);
 
 	# open db connection
 	client 	= pymongo.MongoClient('localhost', 27017)
@@ -126,7 +126,6 @@ def create_hits(keyfile):
 	# for image in images.find():
 	# 	print image
 	print("HIT SIZE: " + str(hitSize));
-    
+
 if __name__ == "__main__":
 	create_hits(sys.argv[1])
-

@@ -17,7 +17,7 @@
 
 	    <script type="text/javascript">
 	    	var INTRO = 0, CONSENT = 1, PRAC_INST = 2, REAL_INST = 3, STUDY = 4, DEBRIEF = 5;
-	    	var MIN_DESC = 150, RADIUS_PIXEL = 32;// IMG_WIDTH = 700, IMG_HEIGHT=700;
+	    	var MIN_DESC = 150, RADIUS_PIXEL = 24;// IMG_WIDTH = 700, IMG_HEIGHT=700;
 	    	var stage = INTRO;
 	    	var formSelector = "#mturk-form";
 	    	var images = null;
@@ -52,7 +52,7 @@
 				$("#bubble").hide();
 				$("#debrief").hide();
 
-				// set up AMT form								
+				// set up AMT form
 				assignmentId 	= gup("assignmentId");
 				hitId 			= gup("hitId");
 				workerId 		= gup("workerId");
@@ -86,7 +86,7 @@
 				practiceImages = { targets:[], blurred:[] };
 				practiceImages.targets.push(base_url+"bubble-practice-1.png");
 				//practiceImages.targets.push(base_url+"bubble-practice-2.jpg");
-				
+
 				practiceImages.blurred.push(base_url+"bubble-practice-1-blurred.png");
 				//practiceImages.blurred.push(base_url+"bubble-practice-2-blurred.jpg");
 				/*
@@ -113,7 +113,7 @@
     			$('#bubble-vis-desc').keyup(function(){
     				$('#char-count').text($('#bubble-vis-desc').val().length);
     			})
-    			
+
 
 	    		$("#bubble-vis-desc").focusin(function(){
 	    			console.log("in focus");
@@ -127,10 +127,11 @@
 
 		          	var diff = JsDiff.diffChars(originalDesc, updatedDesc);
 			        var data = {
-			        	is_practice: isPractice, 
+			        	is_practice: isPractice,
+  		        	image: images.targets[curIdx],
 			        	desc_log: diff
 			        }
-			        LogAction("desc-change", data);		          	
+			        LogAction("desc-change", data);
 	    		});
 
     			//bootstro initialization (tutorial)
@@ -173,17 +174,17 @@
 					bootbox.alert("Sorry, You are not allowed to participate in this study.", function(){
 						$("#submit-btn").trigger("click", [true]);
 					});
-					
+
 				}else{
 					ChangeStage(stage+1);
 				}
 			}
 			function StartPractice(){
-				console.log("StartPractice");				
-				images 		= practiceImages;				
+				console.log("StartPractice");
+				images 		= practiceImages;
 				isPractice 	= true;
-				curIdx 		= clickCount = totalClickCount =0;	
-				LogAction("start-practice", null);			
+				curIdx 		= clickCount = totalClickCount =0;
+				LogAction("start-practice", null);
 				ChangeStage(STUDY);
 
 				//start tutorial instruction
@@ -196,7 +197,7 @@
 				$('#char-count').text($('#bubble-vis-desc').val().length);
 			}
 			function StartExperiment(){
-				console.log("StartExperiment");				
+				console.log("StartExperiment");
 				images 		= realImages;
 				isPractice 	= false;
 				curIdx 		= clickCount = totalClickCount = 0;
@@ -219,7 +220,7 @@
 				curImg = new Image();
 				curImg.onload = function() {
 					curBlurImg = new Image();
-					curBlurImg.onload = function(){						
+					curBlurImg.onload = function(){
 						// draw blurred image first
 						//console.log($(curBlurImg).width() + ", " + console.log($(curBlurImg).height()));
 						var canvas = $("#canvas");
@@ -234,11 +235,11 @@
 				}
 				curImg.src = images.targets[idx];
 			}
-			function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {		
+			function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {
 				console.log("(canvasWidth, canvasHeight) = " + canvasWidth + ", " + canvasHeight);
-				console.log("(oldWidth, oldHeight) = " + imgWidth + ", " + imgHeight);						
-				var newWidth 	= imgWidth;	
-						
+				console.log("(oldWidth, oldHeight) = " + imgWidth + ", " + imgHeight);
+				var newWidth 	= imgWidth;
+
 				if (newWidth>canvasWidth){
 					newWidth 	= canvasWidth;
 					var wratio 	= canvasWidth/imgWidth;
@@ -263,7 +264,7 @@
 
 			    var x = e.clientX - rect.left;
 			    var y = e.clientY - rect.top;
-			    
+
 			    console.log("x, y = " + x + ", " + y);
 			    //reset previous cicle
 			    var newSize = CalcNewImageSize(e.data.width, e.data.height, canvas.width(), canvas.height());
@@ -272,7 +273,7 @@
 
 			    //draw the circle
 			    ctx.beginPath();
-		        ctx.arc(x, y, RADIUS_PIXEL, 0, 6.28, false); 
+		        ctx.arc(x, y, RADIUS_PIXEL, 0, 6.28, false);
 		        ctx.clip();
 		        ctx.drawImage(curImg,0,0, newSize.width, newSize.height);
 
@@ -280,7 +281,7 @@
 
 		        //log click actio
 		        data = {
-		        	is_practice: isPractice, 
+		        	is_practice: isPractice,
 		        	image: images.targets[curIdx],
 		        	center_x: x,
 		        	center_y: y,
@@ -293,7 +294,7 @@
 		        totalClickCount++;
 		        console.log(totalClickCount);
 			}
-			function NextImage(){		
+			function NextImage(){
 				// if the description is less than minumum, can't approve
 				var desc = $("#bubble-vis-desc").val();
 				if (desc.length<MIN_DESC){
@@ -301,11 +302,11 @@
 					return;
 				}
 				//log description
-				LogAction("explain", {is_practice: isPractice, image:images.targets[curIdx], desc: desc});		
+				LogAction("explain", {is_practice: isPractice, image:images.targets[curIdx], desc: desc});
 				console.log('clickCount = ' + clickCount);
 				//increase image index
 				curIdx++;
-				if (curIdx<images.targets.length){					
+				if (curIdx<images.targets.length){
 					//setup a new image
 					SetupImage(curIdx);
 				}else{
@@ -315,7 +316,7 @@
 					else
 						return ChangeStage(DEBRIEF);
 				}
-				
+
 			}
 			function OnKeyPress(e){
 				// if(e.keyCode == 32){
@@ -324,8 +325,8 @@
 				//    	// if (stage==INTRO){
 				//    	// 	ChangeStage(stage+1);
 				//    	// 	return;
-				//    	// }				  
-				// }   	
+				//    	// }
+				// }
 			}
 	    	function ChangeStage(newStage){
 	    		HideStage(stage);
@@ -361,7 +362,7 @@
 	    				LogAction("end", null);
 	    		}
 
-	    	}	
+	    	}
 	    	function HideStage(prevStage){
 	    		switch(prevStage){
 	    			case INTRO: 	$("#intro").hide(); 	break;
@@ -373,7 +374,7 @@
 	    		}
 	    	}
 	    	function LogAction(action, data, callback){
-	    		var log = { 
+	    		var log = {
 	    			timestamp: $.now(),
 	    			hitId: hitId,
 	    			assignmentId: assignmentId,
@@ -393,11 +394,11 @@
 	    	function SubmitForm (e, notQualified) {
 	    		if (notQualified==true){//failed to pass the consent form
 	    			$("<input type='hidden' name='consentForm' value='notQualified'>");
-	    			$(formSelector).submit();	
+	    			$(formSelector).submit();
 	    			return;
 	    		}
 	   			//generating answer data (name-value pairs)
-	   			
+
 	    		// 1. Target Image Count
 	    		$("<input type='hidden' name='imageCount' value='" + images.targets.length + "'>").appendTo($(formSelector));
 	    		// 2. Total Click Count
@@ -418,7 +419,7 @@
 	    		if ($("#ethnicNative").prop('checked'))		ethnic += "/" + $("#ethnicNative").val();
 	    		if ($("#ethnicOther").prop('checked'))		ethnic += "/" + $("#ethnicOther").val();
 	    		if ($("#ethnicNotToSay").prop('checked'))	ethnic += "/" + $("#ethnicNotToSay").val();
-	    		
+
 				var feedback = $("#survey-feedback").val();
 
 	    		// // submit the form to the mturk site
@@ -438,20 +439,20 @@
 	   				ethnic: ethnic,
 	   				feedback: feedback
 	   			}, function(){
-	   				$(formSelector).submit();	    					
+	   				$(formSelector).submit();
 	   			});
 
 	    		// console.log("assignmentId: " + $("#mturk-form input[name=assignmentId]").val());
 	    		// console.log("targetNumber: " + $("#mturk-form input[name=targetNumber]").val());
 	    		// console.log("correctNumber: " + $("#mturk-form input[name=correctNumber]").val());
-	    		
-			}		
+
+			}
 	    </script>
   	</head>
   	<body>
 	  	<div class="container">
 	  		<div class="row">
-		    	<div id="intro">					
+		    	<div id="intro">
 					<div class="row">
 						<div class="col-md-12">
 							<h2>Bubble Study</h2>
@@ -462,23 +463,23 @@
 							</p><br>
 							<img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/bubble-db/study_overview.png">
 							<br>
-							
+
 							<div id="recaptcha" class="g-recaptcha" align="center" data-sitekey="6LcvMf8SAAAAAOAE34JZH6i7v_8lOrSD38mPkuGG" ></div>
 							<br>
 							<button id="intro-start-button" type="button" class="btn btn-success btn-lg btn-block">
 					  			<span class="glyphicon glyphicon-play"></span> Start
 							</button>
-						
-						</div>	
+
+						</div>
 					</div>
-				</div>	  
+				</div>
 				<div id="consent">
 					<div class="row">
 						<div class="col-md-12">
 							<h2>STATEMENT OF INFORMED CONSENT</h2>
-							<p class="text-justify">								
-								<br>								
-								<strong>Purpose of research:</strong> I am studying the memorability of data visualizations and information graphics. The elements of each image, such as type of graph and layout, are of interest in determining what components may aid memorability. This study focuses on the impact that visual elements have on visualization recognition and memorability. 
+							<p class="text-justify">
+								<br>
+								<strong>Purpose of research:</strong> I am studying the memorability of data visualizations and information graphics. The elements of each image, such as type of graph and layout, are of interest in determining what components may aid memorability. This study focuses on the impact that visual elements have on visualization recognition and memorability.
 								<br><br>
 								<strong>What your participation in this study will involve:</strong><br>
 								Reading a summary of relevant background information.<br>
@@ -492,7 +493,7 @@
 								<br><br>
 								<strong>Participation and withdrawal:</strong> Your participation in this study is completely voluntary, and you may withdraw at any time without penalty. You may skip any questions/tasks that you do not want to complete.
 								<br><br>
-								<strong>Researcher Contact Information:</strong> If you have questions about this research, please contact Nam Wook Kim, (Maxwell Dworkin 142, 33 Oxford St , Cambridge, MA, 02138, namwkim@seas.harvard.edu). 
+								<strong>Researcher Contact Information:</strong> If you have questions about this research, please contact Nam Wook Kim, (Maxwell Dworkin 142, 33 Oxford St , Cambridge, MA, 02138, namwkim@seas.harvard.edu).
 								<br><br>
 								<strong>Faculty Sponsor:</strong> Prof. Hanspeter Pfister (33 Oxford Street, Maxwell-Dworkin Rm 227, Cambridge, MA 02138, pfister@seas.harvard.edu, 617-496-8269)
 								<br><br>
@@ -531,7 +532,7 @@
 													</label>
 													<label class="radio-inline">
 													  <input type="radio" name="radioSecond" id="radioSecond2" value="no" checked> No
-													</label>				
+													</label>
 												</td>
 											</tr>
 											<tr>
@@ -551,16 +552,16 @@
 							</div>
 							<button id="consent-btn" type="button" class="btn btn-success btn-lg btn-block">
 					  			<span class="glyphicon glyphicon-ok"></span> Confirm
-							</button>							
+							</button>
 						</div>
 					</div>
-				</div>	
-				<div id="prac-inst">					
+				</div>
+				<div id="prac-inst">
 					<div class="row">
 						<div class="col-md-12">
 							<h2>Bubble Study Instruction</h2>
 							<p class="text-justify">
-								Welcome! In this HIT you will be presented with a series of images containing graphs and diagrams.  
+								Welcome! In this HIT you will be presented with a series of images containing graphs and diagrams.
 								<br><br>
 								<!--You will be paid <strong>$0.40</strong> for participating in this study which is expected to last about <strong>5 minutes</strong>.
 								<br><br>-->
@@ -568,7 +569,7 @@
 								<br><br>
 								We will only pay for successfully completed work.
 								<br><br>
-								We will start with a tutorial. Please <strong>click the button</strong> below when you are ready to begin.					
+								We will start with a tutorial. Please <strong>click the button</strong> below when you are ready to begin.
 							</p>
 							<br>
 							<img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/bubble-db/study_overview.png">
@@ -580,45 +581,45 @@
 					</div>
 				</div>
 
-				<div id="real-inst">					
+				<div id="real-inst">
 					<div class="row">
 						<div class="col-md-12">
 							<h2>Bubble Study Instruction</h2>
 							<p class="text-justify">
-								Great job! Now you will start the real study. The real study will be just like the practice you just did, except a bit longer.			
+								Great job! Now you will start the real study. The real study will be just like the practice you just did, except a bit longer.
 								<br><br>
-								Please <strong>click the "Start" button</strong> below when you are ready to begin.						
+								Please <strong>click the "Start" button</strong> below when you are ready to begin.
 							</p>
 							<br>
 							<img class="center-block thumbnail" height="350" src="/images/bubble-db/study_overview.png">
 							<br>
 							<button id="real-btn" type="button" class="btn btn-success btn-lg btn-block">
 						  		<span class="glyphicon glyphicon-play"></span> Start
-							</button>							
+							</button>
 						</div>
 					</div>
 				</div>
-				<div id="bubble">	
-					<h2><span id="tutorial-msg" class="label label-danger">Tutorial</span> Click and Describe the Image.</h2>		
+				<div id="bubble">
+					<h2><span id="tutorial-msg" class="label label-danger">Tutorial</span> Click and Describe the Image.</h2>
 					<div class="row">
-						<div class="col-md-8">							
+						<div class="col-md-8">
 							<canvas id="canvas" width="500" height="500"></canvas>
 						</div>
 						<div class="col-md-4">
 							<form id="describe-form" role="form">
-								<div class="form-group">									
+								<div class="form-group">
 								    <label for="bubble-vis-desc">
 								    	<span class="badge"><span id="click-count">0</span> clicks</span>
 								    	<span class="badge"><span id="char-count">0</span> characters</span></label>
 								    <textarea id="bubble-vis-desc" name="desc" class="form-control" rows="20" placeholder="Describe the image in as much detail as possible..."></textarea>
-							  	</div>	
+							  	</div>
 							</form>
 							<button id="bubble-next-btn" type="button" class="btn btn-success btn-lg btn-block">
 						  		<span class="glyphicon glyphicon-play"></span> Next
 							</button>
 						</div>
 					</div>
-				</div>	
+				</div>
 				<div id="debrief">
 					<h2>Completed!</h2>
 					<div class="row">
@@ -702,7 +703,7 @@
 														<label class="checkbox-inline">
 														  	<input type="checkbox" id="ethnicWhite" value="White_Caucasian"> White / Caucasian
 														</label>
-													</div>	
+													</div>
 													<div class="checkbox">
 														<label class="checkbox-inline">
 														  	<input type="checkbox" id="ethnicEastInd" value="East_Indian"> East Indian
@@ -716,7 +717,7 @@
 														<label class="checkbox-inline">
 														  	<input type="checkbox" id="ethnicNotToSay" value="NotToSay"> Prefer not to say
 														</label>
-													</div>																																						
+													</div>
 												</td>
 											</tr>
 											<tr>
@@ -729,9 +730,9 @@
 										</tbody>
 									</table>
 								</div>
-							</div>							
-						</div>	
-						<!--<div class="col-md-4">	
+							</div>
+						</div>
+						<!--<div class="col-md-4">
 							<img src="/images/teaser.png" class="img-responsive img-rounded">
 						</div>-->
 					</div>
@@ -739,7 +740,7 @@
 						<button id="submit-btn" type="button" class="btn btn-success btn-lg btn-block">
 					  		<span class="glyphicon glyphicon-send"></span> Submit
 						</button>
-					</form>				
+					</form>
 				</div>
 			</div>
 		<div>
