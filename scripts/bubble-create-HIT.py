@@ -1,7 +1,7 @@
-from boto.mturk.connection import MTurkConnection
+from boto.mturk.connection import MTurkConnection, MTurkRequestError
 from boto.mturk.question import ExternalQuestion
-from boto.mturk.qualification import LocaleRequirement, PercentAssignmentsApprovedRequirement, Qualifications
-import os, pymongo, sys, random
+from boto.mturk.qualification import LocaleRequirement, PercentAssignmentsApprovedRequirement, Qualifications, Requirement
+import os, pymongo, sys, random, time, csv
 
 ######  AMT CONFIGURATION PARAMETRS  ######
 
@@ -36,8 +36,23 @@ BASE_URI = "/images/bubble-db-pilot/targets/"
 BASE_URI_BLUR = "/images/bubble-db-pilot/targets_blurred/"
 #######################################
 
+def create_blocklist(conn, qualtype, blockfile):
+	if blockfile is not None:
+		with open(blockfile, 'r') as f:
+			reader = csv.reader(f)
+			workers = []
+			for row in reader:
+				workers.append(row[0])
+				# assign qualification for past workers to prevent from accepting this hit
+				try:
+					conn.assign_qualification(qualification_type_id = qualtype[0].QualificationTypeId,
+						worker_id=row[0], value="50")
+				except MTurkRequestError:
+					print "Assign Qualification Failed - No worker found (id:"+ row[0] + ")"
+			print "# of workerers participated before: ", len(workers)
 
-def create_hits(keyfile):
+def create_hits(keyfile, blockfile):
+
 	# read a keyfile
 	with open(keyfile, 'r') as f:
 		AWS_ACCESS_KEY = f.readline().split('=')[1].rstrip('\r\n')
@@ -68,6 +83,7 @@ def create_hits(keyfile):
 				continue
 			targets_blurred.append(file)
 
+	# exit if the number of images do not match
 	if len(targets)!=len(targets_blurred):
 		print "target!=targets_blurred";
 		sys.exit(0)
@@ -76,10 +92,23 @@ def create_hits(keyfile):
 	q = ExternalQuestion(external_url=HIT_URL, frame_height=800)
 	conn = MTurkConnection(aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, host=mturk_url)
 
+	# Create a block list
+	qname = "Nam Wook Kim - Qualification to Prevent Retakes ("+time.strftime("%S-%M-%H-%d-%m-%Y")+")"
+	qualtype = conn.create_qualification_type(name=qname,
+		description="This qualification is for people who have worked for me on this task before.",
+	    status = 'Active',
+	    keywords="Worked for me before",
+	    auto_granted = False)
+	create_blocklist(conn, qualtype, blockfile) # Assign qualifications to prevent workers from previous HITs
+	# print qualtype[0]
 	# Create Qualifications
 	quals = Qualifications()
+	# check to see if workers have the qualification only assigned for workers from previous HITs
+	quals.add(Requirement(qualification_type_id = qualtype[0].QualificationTypeId, comparator="DoesNotExist"))
+	# demographic qualifications
 	quals.add(PercentAssignmentsApprovedRequirement(comparator="GreaterThan", integer_value="95"))
 	quals.add(LocaleRequirement(comparator="EqualTo", locale="US"))
+	# TODO
 
 	#Create HITs
 	hitIDs = []
@@ -128,4 +157,9 @@ def create_hits(keyfile):
 	print("HIT SIZE: " + str(hitSize));
 
 if __name__ == "__main__":
-	create_hits(sys.argv[1])
+	blockfile = None
+	if len(sys.argv) < 3:
+		print "block list is not provided"
+	else:
+		blockfile = sys.argv[2]
+	create_hits(sys.argv[1], blockfile)
