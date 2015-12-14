@@ -17,8 +17,8 @@ if __name__ == "__main__":
 	#client 	= pymongo.MongoClient('54.69.103.85', 27017)
 	client 	= pymongo.MongoClient('localhost', 27017)
 	db 		= client.bubblestudy	
-	fromCol = db.logs32_Nov
-	toCol 	= db.refinedLogs32_Nov
+	fromCol = db.logs24_Dec
+	toCol 	= db.refinedLogs24_Dec
 	toCol.remove({})
 
 	# filter data

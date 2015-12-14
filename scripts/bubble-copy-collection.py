@@ -10,12 +10,12 @@ if __name__ == "__main__":
 	# open remote database
 	client 	= pymongo.MongoClient('54.69.103.85', 27017)
 	db 		= client.bubblestudy
-	fromColl = db.logs24.find({})
+	fromColl = db.logs24_Dec.find({})
 	print fromColl.count()
 
 	localClient = pymongo.MongoClient('localhost', 27017)
 	localDb 	= localClient.bubblestudy
-	toColl 		= localDb.logs24
+	toColl 		= localDb.logs24_Dec
 	toColl.remove({})
 	
 	print 'Start copying refined logs from remote to local db'
