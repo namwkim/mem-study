@@ -7,7 +7,7 @@ var https = require('https');
 var http = require('http');
 // ssl certificates
 var key = fs.readFileSync('./bin/privkey.pem');
-var cert = fs.readFileSync('./bin/cert.pem');
+var cert = fs.readFileSync('./bin/fullchain.pem');
 var https_options = {
     key: key,
     cert: cert
