@@ -6,9 +6,9 @@ if __name__ == "__main__":
         print "provide a filename to save worker ids"
         sys.exit(0)
     # open remote database
-    client 	= pymongo.MongoClient('54.69.103.85', 27017)
+    client 	= pymongo.MongoClient('localhost', 27017)
     db 		= client.bubblestudy
-    logs = db.logs24_Dec.find({})
+    logs = db.logs32_Dec.find({})
     print logs.count()
 
     workers = dict()
