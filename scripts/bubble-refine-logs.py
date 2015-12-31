@@ -124,6 +124,9 @@ if __name__ == "__main__":
 		clickCounts = []
 		for log in imageData['logs']:
 			clickCounts.append(len(log['clicks']))
+		if not clickCounts :
+			print "ERROR: clickCounts is empty"
+			continue
 		median 	= np.median(clickCounts)
 		iqr75 	= np.percentile(clickCounts, 75)
 		iqr25   = np.percentile(clickCounts, 25)
