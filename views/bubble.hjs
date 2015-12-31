@@ -572,7 +572,7 @@
 								We will start with a tutorial. Please <strong>click the button</strong> below when you are ready to begin.
 							</p>
 							<br>
-							<img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/bubble-db/study_overview.png">
+							<img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/bubble-db/salicon-study-overview.png">
 							<br>
 							<button id="practice-btn" type="button" class="btn btn-success btn-lg btn-block">
 						  		<span class="glyphicon glyphicon-play"></span> Continue
@@ -591,7 +591,7 @@
 								Please <strong>click the "Start" button</strong> below when you are ready to begin.
 							</p>
 							<br>
-							<img class="center-block thumbnail" height="350" src="/images/bubble-db/study_overview.png">
+							<img class="center-block thumbnail" height="350" src="/images/bubble-db/salicon-study-overview.png">
 							<br>
 							<button id="real-btn" type="button" class="btn btn-success btn-lg btn-block">
 						  		<span class="glyphicon glyphicon-play"></span> Start
