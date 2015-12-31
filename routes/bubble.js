@@ -129,8 +129,8 @@ router.get('/pagelogs', function(req, res){
     // if (lastID!=''){
     //     query._id = { '$gt':req.toObjectID(lastID) };
     // }
-    db.collection('refinedLogs24_Dec').count(function(err, count){
-        db.collection('refinedLogs24_Dec').find({}, null, {
+    db.collection('refinedLogs15').count(function(err, count){
+        db.collection('refinedLogs15').find({}, null, {
             limit:  pageSize,
             skip:   pageNum > 1 ? ((pageNum - 1) * pageSize) : 0,
             sort: {
