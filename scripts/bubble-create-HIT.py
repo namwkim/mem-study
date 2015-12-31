@@ -17,12 +17,12 @@ APPROVAL_DELAY = 60*60*24*7  # How long after the task is completed will the wor
 
 
 # HIT title (as it will appear on the public listing)
-TITLE = 'Graph/Chart Descriptions'
+TITLE = 'Image Descriptions'
 # Description of the HIT that workers will see when deciding to accept it or not
-DESCRIPTION = ("This HIT should take about 5 minutes to complete. In this HIT, you will be presented with a series of images containing graphs and diagrams. "+
+DESCRIPTION = ("This HIT should take about 5 minutes to complete. In this HIT, you will be presented with a series of images containing natural scences. "+
 				"For each image, you will be asked to describe the image in as much detail as possible (minimum 150 characters). The image is heavily blurred so that you can only see a rough outline of the image. However, you can click to reveal small, circular areas of the image ('bubbles') to inspect the full details.")
 # Search terms for the HIT posting
-KEYWORDS = ['Easy', 'Chart', 'Graph', 'Text', 'Visualization', 'Image', 'Describe']
+KEYWORDS = ['Easy', 'Natural Scene', 'Text', 'Image', 'Describe']
 
 
 # Your Amazon Web Services Access Key (private)

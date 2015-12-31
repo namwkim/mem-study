@@ -17,7 +17,7 @@
 
 	    <script type="text/javascript">
 	    	var INTRO = 0, CONSENT = 1, PRAC_INST = 2, REAL_INST = 3, STUDY = 4, DEBRIEF = 5;
-	    	var MIN_DESC = 150, RADIUS_PIXEL = 40;// IMG_WIDTH = 700, IMG_HEIGHT=700;
+	    	var MIN_DESC = 150, RADIUS_PIXEL = 15;// IMG_WIDTH = 700, IMG_HEIGHT=700;
 	    	var stage = INTRO;
 	    	var formSelector = "#mturk-form";
 	    	var images = null;
@@ -74,7 +74,7 @@
 				//load target images
 	    		$.get('/bubble/images', {hitId:hitId}, function(res){
 	    			if (res.targets.length==0){
-	    				bootbox.alert("Failed to retrieve visualization images. HIT ID is not valid ("+hitId+")." , function(){
+	    				bootbox.alert("Failed to retrieve images. HIT ID is not valid ("+hitId+")." , function(){
 							$("#submit-btn").trigger("click", [true]);
 						});
 	    			}
@@ -84,10 +84,10 @@
 
 				//load practice images
 				practiceImages = { targets:[], blurred:[] };
-				practiceImages.targets.push(base_url+"bubble-practice-1.png");
+				practiceImages.targets.push(base_url+"bubble-practice.jpg");
 				//practiceImages.targets.push(base_url+"bubble-practice-2.jpg");
 
-				practiceImages.blurred.push(base_url+"bubble-practice-1-blurred.png");
+				practiceImages.blurred.push(base_url+"bubble-practice-blurred.jpg");
 				//practiceImages.blurred.push(base_url+"bubble-practice-2-blurred.jpg");
 				/*
 				randomized = _.take(_.shuffle(_.zip(practiceImages.targets, practiceImages.blurred)),2);
@@ -193,7 +193,7 @@
 					nextButtonText: "Next »",
 					prevButtonText: "Prev »"
 				});
-				$("#bubble-vis-desc").val("This chart shows the relationship between global malaria deaths and R&D funding across different continents. Africa accounts for a major portion of malaria deaths. Overall, global malaria deaths have been decreasing as R&D funding increases over time.");
+				$("#bubble-vis-desc").val("Two people are riding horses to climb rocky mountains. While the person ahead is wearing a black cap, the other person following behind is wearing a yellow bucket hat.");
 				$('#char-count').text($('#bubble-vis-desc').val().length);
 			}
 			function StartExperiment(){
@@ -457,7 +457,7 @@
 						<div class="col-md-12">
 							<h2>Bubble Study</h2>
 							<p class="text-justify">
-								In this HIT you will be presented with a series of images containing graphs and diagrams, and asked to describe the images in as much detail as possible.
+								In this HIT you will be presented with a series of images containing natural scences and asked to describe the images in as much detail as possible.
 								<br><br>
 								The HIT should take about 5 minutes to complete.
 							</p><br>
@@ -479,11 +479,11 @@
 							<h2>STATEMENT OF INFORMED CONSENT</h2>
 							<p class="text-justify">
 								<br>
-								<strong>Purpose of research:</strong> I am studying the memorability of data visualizations and information graphics. The elements of each image, such as type of graph and layout, are of interest in determining what components may aid memorability. This study focuses on the impact that visual elements have on visualization recognition and memorability.
+								<strong>Purpose of research:</strong> I am studying human visual understanding of various types of images including graphs, posters, and natural scences. This study focuses on recording and logging how humans shift their attention during visual exploration and learning salient elements in the images. 
 								<br><br>
 								<strong>What your participation in this study will involve:</strong><br>
 								Reading a summary of relevant background information.<br>
-								Seeing a visualization image and describing the image.
+								Seeing images and describing the images.
 								<br><br>
 								<strong>Time required:</strong> Participation will take approximately 5 minutes.
 								<br><br>
@@ -561,7 +561,7 @@
 						<div class="col-md-12">
 							<h2>Bubble Study Instruction</h2>
 							<p class="text-justify">
-								Welcome! In this HIT you will be presented with a series of images containing graphs and diagrams.
+								Welcome! In this HIT you will be presented with a series of images containing natural scences.
 								<br><br>
 								<!--You will be paid <strong>$0.40</strong> for participating in this study which is expected to last about <strong>5 minutes</strong>.
 								<br><br>-->
