@@ -127,7 +127,7 @@ router.get('/pagelogs', function(req, res){
     console.log("pageSize = " + pageSize);
     
     if (dbName==null || dbName==''){
-        dbName = "refinedLogs24"
+        dbName = "refinedLogs24_Dec"
     }
     console.log("dbName = " + dbName);
     // var lastID   = req.query.lastID;
