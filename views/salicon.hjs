@@ -26,7 +26,7 @@
     var MIN_DESC = 150,
       RADIUS_PIXEL = 15; // IMG_WIDTH = 700, IMG_HEIGHT=700;
     var WAIT_TIME = 2000,
-        VIEW_TIME = 10000;
+        VIEW_TIME = 12000;
     var stage = INTRO;
     var formSelector = "#mturk-form";
     var images = null;
@@ -501,9 +501,9 @@
             <p class="text-justify">
               In this HIT you will be presented with a series of images containing natural scences and asked to explore the images freely by clicking to reveal anywhere you want to look.
               <br>
-              <br> The HIT should take about <strong>3 minutes</strong> to complete.
+              <br> The HIT should take about <strong>4 minutes</strong> to complete.
               <br>
-              <br> * If you should have normal or corrected-to-normal vision. You can check your vision status here:
+              <br> * You need to have normal or corrected-to-normal vision. You can check your vision status here:
               <a href="http://colorvisiontesting.com/ishihara.htm" target="_blank" > test link </a>
             </p>
             <br>
@@ -534,10 +534,10 @@
               <br> Viewing and clicking images .
               <br>
               <br>
-              <strong>Time required:</strong> Participation will take approximately 3 minutes.
+              <strong>Time required:</strong> Participation will take approximately 4 minutes.
               <br>
               <br>
-              <strong>Risks:</strong> There are no anticipated risks associated with participating in this study. The effects of viewing the images should be comparable to those you would experience from viewing a computer monitor for 3 minutes.
+              <strong>Risks:</strong> There are no anticipated risks associated with participating in this study. The effects of viewing the images should be comparable to those you would experience from viewing a computer monitor for 4 minutes.
               <br>
               <br>
               <strong>Confidentiality:</strong> Your participation in this study will remain confidential, and your identity will not be stored with your data. Your responses will be assigned a code number, and the list connecting your Amazon worker ID
@@ -621,9 +621,9 @@
               Welcome! In this HIT you will be presented with a series of images containing natural scences.
               <br>
               <br>
-              <!--You will be paid <strong>$0.40</strong> for participating in this study which is expected to last about <strong>3 minutes</strong>.
+              <!--You will be paid <strong>$0.40</strong> for participating in this study which is expected to last about <strong>4 minutes</strong>.
               <br><br>-->
-              For each image, you will be asked to <strong>explore the image</strong> for <strong>10</strong> seconds. The image is <strong>heavily blurred</strong> so that you can only see a rough outline of the image. However,
+              For each image, you will be asked to <strong>explore the image</strong> for <strong>12</strong> seconds. The image is <strong>heavily blurred</strong> so that you can only see a rough outline of the image. However,
               you can <strong>click to reveal</strong> small, circular areas of the image ("bubbles") to inspect the full details.
               <br>
               <br> We will only pay for successfully completed work.
@@ -660,7 +660,7 @@
       </div>
       <div id="bubble">
         <h3 class="text-muted"><span id="tutorial-msg" class="label label-danger">Tutorial</span> <span id="main-msg"></span></h3>
-        <div id="sub-msg" class="text-danger">This is how long 10 seconds is.</div>
+        <div id="sub-msg" class="text-danger">This is how long 12 seconds is.</div>
         <div class="row">
           <div class="col-md-12 center-block">
             <canvas id="canvas" width="640" height="480"></canvas>

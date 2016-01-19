@@ -11,7 +11,7 @@ HIT_URL = "https://study.namwkim.org/salicon"  # Provide the URL that you want w
 NUMBER_OF_HITS = 3  # Number of different HITs posted for this task
 NUMBER_OF_ASSIGNMENTS = 10  # Number of tasks that DIFFERENT workers will be able to take for each HIT
 LIFETIME = 60 * 60 * 24 * 7  # How long that the task will stay visible if not taken by a worker (in seconds)
-REWARD = 0.2  # Base payment value for completing the task (in dollars)
+REWARD = 0.4  # Base payment value for completing the task (in dollars)
 DURATION = 60*45  # How long the worker will be able to work on a single task (in seconds)
 APPROVAL_DELAY = 60*60*24*7  # How long after the task is completed will the worker be automatically paid if not manually approved (in seconds)
 
@@ -19,8 +19,8 @@ APPROVAL_DELAY = 60*60*24*7  # How long after the task is completed will the wor
 # HIT title (as it will appear on the public listing)
 TITLE = 'Free-Viewing Images'
 # Description of the HIT that workers will see when deciding to accept it or not
-DESCRIPTION = ("This HIT should take about 2 minutes to complete. In this HIT, you will be presented with a series of images containing natural scences. "+
-				"For each image, you will be asked to explore the image for 5 seconds. The image is heavily blurred so that you can only see a rough outline of the image. However, you can click to reveal small, circular areas of the image ('bubbles') to inspect the full details.")
+DESCRIPTION = ("This HIT should take about 4 minutes to complete. In this HIT, you will be presented with a series of images containing natural scences. "+
+				"For each image, you will be asked to explore the image for 12 seconds. The image is heavily blurred so that you can only see a rough outline of the image. However, you can click to reveal small, circular areas of the image ('bubbles') to inspect the full details.")
 # Search terms for the HIT posting
 KEYWORDS = ['Easy', 'Natural Scene', 'Image', 'Click', 'Reveal']
 
