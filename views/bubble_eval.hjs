@@ -285,7 +285,7 @@
 			    	}	    	
 			    	if ($scope.pages[pageNum]==null){// if not loaded
 			    		
-			    		var query = {pageSize:PAGE_SIZE, pageNum: pageNum};
+			    		var query = {pageSize:PAGE_SIZE, pageNum: pageNum, dbName: gup("db")};
 			    		console.log(query);
 			    		var spinner = new Spinner().spin();
 						$("#image-panel").prepend(spinner.el);	

@@ -16,7 +16,7 @@ router.get('/admin', function(req, res) {
     res.render('bubble_eval', { title: 'Bubble Experiment Admin' });
 });
 router.get('/eval', function(req, res) {
-    console.log(req.params);
+    console.log(req.query);
     res.render('bubble_eval', { title: 'Bubble Evaluation Admin' });
 });
 
@@ -123,14 +123,20 @@ router.get('/pagelogs', function(req, res){
     console.log(req.query);
     var pageSize = parseInt(req.query.pageSize);
     var pageNum  = parseInt(req.query.pageNum);
+    var dbName   = req.query.dbName;
     console.log("pageSize = " + pageSize);
+    
+    if (dbName==null || dbName==''){
+        dbName = "refinedLogs24_Dec"
+    }
+    console.log("dbName = " + dbName);
     // var lastID   = req.query.lastID;
     // var query    = {}
     // if (lastID!=''){
     //     query._id = { '$gt':req.toObjectID(lastID) };
     // }
-    db.collection('refinedLogs24_Dec').count(function(err, count){
-        db.collection('refinedLogs24_Dec').find({}, null, {
+    db.collection(dbName).count(function(err, count){
+        db.collection(dbName).find({}, null, {
             limit:  pageSize,
             skip:   pageNum > 1 ? ((pageNum - 1) * pageSize) : 0,
             sort: {
