@@ -40,9 +40,10 @@ router.get('/images', function(req, res){
                 images = _.sample(images, 2);
             }
             // target images
-            var targets = _.map(_.shuffle(images), function(img){ return img.img_url; })
+						var shuffled = _.shuffle(images);
+            var targets = _.map(shuffled, function(img){ return img.img_url; })
             // filler images
-            var blurred = _.map(_.shuffle(images), function(img){ return img.blur_img_url; })
+            var blurred = _.map(shuffled, function(img){ return img.blur_img_url; })
 
             res.json({ targets: targets, blurred: blurred});
         }
