@@ -106,7 +106,7 @@ router.post('/log', function(req, res) {
   newLog.worker_id = req.body.workerId;
   newLog.action = req.body.action;
   newLog.data = req.body.data;
-  console.log(newLog);
+  // console.log(newLog);
   db.collection('logs').insert(newLog, function(err, result) {
     if (err) {
       return console.log(new Date(), 'insert error', err);

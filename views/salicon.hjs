@@ -26,7 +26,7 @@
     var MIN_DESC = 150,
       RADIUS_PIXEL = 15; // IMG_WIDTH = 700, IMG_HEIGHT=700;
     var WAIT_TIME = 2000,
-        VIEW_TIME = 30000;
+        VIEW_TIME = 15000;
     var stage = INTRO;
     var formSelector = "#mturk-form";
     var images = null;
@@ -161,7 +161,7 @@
         .attr("data-bootstro-title", "Click Image")
         .attr("data-bootstro-content", "Click to reveal small, circular areas of the image to inspect the full details.")
         .attr("data-bootstro-placement", "right")
-        .attr("data-bootstro-step", 0)
+        .attr("data-bootstro-step", 0);
 
     }
 
@@ -208,12 +208,13 @@
 
       //start tutorial instruction
       $("#tutorial-msg").show();
+      $("#main-msg").text("Click anywhere you want to look.");
       bootstro.start(".bootstro", {
         nextButtonText: "Next »",
         prevButtonText: "Prev »"
       });
-      $("#bubble-vis-desc").val("Two people are riding horses to climb rocky mountains. While the person ahead is wearing a black cap, the other person following behind is wearing a yellow bucket hat.");
-      $('#char-count').text($('#bubble-vis-desc').val().length);
+      // $("#bubble-vis-desc").val("Two people are riding horses to climb rocky mountains. While the person ahead is wearing a black cap, the other person following behind is wearing a yellow bucket hat.");
+      // $('#char-count').text($('#bubble-vis-desc').val().length);
     }
 
     function StartExperiment() {
@@ -225,6 +226,8 @@
       ChangeStage(STUDY);
 
       $("#tutorial-msg").hide();
+      $("#main-msg").text("Click anywhere you want to look.");
+      $("#sub-msg").text("");
     }
 
     function SetupImage(idx) {
@@ -300,10 +303,13 @@
 
       //draw the circle
       ctx.beginPath();
-      ctx.arc(x, y, RADIUS_PIXEL, 0, 6.28, false);
+      ctx.arc(x, y, RADIUS_PIXEL, 0, 2 * Math.PI, false);
       ctx.clip();
       ctx.drawImage(curImg, 0, 0, newSize.width, newSize.height);
-
+      ctx.arc(x, y, RADIUS_PIXEL, 0, 2 * Math.PI, false);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#ff0000';
+      ctx.stroke();
       ctx.restore();
 
       //log click actio
@@ -330,9 +336,11 @@
       if (curIdx < images.targets.length) {
         //hide the canvas for 2 second, before showing the next image
         $('#canvas').hide();
+        $("#main-msg").text("Waiting for a next image...");
         setTimeout(function(){
           console.log("Next Image if Available!")
           $('#canvas').show();
+          $("#main-msg").text("Click anywhere you want to look.");
           //setup a new image
           SetupImage(curIdx);
         }, WAIT_TIME)//5second
@@ -493,7 +501,7 @@
             <p class="text-justify">
               In this HIT you will be presented with a series of images containing natural scences and asked to explore the images freely by clicking to reveal anywhere you want to look.
               <br>
-              <br> The HIT should take about <strong>2 minutes</strong> to complete.
+              <br> The HIT should take about <strong>5 minutes</strong> to complete.
               <br>
               <br> * If you should have normal or corrected-to-normal vision. You can check your vision status here:
               <a href="http://colorvisiontesting.com/ishihara.htm" target="_blank" > test link </a>
@@ -615,7 +623,7 @@
               <br>
               <!--You will be paid <strong>$0.40</strong> for participating in this study which is expected to last about <strong>5 minutes</strong>.
               <br><br>-->
-              For each image, you will be asked to <strong>explore the image</strong> for <strong>30</strong> seconds. The image is <strong>heavily blurred</strong> so that you can only see a rough outline of the image. However,
+              For each image, you will be asked to <strong>explore the image</strong> for <strong>15</strong> seconds. The image is <strong>heavily blurred</strong> so that you can only see a rough outline of the image. However,
               you can <strong>click to reveal</strong> small, circular areas of the image ("bubbles") to inspect the full details.
               <br>
               <br> We will only pay for successfully completed work.
@@ -651,7 +659,8 @@
         </div>
       </div>
       <div id="bubble">
-        <h2><span id="tutorial-msg" class="label label-danger">Tutorial</span>Click the image to reveal details.</h2>
+        <h3 class="text-muted"><span id="tutorial-msg" class="label label-danger">Tutorial</span> <span id="main-msg"></span></h3>
+        <div id="sub-msg" class="text-danger">This is how long 15 seconds is.</div>
         <div class="row">
           <div class="col-md-12 center-block">
             <canvas id="canvas" width="640" height="480"></canvas>
