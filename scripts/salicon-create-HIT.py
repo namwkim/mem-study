@@ -5,24 +5,24 @@ import os, pymongo, sys, random, time, csv
 
 ######  AMT CONFIGURATION PARAMETRS  ######
 
-SANDBOX = False  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
-HIT_URL = "https://study.namwkim.org/bubble"  # Provide the URL that you want workers to sent sent to complete you task
+SANDBOX = True  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
+HIT_URL = "https://study.namwkim.org/salicon"  # Provide the URL that you want workers to sent sent to complete you task
 
-NUMBER_OF_HITS = 17  # Number of different HITs posted for this task
+NUMBER_OF_HITS = 3  # Number of different HITs posted for this task
 NUMBER_OF_ASSIGNMENTS = 10  # Number of tasks that DIFFERENT workers will be able to take for each HIT
 LIFETIME = 60 * 60 * 24 * 7  # How long that the task will stay visible if not taken by a worker (in seconds)
-REWARD = 0.5  # Base payment value for completing the task (in dollars)
+REWARD = 0.2  # Base payment value for completing the task (in dollars)
 DURATION = 60*45  # How long the worker will be able to work on a single task (in seconds)
 APPROVAL_DELAY = 60*60*24*7  # How long after the task is completed will the worker be automatically paid if not manually approved (in seconds)
 
 
 # HIT title (as it will appear on the public listing)
-TITLE = 'Graph/Chart Descriptions'
+TITLE = 'Free-Viewing Images'
 # Description of the HIT that workers will see when deciding to accept it or not
-DESCRIPTION = ("This HIT should take about 5 minutes to complete. In this HIT, you will be presented with a series of images containing graphs and diagrams. "+
-				"For each image, you will be asked to describe the image in as much detail as possible (minimum 150 characters). The image is heavily blurred so that you can only see a rough outline of the image. However, you can click to reveal small, circular areas of the image ('bubbles') to inspect the full details.")
+DESCRIPTION = ("This HIT should take about 2 minutes to complete. In this HIT, you will be presented with a series of images containing natural scences. "+
+				"For each image, you will be asked to explore the image for 5 seconds. The image is heavily blurred so that you can only see a rough outline of the image. However, you can click to reveal small, circular areas of the image ('bubbles') to inspect the full details.")
 # Search terms for the HIT posting
-KEYWORDS = ['Easy', 'Chart', 'Graph', 'Text', 'Visualization', 'Image', 'Describe']
+KEYWORDS = ['Easy', 'Natural Scene', 'Image', 'Click', 'Reveal']
 
 
 # Your Amazon Web Services Access Key (private)
@@ -32,8 +32,8 @@ AWS_SECRET_KEY = ''
 # Your Amazon Web Services IAM User Name (private)
 
 ######  BUBBLE CONFIGURATION PARAMETRS  ######
-BASE_URI = "/images/bubble-db-pilot/targets/"
-BASE_URI_BLUR = "/images/bubble-db-pilot/targets_blurred/"
+BASE_URI = "/images/salicon-db-pilot/targets/"
+BASE_URI_BLUR = "/images/salicon-db-pilot/targets_blurred/"
 #######################################
 
 def create_blocklist(conn, qualtype, blockfile):
@@ -70,14 +70,14 @@ def create_hits(keyfile, blockfile):
 
 	# collect target image filenames
 	targets = []
-	for root, dirs, files in os.walk("../public/images/bubble-db-pilot/targets"):
+	for root, dirs, files in os.walk("../public/images/salicon-db-pilot/targets"):
 		for file in files:
 			if file.startswith('.'):
 				continue
 			targets.append(file)
 
 	targets_blurred = []
-	for root, dirs, files in os.walk("../public/images/bubble-db-pilot/targets_blurred"):
+	for root, dirs, files in os.walk("../public/images/salicon-db-pilot/targets_blurred"):
 		for file in files:
 			if file.startswith('.'):
 				continue
@@ -122,7 +122,7 @@ def create_hits(keyfile, blockfile):
 
 	# open db connection
 	client 	= pymongo.MongoClient('localhost', 27017)
-	db 		= client.bubblestudy
+	db 		= client.saliconstudy
 	images	= db.images
 
 	#remove existing documents
