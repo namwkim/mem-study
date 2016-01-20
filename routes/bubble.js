@@ -16,7 +16,7 @@ router.get('/admin', function(req, res) {
     res.render('bubble_eval', { title: 'Bubble Experiment Admin' });
 });
 router.get('/eval', function(req, res) {
-    console.log(req.params);
+    console.log(req.query);
     res.render('bubble_eval', { title: 'Bubble Evaluation Admin' });
 });
 
@@ -34,22 +34,23 @@ router.get('/images', function(req, res){
         }
         console.log(result);
         if (result) {
-            var images = result;  
-                      
+            var images = result;
+
             if (hitId.search("TEST")!=-1){
                 images = _.sample(images, 2);
             }
             // target images
-            var targets = _.map(images, function(img){ return img.img_url; })
+						var shuffled = _.shuffle(images);
+            var targets = _.map(shuffled, function(img){ return img.img_url; })
             // filler images
-            var blurred = _.map(images, function(img){ return img.blur_img_url; })
+            var blurred = _.map(shuffled, function(img){ return img.blur_img_url; })
 
             res.json({ targets: targets, blurred: blurred});
         }
 	});
 });
 router.post('/recaptcha', function(req, res){
-    
+
     var postData = {
         secret :'6LcvMf8SAAAAANwRhpM0Mt7JH46AqFDwnfMzMiHg',
         ip : req.ip,
@@ -57,15 +58,15 @@ router.post('/recaptcha', function(req, res){
     };
     var url = 'https://www.google.com/recaptcha/api/siteverify?'+qs.stringify(postData);
     console.log(url);
-    
+
     // Set up the request
     request.post(
         url,
         {},
         function (error, response, body){
             if (!error && response.statusCode == 200) {
-                
-                
+
+
                 body = JSON.parse(body);
                 console.log(body);
                 if (body.success==true){
@@ -97,20 +98,20 @@ router.post('/rating', function(req, res){
     rating.hit_id               = req.body.hit_id;
     rating.assignment_id        = req.body.assignment_id;
     rating.image                = req.body.image;
-    rating.rater                = req.body.rater;  
+    rating.rater                = req.body.rater;
     rating.relevancy            = req.body.relevancy;
-    rating.accuracy             = req.body.accuracy;  
+    rating.accuracy             = req.body.accuracy;
     rating.comprehensive        = req.body.comprehensive;
     console.log(rating);
     db.collection('expertRatings24').update(
-        {image: rating.image, assignment_id: rating.assignment_id, rater: rating.rater}, 
-        rating, 
-        { upsert: true }, 
+        {image: rating.image, assignment_id: rating.assignment_id, rater: rating.rater},
+        rating,
+        { upsert: true },
         function(err, result) {
             if (err) {
                 return console.log(new Date(), 'update error', err);
             }
-            if (result) {            
+            if (result) {
                 res.json({ code: 0, message: 'Successfully updated!', result: result[0]});
             }
 
@@ -123,14 +124,20 @@ router.get('/pagelogs', function(req, res){
     console.log(req.query);
     var pageSize = parseInt(req.query.pageSize);
     var pageNum  = parseInt(req.query.pageNum);
+    var dbName   = req.query.dbName;
     console.log("pageSize = " + pageSize);
+
+    if (dbName==null || dbName==''){
+        dbName = "refinedLogs24_Dec"
+    }
+    console.log("dbName = " + dbName);
     // var lastID   = req.query.lastID;
     // var query    = {}
     // if (lastID!=''){
     //     query._id = { '$gt':req.toObjectID(lastID) };
     // }
-    db.collection('refinedLogs24_Dec').count(function(err, count){
-        db.collection('refinedLogs24_Dec').find({}, null, {
+    db.collection(dbName).count(function(err, count){
+        db.collection(dbName).find({}, null, {
             limit:  pageSize,
             skip:   pageNum > 1 ? ((pageNum - 1) * pageSize) : 0,
             sort: {
@@ -141,7 +148,7 @@ router.get('/pagelogs', function(req, res){
                 return console.log(new Date(), 'error in loading images', err);
             }
             console.log('loaded: ' + result.length);
-                
+
             res.json({ pageNum : pageNum, pageSize:pageSize, totalPage: Math.ceil(count*1.0/pageSize), logs : result});
         });
     });
@@ -163,7 +170,7 @@ router.get('/logs', function(req, res){
         }
         console.log('loaded: ' + result.length);
         if (result.length!=0) {
-            
+
             res.json({ lastID : result[result.length-1]._id, logs : result});
         }else{
             res.json({lastID: null, logs: result})
@@ -178,13 +185,13 @@ router.post('/log', function(req, res){
 	newLog.assignment_id     = req.body.assignmentId;
 	newLog.worker_id 	     = req.body.workerId;
 	newLog.action 		     = req.body.action;
-	newLog.data 		     = req.body.data;	
+	newLog.data 		     = req.body.data;
     console.log(newLog);
 	db.collection('logs').insert(newLog, function(err, result) {
         if (err) {
             return console.log(new Date(), 'insert error', err);
         }
-        if (result) {            
+        if (result) {
             res.json({ code: 0, message: 'Successfully Created!', result: result[0]});
         }
 

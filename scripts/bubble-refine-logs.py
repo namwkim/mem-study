@@ -17,8 +17,8 @@ if __name__ == "__main__":
 	#client 	= pymongo.MongoClient('54.69.103.85', 27017)
 	client 	= pymongo.MongoClient('localhost', 27017)
 	db 		= client.bubblestudy	
-	fromCol = db.logs32_Dec
-	toCol 	= db.refinedLogs32_Dec
+	fromCol = db.logs40_Dec
+	toCol 	= db.refinedLogs40_Dec
 	toCol.remove({})
 
 	# filter data
@@ -124,6 +124,9 @@ if __name__ == "__main__":
 		clickCounts = []
 		for log in imageData['logs']:
 			clickCounts.append(len(log['clicks']))
+		if not clickCounts:
+			print "ERROR: clickCounts is empty"
+			continue
 		median 	= np.median(clickCounts)
 		iqr75 	= np.percentile(clickCounts, 75)
 		iqr25   = np.percentile(clickCounts, 25)
