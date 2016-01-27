@@ -4,7 +4,7 @@ images = dir('./targets/*.jpg');
 
 mkdir('targets_blurred')
 
-H = fspecial('gaussian',15,15); 
+H = fspecial('gaussian',40,40); 
 
 % read image
 for i=1:length(images)

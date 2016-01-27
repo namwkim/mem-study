@@ -38,7 +38,11 @@ router.get('/images', function(req, res) {
       var images = result;
 
       if (hitId.search("TEST") != -1) {
-        images = _.sample(images, 2);
+        // images = _.sample(images, 2);
+        var img = _.find(images, function(item){
+          return item.img_url == "/images/salicon-db-pilot/targets/example-salicon.jpg";
+        });
+        images = [img];
       }
       // target images
       var shuffled = _.shuffle(images);
@@ -58,7 +62,6 @@ router.get('/images', function(req, res) {
   });
 });
 router.post('/recaptcha', function(req, res) {
-
   var postData = {
     secret: '6LcvMf8SAAAAANwRhpM0Mt7JH46AqFDwnfMzMiHg',
     ip: req.ip,
