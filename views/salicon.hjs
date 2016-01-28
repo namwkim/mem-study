@@ -187,7 +187,7 @@
     function ConfirmRecaptcha() {
       //check reCAPTCHA
       //console.log(grecaptcha.getResponse());
-      $.post('/bubble/recaptcha', {
+      $.post('/salicon/recaptcha', {
         recaptcha_response: grecaptcha.getResponse()
       }, function(res) {
         console.log(res);

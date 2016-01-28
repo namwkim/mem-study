@@ -33,7 +33,7 @@ router.get('/images', function(req, res) {
     if (err) {
       return console.log(new Date(), 'error in loading images', err);
     }
-    console.log(result);
+
     if (result) {
       var images = result;
 
@@ -49,7 +49,7 @@ router.get('/images', function(req, res) {
       var blurred = _.map(shuffled, function(img) {
         return img.blur_img_url;
       })
-
+      console.log(images);
       res.json({
         targets: targets,
         blurred: blurred
