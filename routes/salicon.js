@@ -37,12 +37,8 @@ router.get('/images', function(req, res) {
     if (result) {
       var images = result;
 
-      if (hitId.search("TEST") != -1) {
-        // images = _.sample(images, 2);
-        var img = _.find(images, function(item){
-          return item.img_url == "/images/salicon-db-pilot/targets/example-salicon.jpg";
-        });
-        images = [img];
+      if (hitId.search("TEST")!=-1){
+          images = _.sample(images, 17);
       }
       // target images
       var shuffled = _.shuffle(images);

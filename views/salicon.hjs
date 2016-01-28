@@ -24,9 +24,11 @@
       STUDY = 4,
       DEBRIEF = 5;
     var MIN_DESC = 150,
-      RADIUS_PIXEL = 70; // IMG_WIDTH = 700, IMG_HEIGHT=700;
+      BLUR_RADIUS = 15,
+      BUBBLE_RADIUS = 70; // IMG_WIDTH = 700, IMG_HEIGHT=700;
     var WAIT_TIME = 2000,
         VIEW_TIME = 12000;
+
     var stage = INTRO;
     var formSelector = "#mturk-form";
     var images = null;
@@ -76,6 +78,15 @@
       console.log(hitId);
       console.log(assignmentId);
       console.log(workerId);
+      //HACK:
+      BLUR_RADIUS = parseInt(gup("blur"));
+      if ([15, 25, 35, 45, 55].indexOf(BLUR_RADIUS)==-1){
+        bootbox.alert("Blur radius should be one of 15, 25, 35, 45, 55.");
+        $("#intro").hide();
+        return;
+      }
+      BUBBLE_RADIUS = parseInt(gup("bubble"));
+      b = gup("blur");
       if (assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE") { //preview mode
         $('#intro-start-button').hide(); //do not allow a worker to proceed
         $('#recaptcha').hide();
@@ -96,8 +107,14 @@
             $("#submit-btn").trigger("click", [true]);
           });
         }
-        console.log(res);
+
         realImages = res;
+        //HACK: change image path
+        realImages.blurred.forEach(function(url, i){
+          url = url.replace("targets_blurred", "targets_blurred_"+BLUR_RADIUS);
+          realImages.blurred[i] = url;
+        });
+        console.log(realImages);
       });
 
       //load practice images
@@ -105,10 +122,12 @@
         targets: [],
         blurred: []
       };
-      practiceImages.targets.push(base_url + "salicon-practice.jpg");
+      practiceImages.targets.push(base_url +
+        "salicon-practice.jpg");
       //practiceImages.targets.push(base_url+"bubble-practice-2.jpg");
 
-      practiceImages.blurred.push(base_url + "salicon-practice-blurred.jpg");
+      practiceImages.blurred.push(base_url +
+        "salicon-practice-blurred_" + BLUR_RADIUS + ".jpg");
       //practiceImages.blurred.push(base_url+"bubble-practice-2-blurred.jpg");
       /*
       randomized = _.take(_.shuffle(_.zip(practiceImages.targets, practiceImages.blurred)),2);
@@ -303,10 +322,10 @@
 
       //draw the circle
       ctx.beginPath();
-      ctx.arc(x, y, RADIUS_PIXEL, 0, 2 * Math.PI, false);
+      ctx.arc(x, y, BUBBLE_RADIUS, 0, 2 * Math.PI, false);
       ctx.clip();
       ctx.drawImage(curImg, 0, 0, newSize.width, newSize.height);
-      ctx.arc(x, y, RADIUS_PIXEL, 0, 2 * Math.PI, false);
+      ctx.arc(x, y, BUBBLE_RADIUS, 0, 2 * Math.PI, false);
       ctx.lineWidth = 2;
       ctx.strokeStyle = '#ff0000';
       ctx.stroke();
@@ -318,7 +337,7 @@
         image: images.targets[curIdx],
         center_x: x,
         center_y: y,
-        radius: RADIUS_PIXEL,
+        radius: BUBBLE_RADIUS,
         size: size
       }
       LogAction("click", data);
