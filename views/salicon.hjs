@@ -16,6 +16,7 @@
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <script src="/bower_components/jsdiff/diff.js"></script>
 
+
   <script type="text/javascript">
     var INTRO = 0,
       CONSENT = 1,
@@ -86,6 +87,12 @@
         return;
       }
       BUBBLE_RADIUS = parseInt(gup("bubble"));
+      view_time_in_sec = parseInt(gup("time"));
+      VIEW_TIME = view_time_in_sec*1000;
+      //update time info
+      $(".view_time").text(view_time_in_sec);
+      $(".hit_time").text(Math.ceil(view_time_in_sec*17/60));
+
       b = gup("blur");
       if (assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE") { //preview mode
         $('#intro-start-button').hide(); //do not allow a worker to proceed
@@ -522,7 +529,7 @@
             <p class="text-justify">
               In this HIT you will be presented with a series of images containing natural scences and asked to explore the images freely by clicking to reveal anywhere you want to look.
               <br>
-              <br> The HIT should take about <strong>3 minutes</strong> to complete.
+              <br> The HIT should take about <strong><span class="hit_time">3</span> minutes</strong> to complete.
               <br>
               <br> * You need to have normal or corrected-to-normal vision. You can check your vision status here:
               <a href="http://colorvisiontesting.com/ishihara.htm" target="_blank" > test link </a>
@@ -553,10 +560,10 @@
               <br> Viewing and clicking images .
               <br>
               <br>
-              <strong>Time required:</strong> Participation will take approximately 3 minutes.
+              <strong>Time required:</strong> Participation will take approximately <span class="hit_time">3</span> minutes.
               <br>
               <br>
-              <strong>Risks:</strong> There are no anticipated risks associated with participating in this study. The effects of viewing the images should be comparable to those you would experience from viewing a computer monitor for 3 minutes.
+              <strong>Risks:</strong> There are no anticipated risks associated with participating in this study. The effects of viewing the images should be comparable to those you would experience from viewing a computer monitor for <span class="hit_time">3</span> minutes.
               <br>
               <br>
               <strong>Confidentiality:</strong> Your participation in this study will remain confidential, and your identity will not be stored with your data. Your responses will be assigned a code number, and the list connecting your Amazon worker ID
@@ -642,7 +649,7 @@
               <br>
               <!--You will be paid <strong>$0.40</strong> for participating in this study which is expected to last about <strong>3 minutes</strong>.
               <br><br>-->
-              For each image, you will be asked to <strong>explore the image</strong> for <strong>10</strong> seconds. The image is <strong>heavily blurred</strong> so that you can only see a rough outline of the image. However,
+              For each image, you will be asked to <strong>explore the image</strong> for <strong><span class="view_time">10</span></strong> seconds. The image is <strong>heavily blurred</strong> so that you can only see a rough outline of the image. However,
               you can <strong>click to reveal</strong> small, circular areas of the image ("bubbles") to inspect the full details.
               <br>
               <br> We will only pay for successfully completed work.
@@ -677,7 +684,7 @@
       </div>
       <div id="bubble">
         <h3 class="text-muted"><span id="tutorial-msg" class="label label-danger">Tutorial</span> <span id="main-msg"></span></h3>
-        <div id="sub-msg" class="text-danger">This is how long 10 seconds is.</div>
+        <div id="sub-msg" class="text-danger">This is how long <span class="view_time">10</span> seconds is.</div>
         <div class="row">
           <div class="col-md-12 center-block">
             <canvas id="canvas" width="640" height="480"></canvas>
