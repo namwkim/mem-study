@@ -281,6 +281,9 @@
 
           setTimeout(function(){
             console.log("Waiting Time Start!")
+            if (isPractice==false && clickCount==0){
+              $("#submit-btn").trigger("click", [true]);
+            }
             NextImage();// disappear the image
           }, VIEW_TIME)//5second
         }
