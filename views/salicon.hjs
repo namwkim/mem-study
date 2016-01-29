@@ -81,7 +81,7 @@
       console.log(workerId);
       //HACK:
       BLUR_RADIUS = parseInt(gup("blur"));
-      if ([15, 25, 35, 45, 55].indexOf(BLUR_RADIUS)==-1){
+      if ([10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80].indexOf(BLUR_RADIUS)==-1){
         bootbox.alert("Blur radius should be one of 15, 25, 35, 45, 55.");
         $("#intro").hide();
         return;

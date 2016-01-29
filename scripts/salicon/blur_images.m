@@ -1,7 +1,7 @@
 
 % load all images
 images = dir('./targets/*.jpg');
-radi = [15, 25, 35, 45, 55];
+radi = [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80];
 for i=1:length(radi)
     blur_dir = sprintf('targets_blurred_%d', radi(i));
     mkdir(blur_dir)
