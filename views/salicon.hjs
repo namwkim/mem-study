@@ -525,7 +525,7 @@
       <div id="intro">
         <div class="row">
           <div class="col-md-12">
-            <h2>Salicon Study</h2>
+            <h2>BubbleView Study</h2>
             <p class="text-justify">
               In this HIT you will be presented with a series of images containing natural scences and asked to explore the images freely by clicking to reveal anywhere you want to look.
               <br>
@@ -642,7 +642,7 @@
       <div id="prac-inst">
         <div class="row">
           <div class="col-md-12">
-            <h2>Salicon Study Instruction</h2>
+            <h2>BubbleView Study Instruction</h2>
             <p class="text-justify">
               Welcome! In this HIT you will be presented with a series of images containing natural scences.
               <br>
@@ -667,7 +667,7 @@
       <div id="real-inst">
         <div class="row">
           <div class="col-md-12">
-            <h2>Salicon Study Instruction</h2>
+            <h2>BubbleView Study Instruction</h2>
             <p class="text-justify">
               Great job! Now you will start the real study. The real study will be just like the practice you just did, except a bit longer.
               <br>

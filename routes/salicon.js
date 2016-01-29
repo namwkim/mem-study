@@ -9,7 +9,7 @@ var router = express.Router();
 router.get('/', function(req, res) {
   console.log(req.params);
   res.render('salicon', {
-    title: 'Salicon Experiment'
+    title: 'BubbleView Experiment'
   });
 });
 
