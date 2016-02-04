@@ -12,7 +12,7 @@ if __name__ == "__main__":
     print logs.count()
 
     workers = dict()
-    with open(sys.argv[3], 'wb') as f:
+    with open(sys.argv[3], 'ab') as f:
         writer = csv.writer(f)
         for log in logs:
             if workers.has_key(log["worker_id"]):

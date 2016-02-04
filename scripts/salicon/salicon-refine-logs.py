@@ -30,8 +30,8 @@ if __name__ == "__main__":
 		sys.exit(0)
 
 	# open log database
-	# client 	= pymongo.MongoClient('54.69.103.85', 27017)
-	client = pymongo.MongoClient('localhost', 27017)
+	client 	= pymongo.MongoClient('54.69.103.85', 27017)
+	# client = pymongo.MongoClient('localhost', 27017)
 
 	db = client.saliconstudy
 	fromCol = db[sys.argv[1]]
