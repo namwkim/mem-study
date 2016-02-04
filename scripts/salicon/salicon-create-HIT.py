@@ -70,14 +70,14 @@ def create_hits(keyfile, blockfile):
 
 	# collect target image filenames
 	targets = []
-	for root, dirs, files in os.walk("../public/images/salicon-db-pilot/targets"):
+	for root, dirs, files in os.walk("../../public/images/salicon-db-pilot/targets"):
 		for file in files:
 			if file.startswith('.'):
 				continue
 			targets.append(file)
 
 	targets_blurred = []
-	for root, dirs, files in os.walk("../public/images/salicon-db-pilot/targets_blurred"):
+	for root, dirs, files in os.walk("../../public/images/salicon-db-pilot/targets_blurred"):
 		for file in files:
 			if file.startswith('.'):
 				continue
