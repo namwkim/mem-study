@@ -12,7 +12,10 @@ router.get('/', function(req, res) {
     title: 'BubbleView Experiment'
   });
 });
-
+router.get('/eval', function(req, res) {
+    console.log(req.params);
+    res.render('salicon_eval', { title: 'BubbleView Experiment Admin' });
+});
 // router.get('/eval', function(req, res) {
 //     console.log(req.params);
 //     res.render('salicon_eval', { title: 'Salicon Experiment Admin' });
@@ -98,7 +101,75 @@ router.post('/recaptcha', function(req, res) {
       });
   */
 });
+router.get('/ratings', function(req, res){
+    var db = req.salicondb;
+    var rater = req.query.rater;
+    console.log(rater);
+    db.collection('expertRatings').find({ rater: rater}).toArray(function(err, result){
+        res.json(result);
+    });
+})
+router.post('/rating', function(req, res){
+    var db      = req.salicondb;
+    var rating  = {};
+    rating.hit_id               = req.body.hit_id;
+    rating.assignment_id        = req.body.assignment_id;
+    rating.image                = req.body.image;
+    rating.rater                = req.body.rater;
+    rating.relevancy            = req.body.relevancy;
+    rating.accuracy             = req.body.accuracy;
+    rating.comprehensive        = req.body.comprehensive;
+    console.log(rating);
+    db.collection('expertRatings').update(
+        {image: rating.image, assignment_id: rating.assignment_id, rater: rating.rater},
+        rating,
+        { upsert: true },
+        function(err, result) {
+            if (err) {
+                return console.log(new Date(), 'update error', err);
+            }
+            if (result) {
+                res.json({ code: 0, message: 'Successfully updated!', result: result[0]});
+            }
 
+    });
+
+});
+router.get('/pagelogs', function(req, res){
+    var db = req.salicondb;
+    console.log(req.query);
+    var pageSize = parseInt(req.query.pageSize);
+    var pageNum  = parseInt(req.query.pageNum);
+    var dbName   = req.query.dbName;
+    console.log("pageSize = " + pageSize);
+
+    if (dbName==null || dbName==''){
+        dbName = "refLogs30x30"
+    }
+    console.log("dbName = " + dbName);
+    // var lastID   = req.query.lastID;
+    // var query    = {}
+    // if (lastID!=''){
+    //     query._id = { '$gt':req.toObjectID(lastID) };
+    // }
+    db.collection(dbName).count(function(err, count){
+        db.collection(dbName).find({}, null, {
+            limit:  pageSize,
+            skip:   pageNum > 1 ? ((pageNum - 1) * pageSize) : 0,
+            sort: {
+                '_id': -1
+            }
+        }).toArray(function(err, result){
+            if (err) {
+                return console.log(new Date(), 'error in loading images', err);
+            }
+            console.log('loaded: ' + result.length);
+
+            res.json({ pageNum : pageNum, pageSize:pageSize, totalPage: Math.ceil(count*1.0/pageSize), logs : result});
+        });
+    });
+
+})
 router.post('/log', function(req, res) {
   var db = req.salicondb;
   var newLog = {};

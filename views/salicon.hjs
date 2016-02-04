@@ -667,7 +667,7 @@
               <br>
               <br> We will only pay for successfully completed work.
               <br>
-              <br> We will start with a tutorial. Please make sense of how 10 seconds feel like. Please <strong>click the button</strong> below when you are ready to begin. 
+              <br> We will start with a tutorial. Please make sense of how 10 seconds feel like. Please <strong>click the button</strong> below when you are ready to begin.
             </p>
             <img class="img-responsive center-block thumbnail" width="400" src="/images/salicon-db-pilot/salicon-study-overview.png">
             <button id="practice-btn" type="button" class="btn btn-success btn-lg btn-block">

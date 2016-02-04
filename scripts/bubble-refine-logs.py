@@ -14,9 +14,9 @@ def splitKey(key):
 	return {'hit_id': splited[0], 'assignment_id':splited[1], 'worker_id':splited[2] }
 if __name__ == "__main__":
 	# open log database
-	#client 	= pymongo.MongoClient('54.69.103.85', 27017)
-	client 	= pymongo.MongoClient('localhost', 27017)
-	db 		= client.bubblestudy	
+	client 	= pymongo.MongoClient('54.69.103.85', 27017)
+	# client 	= pymongo.MongoClient('localhost', 27017)
+	db 		= client.bubblestudy
 	fromCol = db.logs40_Dec
 	toCol 	= db.refinedLogs40_Dec
 	toCol.remove({})
@@ -24,7 +24,7 @@ if __name__ == "__main__":
 	# filter data
 
 	# 1. create temp database containing filtered data
-	
+
 	tempHits = {}
 	# sort and group by hit id
 	sortedLogs = sorted(fromCol.find({}), key=lambda x: x['hit_id'])
@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
 	print 'filtering bad data...'
 	hits = {}
-	
+
 
 	for hitID, hitData in tempHits.iteritems(): # loop over hit
 		sortedLogs = sorted(hitData, key=lambda x: x['assignment_id'])
@@ -51,7 +51,7 @@ if __name__ == "__main__":
 				survey = filter(lambda x: x['action'] == "survey", sortedLogs)
 				start  = filter(lambda x: x['action'] == "start-experiment", sortedLogs)
 				descs  = filter(lambda x: x['action'] == "explain", sortedLogs)
-				if len(survey)==1 and len(start)==1 and len(descs)==4:					
+				if len(survey)==1 and len(start)==1 and len(descs)==4:
 					workers[wk] = sortedLogs
 				# else:
 				# 	print 'filtered: ', wk
@@ -61,7 +61,7 @@ if __name__ == "__main__":
 			# 	print 'multiple workers participated'
 			# else:
 			# 	print 'no workers participated'
-				
+
 		if len(assignments.values())==0:
 			print 'no assignments found: ', len(workers.values())
 		else:
@@ -76,17 +76,17 @@ if __name__ == "__main__":
 		for asmtID, asmtData in hitData.iteritems():
 			# for workerID, workerData in asmtData.iteritems():
 			print asmtID, ' len: ', len(asmtData)
-				
+
 			start  = filter(lambda x: x['action'] == "start-experiment", asmtData)
 			descs  = filter(lambda x: x['action'] == "explain" and x['data']['is_practice'] == "false", asmtData)
 			# diffs  = filter(lambda x: x['action'] == "desc-change" and x['data']['is_practice'] == "false", asmtData)
-			
+
 			survey = filter(lambda x: x['action'] == "survey", asmtData)
 			# print survey
 			marks = start + descs
 			for s, e in pairwise(marks):
-				imageName = e['data']['image'].split("/")[-1].split(".")[0]	
-				
+				imageName = e['data']['image'].split("/")[-1].split(".")[0]
+
 				# 1) there should not be duplicate descritions (other option: remove all asmts when duplicate found)
 				desc = e['data']['desc']
 				if descMap.has_key(desc)==True:
@@ -145,10 +145,10 @@ if __name__ == "__main__":
 		print image , "' asmt size: ", len(imageData['logs'])
 		print "median click count: ", median, ", iqr range: ", iqr25, " ~ ", iqr75
 		# print len(imageData['logs'])
-		toCol.insert(imageData) 
-	
+		toCol.insert(imageData)
+
 	print len(images), " images saved."
-				
+
 	# #collect survey data
 	# filtered 	= logs.find({'action':'survey'})
 	# survey = {}
@@ -179,7 +179,7 @@ if __name__ == "__main__":
 	# #print desc
 
 	# # collect text changes
-	# changes = logs.find({'action': 'desc-change', 'data.is_practice':'false'});			
+	# changes = logs.find({'action': 'desc-change', 'data.is_practice':'false'});
 	# sortedChanges = sorted(changes, key=lambda x: getKey(x));
 	# textChanges = {}
 	# for k, g in itertools.groupby(sortedChanges, key=lambda x: getKey(x)):
@@ -200,10 +200,10 @@ if __name__ == "__main__":
 	# 		for c in temp:
 	# 			if s['timestamp']<= c['timestamp'] and c['timestamp']<e['timestamp']:
 	# 				c['data']['image'] = e['data']['image']
-	# 				within.append(c)					
+	# 				within.append(c)
 	# 				# print c['data']['image']
 	# 		# print len(within)
-			
+
 	# 		if textChanges.has_key(k + '/' + e['data']['image']):
 	# 			print 'weirdo'
 	# 		textChanges[k + '/' + e['data']['image']] = within
@@ -219,12 +219,12 @@ if __name__ == "__main__":
 	# 	 	clicks.append(x)
 	# #print clicks
 
-	# #group by images 
-	
+	# #group by images
+
 	# sortedByImage = sorted(clicks, key=lambda x : x['data']['image'])
-	# for k, g in itertools.groupby(sortedByImage, key=lambda x : x['data']['image']):	
+	# for k, g in itertools.groupby(sortedByImage, key=lambda x : x['data']['image']):
 	# 	#save back to database
-	# 	imageName = k.split("/")[-1].split(".")[0]	
+	# 	imageName = k.split("/")[-1].split(".")[0]
 	# 	print 'saving... ', imageName
 	# 	groupClicks = list(g)
 	# 	sortedByAsmt = sorted(groupClicks, key=lambda x : getKey(x))
@@ -232,7 +232,7 @@ if __name__ == "__main__":
 	# 	#group by assignments
 	# 	for ak, ag in itertools.groupby(sortedByAsmt, key=lambda x : getKey(x)):
 	#     	#sort clicks
-	# 		sortedClicks = sorted(ag, key=lambda x: x['timestamp'])	    	
+	# 		sortedClicks = sorted(ag, key=lambda x: x['timestamp'])
 
 	# 		#sort desc-changes
 	# 		sortedDescChgs = sorted(descChanges[k][ak], key=lambda x: x['timestamp'])
@@ -246,11 +246,7 @@ if __name__ == "__main__":
 	# 		assignments.append(asmt)
 	# 		print 'assignment ID: ', ak, ', click counts: ', len(asmt["clicks"])
 
-		
+
 
 	# 	print len(assignments)
-	# 	toCol.insert({ "image": imageName, "logs": assignments }) 
-	
-
-	
-
+	# 	toCol.insert({ "image": imageName, "logs": assignments })
