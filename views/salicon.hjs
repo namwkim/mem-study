@@ -472,7 +472,7 @@
 
     function SubmitForm(e, notQualified) {
       if (notQualified == true) { //failed to pass the consent form
-        $("<input type='hidden' name='consentForm' value='notQualified'>");
+        $("<input type='hidden' name='consentForm' value='notQualified'>").appendTo($(formSelector));
         $(formSelector).submit();
         return;
       }
