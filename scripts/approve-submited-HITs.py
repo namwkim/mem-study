@@ -15,6 +15,7 @@ AWS_SECRET_KEY = '' # <-- TODO: Enter your private key here
 #######################################
 
 STATUS = "Submitted" #"Submitted", "Approved"
+FEEDBACK = "Thank you for your participation."
 """ Delete the HIT associated with the supplied HITId. """
 def approve_all_hits(keyfile):
 	# read a keyfile
@@ -32,14 +33,14 @@ def approve_all_hits(keyfile):
 		mturk_url = 'mechanicalturk.amazonaws.com'
 		preview_url = 'https://mturk.com/mturk/preview?groupId='
 
-	conn = MTurkConnection(aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, host=mturk_url)		
+	conn = MTurkConnection(aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, host=mturk_url)
 	hits = conn.get_all_hits()
 	for hit in hits:
 		print "HIT " + hit.HITId + " : " + hit.Title
 		print "--- HITStatus: "+hit.HITStatus+", ReviewStatus: " + hit.HITReviewStatus + ", Expiration: " +hit.Expiration+""
 		# conn.expire_hit(hit.HITId)
 
-		# Give the HIT a moment to expire.		
+		# Give the HIT a moment to expire.
 		# time.sleep(0.25)
 
 		# Update Hit
@@ -52,8 +53,8 @@ def approve_all_hits(keyfile):
 			print "# of Assignments: ", i
 			for assignment in assignments:
 				print "Approving " + assignment.AssignmentId + "(Status: " + assignment.AssignmentStatus + ")"
-				conn.approve_assignment(assignment.AssignmentId, feedback="Our apologies. We reverted our decision to approve your work. Thanks again for your participation.");
-	
+				conn.approve_assignment(assignment.AssignmentId, feedback=FEEDBACK);
+
 
 if __name__ == "__main__":
 	import time
