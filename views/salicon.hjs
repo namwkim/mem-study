@@ -25,8 +25,8 @@
       STUDY = 4,
       DEBRIEF = 5;
     var MIN_DESC = 150,
-      BLUR_RADIUS = 15,
-      BUBBLE_RADIUS = 70; // IMG_WIDTH = 700, IMG_HEIGHT=700;
+      BLUR_RADIUS = 30,
+      BUBBLE_RADIUS = 30; // IMG_WIDTH = 700, IMG_HEIGHT=700;
     var WAIT_TIME = 2000,
         VIEW_TIME = 10000;
 
@@ -80,18 +80,17 @@
       console.log(assignmentId);
       console.log(workerId);
       //HACK:
-      BLUR_RADIUS = parseInt(gup("blur"));
-      if ([10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80].indexOf(BLUR_RADIUS)==-1){
-        bootbox.alert("Blur radius should be one of 15, 25, 35, 45, 55.");
-        $("#intro").hide();
-        return;
-      }
-      BUBBLE_RADIUS = parseInt(gup("bubble"));
-      view_time_in_sec = parseInt(gup("time"));
-      VIEW_TIME = view_time_in_sec*1000;
+      // BLUR_RADIUS = parseInt(gup("blur"));
+      // if ([10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80].indexOf(BLUR_RADIUS)==-1){
+      //   bootbox.alert("Blur radius should be one of 15, 25, 35, 45, 55.");
+      //   $("#intro").hide();
+      //   return;
+      // }
+      // view_time_in_sec = parseInt(gup("time"));
+      // VIEW_TIME = view_time_in_sec*1000;
       //update time info
-      $(".view_time").text(view_time_in_sec);
-      $(".hit_time").text(Math.ceil(view_time_in_sec*17/60));
+      $(".view_time").text(VIEW_TIME/1000);
+      $(".hit_time").text(Math.ceil((VIEW_TIME/1000)*17/60));
 
       b = gup("blur");
       if (assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE") { //preview mode
@@ -114,7 +113,11 @@
             $("#submit-btn").trigger("click", [true]);
           });
         }
+        //set experimental parameters
 
+        console.log("bubble_radius: " + BUBBLE_RADIUS);
+        console.log("blur_radius: " + BLUR_RADIUS);
+        console.log("view_time: " + VIEW_TIME/1000);
         realImages = res;
         //HACK: change image path
         realImages.blurred.forEach(function(url, i){
@@ -163,24 +166,24 @@
       })
 
 
-      $("#bubble-vis-desc").focusin(function() {
-        console.log("in focus");
-        originalDesc = $("#bubble-vis-desc").val();
-        //$("#msg").text($("#textbox").val());
-      });
-
-      $("#bubble-vis-desc").focusout(function() {
-        console.log("out focus");
-        updatedDesc = $("#bubble-vis-desc").val();
-
-        var diff = JsDiff.diffChars(originalDesc, updatedDesc);
-        var data = {
-          is_practice: isPractice,
-          image: images.targets[curIdx],
-          desc_log: diff
-        }
-        LogAction("desc-change", data);
-      });
+      // $("#bubble-vis-desc").focusin(function() {
+      //   console.log("in focus");
+      //   originalDesc = $("#bubble-vis-desc").val();
+      //   //$("#msg").text($("#textbox").val());
+      // });
+      //
+      // $("#bubble-vis-desc").focusout(function() {
+      //   console.log("out focus");
+      //   updatedDesc = $("#bubble-vis-desc").val();
+      //
+      //   var diff = JsDiff.diffChars(originalDesc, updatedDesc);
+      //   var data = {
+      //     is_practice: isPractice,
+      //     image: images.targets[curIdx],
+      //     desc_log: diff
+      //   }
+      //   LogAction("desc-change", data);
+      // });
 
       //bootstro initialization (tutorial)
       $('#canvas').addClass("bootstro")
@@ -349,7 +352,9 @@
         image: images.targets[curIdx],
         center_x: x,
         center_y: y,
-        radius: BUBBLE_RADIUS,
+        bubble_radius: BUBBLE_RADIUS,
+        blur_radius: BLUR_RADIUS,
+        view_time: VIEW_TIME/1000,
         size: size
       }
       LogAction("click", data);
@@ -509,7 +514,10 @@
         gender: gender,
         age: age,
         ethnic: ethnic,
-        feedback: feedback
+        feedback: feedback,
+        bubble_radius: BUBBLE_RADIUS,
+        blur_radius: BLUR_RADIUS,
+        view_time: VIEW_TIME/1000
       }, function() {
         $(formSelector).submit();
       });

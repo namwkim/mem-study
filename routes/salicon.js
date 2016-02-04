@@ -38,7 +38,7 @@ router.get('/images', function(req, res) {
       var images = result;
 
       if (hitId.search("TEST")!=-1){
-          images = _.sample(images, 17);
+          images = _.sample(images, 2);
       }
       // target images
       var shuffled = _.shuffle(images);
@@ -49,7 +49,9 @@ router.get('/images', function(req, res) {
       var blurred = _.map(shuffled, function(img) {
         return img.blur_img_url;
       })
-      console.log(images);
+      // console.log(images);
+      //set experimental conditions
+
       res.json({
         targets: targets,
         blurred: blurred
