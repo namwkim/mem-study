@@ -284,8 +284,10 @@
 
           setTimeout(function(){
             console.log("Waiting Time Start!")
-            if (isPractice==false && clickCount==0){
-              $("#submit-btn").trigger("click", [true]);
+            if (isPractice==false && clickCount<2){
+              bootbox.alert("Sorry, you have to click at least twice for each image. ", function() {
+                $("#submit-btn").trigger("click", [true]);
+              });
             }
             NextImage();// disappear the image
           }, VIEW_TIME)//5second
