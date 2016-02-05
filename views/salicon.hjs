@@ -25,8 +25,8 @@
       STUDY = 4,
       DEBRIEF = 5;
     var MIN_DESC = 150,
-      BLUR_RADIUS = 30,
-      BUBBLE_RADIUS = 70; // IMG_WIDTH = 700, IMG_HEIGHT=700;
+      BLUR_RADIUS = 50,
+      BUBBLE_RADIUS = 30; // IMG_WIDTH = 700, IMG_HEIGHT=700;
     var WAIT_TIME = 2000,
         VIEW_TIME = 10000;
 
