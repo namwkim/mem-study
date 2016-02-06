@@ -5,10 +5,10 @@ import os, pymongo, sys, random, time, csv
 
 ######  AMT CONFIGURATION PARAMETRS  ######
 
-SANDBOX = False  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
+SANDBOX = True  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 HIT_URL = "https://study.namwkim.org/bubble"  # Provide the URL that you want workers to sent sent to complete you task
 
-NUMBER_OF_HITS = 17  # Number of different HITs posted for this task
+NUMBER_OF_HITS = 34  # Number of different HITs posted for this task
 NUMBER_OF_ASSIGNMENTS = 10  # Number of tasks that DIFFERENT workers will be able to take for each HIT
 LIFETIME = 60 * 60 * 24 * 7  # How long that the task will stay visible if not taken by a worker (in seconds)
 REWARD = 0.5  # Base payment value for completing the task (in dollars)
@@ -70,14 +70,14 @@ def create_hits(keyfile, blockfile):
 
 	# collect target image filenames
 	targets = []
-	for root, dirs, files in os.walk("../public/images/bubble-db-pilot/targets"):
+	for root, dirs, files in os.walk("../../public/images/bubble-db-pilot/targets"):
 		for file in files:
 			if file.startswith('.'):
 				continue
 			targets.append(file)
 
 	targets_blurred = []
-	for root, dirs, files in os.walk("../public/images/bubble-db-pilot/targets_blurred"):
+	for root, dirs, files in os.walk("../../public/images/bubble-db-pilot/targets_blurred"):
 		for file in files:
 			if file.startswith('.'):
 				continue
