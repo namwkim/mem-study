@@ -26,7 +26,7 @@
       DEBRIEF = 5;
     var MIN_DESC = 150,
       BLUR_RADIUS = 70,
-      BUBBLE_RADIUS = 50; // IMG_WIDTH = 700, IMG_HEIGHT=700;
+      BUBBLE_RADIUS = 70; // IMG_WIDTH = 700, IMG_HEIGHT=700;
     var WAIT_TIME = 2000,
         VIEW_TIME = 10000;
 
