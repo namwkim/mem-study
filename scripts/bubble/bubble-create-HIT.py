@@ -9,7 +9,7 @@ SANDBOX = False  # Select whether to post to the sandbox (using fake money), or 
 HIT_URL = "https://study.namwkim.org/bubble"  # Provide the URL that you want workers to sent sent to complete you task
 
 NUMBER_OF_HITS = 34  # Number of different HITs posted for this task
-NUMBER_OF_ASSIGNMENTS = 10  # Number of tasks that DIFFERENT workers will be able to take for each HIT
+NUMBER_OF_ASSIGNMENTS = 5  # Number of tasks that DIFFERENT workers will be able to take for each HIT
 LIFETIME = 60 * 60 * 24 * 7  # How long that the task will stay visible if not taken by a worker (in seconds)
 REWARD = 0.5  # Base payment value for completing the task (in dollars)
 DURATION = 60*45  # How long the worker will be able to work on a single task (in seconds)
