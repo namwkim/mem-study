@@ -14,11 +14,11 @@ def splitKey(key):
 	return {'hit_id': splited[0], 'assignment_id':splited[1], 'worker_id':splited[2] }
 if __name__ == "__main__":
 	# open log database
-	#client 	= pymongo.MongoClient('54.69.103.85', 27017)
-	client 	= pymongo.MongoClient('localhost', 27017)
+	client 	= pymongo.MongoClient('54.69.103.85', 27017)
+	# client 	= pymongo.MongoClient('localhost', 27017)
 	db 		= client.bubblestudy
-	fromCol = db.logs40_Dec
-	toCol 	= db.refinedLogs40_Dec
+	fromCol = db[sys.argv[1]]
+	toCol 	= db[sys.argv[2]]
 	toCol.remove({})
 
 	# filter data

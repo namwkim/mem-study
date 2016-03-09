@@ -65,8 +65,8 @@ for i=1:imgCnt
         valid = [];
         for jj = 1:size(u.fixations.enc,1)
             curfix =  u.fixations.enc(jj,:);
-            if curfix(1) > 0 && curfix(1) < size(im,2) && ...
-                    curfix(2) > 0 && curfix(2) < size(im,1)
+            if curfix(1) >= 0 && curfix(1) <= size(im,2) && ...
+                    curfix(2) >= 0 && curfix(2) <= size(im,1)
                 valid = [valid,jj];
             end
         end
@@ -75,6 +75,7 @@ for i=1:imgCnt
         %    i,j,length(valid),size(u.fixations.enc,1));
         
         u.fixations.enc = u.fixations.enc(valid,:);
+        u.fixations.enc_time = u.fixations.enc_time(valid,:);
         
         %temporary code to match the number of fixations
 %         if length(u.fixations.enc)>90

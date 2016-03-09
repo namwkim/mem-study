@@ -8,6 +8,7 @@ var bodyParser = require('body-parser');
 var routes          = require('./routes/index');
 var bubbleRouter    = require('./routes/bubble');
 var saliconRouter    = require('./routes/salicon');
+var websalyRouter    = require('./routes/websaly');
 var recallRouter    = require('./routes/recall');
 var codingRouter    = require('./routes/coding');
 var doiRouter    = require('./routes/socialdoi/index');
@@ -21,6 +22,7 @@ var mongo = require('mongoskin');
 var db = mongo.db("mongodb://localhost:27017/mem_study", {native_parser: true});
 var bubbledb = mongo.db("mongodb://localhost:27017/bubblestudy", {native_parser: true});
 var salicondb = mongo.db("mongodb://localhost:27017/saliconstudy", {native_parser: true});
+var websalydb = mongo.db("mongodb://localhost:27017/websalystudy", {native_parser: true});
 var recalldb = mongo.db("mongodb://localhost:27017/recallstudy", {native_parser: true});
 var codingdb = mongo.db("mongodb://localhost:27017/coding", {native_parser: true});
 var socialdoidb = mongo.db("mongodb://localhost:27017/socialdoi", {native_parser: true});
@@ -46,6 +48,7 @@ app.use(function(req, res, next){
     req.codingdb = codingdb;
     req.bubbledb = bubbledb;
     req.salicondb = salicondb;
+    req.websalydb = websalydb;
     req.recalldb = recalldb;
     req.socialdoi = socialdoidb
     req.toObjectID = mongo.helper.toObjectID;
@@ -55,6 +58,7 @@ app.use(function(req, res, next){
 app.use('/', routes);
 app.use('/coding', codingRouter);
 app.use('/bubble', bubbleRouter);
+app.use('/websaly', websalyRouter);
 app.use('/salicon', saliconRouter);
 app.use('/recall', recallRouter);
 app.use('/socialdoi', doiRouter.budgetRouter);

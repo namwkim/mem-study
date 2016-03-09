@@ -3,7 +3,7 @@ import os, pymongo, sys, datetime, csv
 
 def export2csv(collection, csvout):#, filterList):
 	# open log database
-	client 	= pymongo.MongoClient('localhost', 27017)
+	client 	= pymongo.MongoClient('54.69.103.85', 27017)
 	db 		= client.saliconstudy
 	logs 	= db[collection]
 

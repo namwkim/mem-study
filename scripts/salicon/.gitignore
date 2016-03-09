@@ -1,3 +1,6 @@
+*.png
+*.mat
+*.csv
 train
 target_blurred
 target
