@@ -709,7 +709,7 @@
         <div id="sub-msg" class="text-danger">This is how long <span class="view_time">10</span> seconds is.</div>
         <div class="row">
           <div class="col-md-12 center-block">
-            <canvas id="canvas" width="640" height="480"></canvas>
+            <canvas id="canvas" width="1000" height="600"></canvas>
           </div>
         </div>
       </div>
