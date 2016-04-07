@@ -25,8 +25,8 @@
       STUDY = 4,
       DEBRIEF = 5;
     var MIN_DESC = 150,
-      BLUR_RADIUS = 30,
-      BUBBLE_RADIUS = 30; // IMG_WIDTH = 700, IMG_HEIGHT=700;
+      BLUR_RADIUS = 50,
+      BUBBLE_RADIUS = 70; // IMG_WIDTH = 700, IMG_HEIGHT=700;
     var WAIT_TIME = 2000,
         VIEW_TIME = 10000;
 
@@ -79,22 +79,22 @@
       console.log(hitId);
       console.log(assignmentId);
       console.log(workerId);
-      //HACK:
-      if (gup("blur")!=""){
-        BLUR_RADIUS = parseInt(gup("blur"));
-        if ([10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80].indexOf(BLUR_RADIUS)==-1){
-          bootbox.alert("Blur radius should be one of 15, 25, 35, 45, 55.");
-          $("#intro").hide();
-          return;
-        }
-      }
-      if (gup("bubble")!=""){
-        BUBBLE_RADIUS = parseInt(gup("bubble"));
-      }
-      if (gup("time")!=""){
-        view_time_in_sec = parseInt(gup("time"));
-        VIEW_TIME = view_time_in_sec*1000;
-      }
+      //HACK:should be commneted out in a real study
+      // if (gup("blur")!=""){
+      //   BLUR_RADIUS = parseInt(gup("blur"));
+      //   if ([10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80].indexOf(BLUR_RADIUS)==-1){
+      //     bootbox.alert("Blur radius should be one of 15, 25, 35, 45, 55.");
+      //     $("#intro").hide();
+      //     return;
+      //   }
+      // }
+      // if (gup("bubble")!=""){
+      //   BUBBLE_RADIUS = parseInt(gup("bubble"));
+      // }
+      // if (gup("time")!=""){
+      //   view_time_in_sec = parseInt(gup("time"));
+      //   VIEW_TIME = view_time_in_sec*1000;
+      // }
 
 
       // update time info
