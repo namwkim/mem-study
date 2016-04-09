@@ -19,8 +19,8 @@ APPROVAL_DELAY = 60*60*24*7  # How long after the task is completed will the wor
 # HIT title (as it will appear on the public listing)
 TITLE = 'Free-Viewing Images'
 # Description of the HIT that workers will see when deciding to accept it or not
-DESCRIPTION = ("This HIT should take about 3 minutes to complete. In this HIT, you will be presented with a series of images containing web pages. "+
-				"For each image, you will be asked to explore the image for 10 seconds. The image is heavily blurred so that you can only see a rough outline of the image. However, you can click to reveal small, circular areas of the image ('bubbles') to inspect the full details.")
+DESCRIPTION = ("This HIT should take about 9 minutes to complete. In this HIT, you will be presented with a series of images containing web pages. "+
+				"For each image, you will be asked to explore the image for 30 seconds. The image is heavily blurred so that you can only see a rough outline of the image. However, you can click to reveal small, circular areas of the image ('bubbles') to inspect the full details.")
 # Search terms for the HIT posting
 KEYWORDS = ['Easy', 'Web Page', 'Image', 'Click', 'Reveal']
 
