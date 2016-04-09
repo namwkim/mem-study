@@ -35,6 +35,6 @@ for ann in ijson.items(f, "annotations.item"):
         print imgName, workderID
         for coord in ann["fixations"]:
             curTime = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-            csvwriter.writerow([curTime, imgName, workderID, coord[0], coord[1]])
+            csvwriter.writerow([curTime, imgName, workderID, coord[1], coord[0]])
 
 print 'saving fixations into a csv file'

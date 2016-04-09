@@ -28,7 +28,7 @@
       BLUR_RADIUS = 50,
       BUBBLE_RADIUS = 70; // IMG_WIDTH = 700, IMG_HEIGHT=700;
     var WAIT_TIME = 2000,
-        VIEW_TIME = 10000;
+        VIEW_TIME = 30000;
 
     var stage = INTRO;
     var formSelector = "#mturk-form";
@@ -551,7 +551,7 @@
             <p class="text-justify">
               In this HIT you will be presented with a series of images containing web pages and asked to explore the images freely by clicking to reveal anywhere you want to look.
               <br>
-              <br> The HIT should take about <strong><span class="hit_time">3</span> minutes</strong> to complete.
+              <br> The HIT should take about <strong><span class="hit_time">3</span> minutes</strong> to complete. Please stay focused throughout the study. Otherwise, you valuable time may not get paid.
               <br>
               <br> * You need to have normal or corrected-to-normal vision. You can check your vision status here:
               <a href="http://colorvisiontesting.com/ishihara.htm" target="_blank" > test link </a>
@@ -674,9 +674,9 @@
               For each image, you will be asked to <strong>explore the image</strong> for <strong><span class="view_time">10</span></strong> seconds. The image is <strong>heavily blurred</strong> so that you can only see a rough outline of the image. However,
               you can <strong>click to reveal</strong> small, circular areas of the image ("bubbles") to inspect the full details.
               <br>
-              <br> We will only pay for successfully completed work. Please try to focus on images and click where you want to look.
+              <br> We will only pay for successfully completed work. Please try to <strong>focus</strong> on images and click where you want to look.
               <br>
-              <br> We will start with a tutorial. Please make sense of how 10 seconds feel like. Please <strong>click the button</strong> below when you are ready to begin.
+              <br> We will start with a tutorial. Please make sense of how <strong><span class="view_time">10</span></strong> seconds feel like. Please <strong>click the button</strong> below when you are ready to begin.
             </p>
             <img class="img-responsive center-block thumbnail" width="400" src="/images/websaly-db-pilot/websaly-study-overview.png">
             <button id="practice-btn" type="button" class="btn btn-success btn-lg btn-block">
