@@ -144,7 +144,7 @@ router.get('/pagelogs', function(req, res){
     console.log("pageSize = " + pageSize);
 
     if (dbName==null || dbName==''){
-        dbName = "refLogs30x30"
+        dbName = "refLogs10x70"
     }
     console.log("dbName = " + dbName);
     // var lastID   = req.query.lastID;
