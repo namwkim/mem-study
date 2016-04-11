@@ -433,9 +433,10 @@
         totalCount++;
         if (maxDate && maxDate.getTime() < diff.getTime())
           break;
-
+        console.log("(prev) bubble: "+click.center_x+", "+click.center_y);
         center_x = click.center_x*wFactor;
         center_y = click.center_y*hFactor;
+        console.log("bubble: "+center_x+", "+center_y);
         ctx.beginPath();
         ctx.arc(center_x, center_y, click.bubble_radius, 0, 6.28, false);
         ctx.fillStyle = "red";
