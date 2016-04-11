@@ -405,8 +405,8 @@
       var totalCount = 0;
 
       //HACK: websaly used a different canvas size
-      var wFactor = canvas.width()/1000;
-      var hFactor = canvas.height()/600;
+      // var wFactor = canvas.width()/1000;
+      // var hFactor = canvas.height()/600;
       //draw circles
       ctx.save();
       ctx.globalAlpha = 0.2;
@@ -431,9 +431,9 @@
         totalCount++;
         if (maxDate && maxDate.getTime() < diff.getTime())
           break;
-        console.log("(prev) bubble: "+click.center_x+", "+click.center_y);
-        center_x = click.center_x*wFactor;
-        center_y = click.center_y*hFactor;
+        // console.log("(prev) bubble: "+click.center_x+", "+click.center_y);
+        center_x = click.center_x;//*wFactor;
+        center_y = click.center_y;//*wFactor;
         console.log("bubble: "+center_x+", "+center_y);
         ctx.beginPath();
         ctx.arc(center_x, center_y, click.bubble_radius, 0, 6.28, false);
@@ -660,7 +660,7 @@
                       </div>
                     </div>
                     <br>
-                    <canvas id="websaly-canvas" width="600" height="600"></canvas>
+                    <canvas id="websaly-canvas" width="1000" height="600"></canvas>
                   </div>
                 </div>
 
