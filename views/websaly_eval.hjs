@@ -404,7 +404,11 @@
       var ctx = canvas[0].getContext('2d');
       var totalCount = 0;
 
-
+      // console.log("width, height = " + canvas.width() + " , " + canvas.height());
+      ctx.clearRect(0, 0, canvas.width(), canvas.height());
+      //HACK: websaly used a different canvas size
+      var wFactor = canvas.width()/1000;
+      var hFactor = canvas.height()/600;
       //draw circles
       ctx.save();
       ctx.globalAlpha = 0.2;
@@ -430,8 +434,10 @@
         if (maxDate && maxDate.getTime() < diff.getTime())
           break;
 
+        center_x = click.center_x*wFactor;
+        center_y = click.center_y*hFactor;
         ctx.beginPath();
-        ctx.arc(click.center_x, click.center_y, click.bubble_radius, 0, 6.28, false);
+        ctx.arc(center_x, center_y, click.bubble_radius, 0, 6.28, false);
         ctx.fillStyle = "red";
         ctx.fill();
 
@@ -440,7 +446,7 @@
           ctx.globalAlpha = 0.5;
           ctx.beginPath();
           ctx.moveTo(prev_x, prev_y);
-          ctx.lineTo(click.center_x, click.center_y);
+          ctx.lineTo(center_x, center_y);
           ctx.strokeStyle = "green";
           ctx.stroke();
           ctx.restore();
@@ -448,7 +454,7 @@
         ctx.save();
         ctx.globalAlpha = 0.8;
         ctx.fillStyle = "green"
-        roundRect(ctx, parseFloat(click.center_x), parseFloat(click.center_y), 25, 12, 5, true, false);
+        roundRect(ctx, parseFloat(center_x), parseFloat(center_y), 25, 12, 5, true, false);
         ctx.restore();
 
         ctx.save();
@@ -457,13 +463,13 @@
         ctx.globalAlpha = 0.5;
         ctx.fillStyle = "white";
 
-        ctx.fillText(diff.getMinutes() + ":" + diff.getSeconds(), click.center_x, parseFloat(click.center_y) + 8);
+        ctx.fillText(diff.getMinutes() + ":" + diff.getSeconds(), center_x, parseFloat(center_y) + 8);
         ctx.restore();
 
-        prev_x = click.center_x;
-        prev_y = click.center_y;
+        prev_x = center_x;
+        prev_y = center_y;
 
-        //heatmapData.push({x:click.center_x, y:click.center_y, value:1})
+        //heatmapData.push({x:click.center_x, y:center_y, value:1})
       }
       ctx.restore();
       return totalCount;
