@@ -7,3 +7,4 @@ target
 validation
 *.jpg
 *.json
+clicks*.csv
