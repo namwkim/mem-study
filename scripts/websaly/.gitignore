@@ -8,3 +8,6 @@ validation
 *.jpg
 *.json
 clicks*.csv
+targets_websaly
+*.m~
+websaly-clicks.csv

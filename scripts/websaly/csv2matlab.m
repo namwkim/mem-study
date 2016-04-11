@@ -43,7 +43,7 @@ for i=1:imgCnt
     img = char(imgNames(i));%image filename
     
     % set filenames
-    s = struct('filename', img, 'impath', strcat('images/targets/',img), 'userdata',[]);
+    s = struct('filename', img, 'impath', strcat('targets_websaly/',img), 'userdata',[]);
     
     % set click data
     userdata = data(img);
