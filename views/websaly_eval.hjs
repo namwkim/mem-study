@@ -33,7 +33,7 @@
     });
     /*
 			function LoadMore(lastID, callback){
-				$.get('/salicon/logs', {pageSize:PAGE_SIZE, lastID: lastID},  function(res){
+				$.get('/websaly/logs', {pageSize:PAGE_SIZE, lastID: lastID},  function(res){
 					console.log(res.logs.length);
 					//copy new data (if, exist)
 					for (var i in res.logs){
@@ -166,7 +166,7 @@
         }
 
         // update evaluation
-        $http.post('/salicon/rating', $scope.rating)
+        $http.post('/websaly/rating', $scope.rating)
           .success(function() {
             console.log("rating updated!");
           })
@@ -174,7 +174,7 @@
       }
       $scope.onSuspicious = function() {
         // update evaluation
-        $http.post('/salicon/rating', $scope.rating)
+        $http.post('/websaly/rating', $scope.rating)
           .success(function() {
             console.log("rating updated!");
           })
@@ -276,12 +276,12 @@
           $("#image-panel").prepend(spinner.el);
           $('#image-list').fadeTo("fast", 0.3);
           loadComplete = 0;
-          $http.get('/salicon/pagelogs', {
+          $http.get('/websaly/pagelogs', {
               params: query
             })
             .success(function(res) {
 
-              $http.get('/salicon/ratings', {
+              $http.get('/websaly/ratings', {
                   params: {
                     rater: $scope.rater
                   }
@@ -384,7 +384,7 @@
       //draw image
       var img = new Image();
       img.onload = function() {
-        var canvas = $("#salicon-canvas");
+        var canvas = $("#websaly-canvas");
         //console.log(this.naturalWidth);
         var ctx = canvas[0].getContext('2d');
         ctx.clearRect(0, 0, canvas[0].width, canvas[0].height);
@@ -399,7 +399,7 @@
     }
 
     function drawBubbles(clickData, maxDate) {
-      var canvas = $("#salicon-canvas");
+      var canvas = $("#websaly-canvas");
       //console.log(canvas)
       var ctx = canvas[0].getContext('2d');
       var totalCount = 0;
@@ -585,7 +585,7 @@
           <div class="panel-heading">
             <!-- Nav tabs -->
             <ul class="nav nav-pills" role="tablist">
-              <li role="presentation" class="active"><a href="#salicon" aria-controls="salicon" role="tab" data-toggle="tab">Bubble</a></li>
+              <li role="presentation" class="active"><a href="#websaly" aria-controls="websaly" role="tab" data-toggle="tab">Bubble</a></li>
               <li role="presentation"><a href="#survey" aria-controls="survey" role="tab" data-toggle="tab">Survey</a></li>
             </ul>
           </div>
@@ -593,7 +593,7 @@
           <!-- Tab panes -->
           <div class="panel-body">
             <div class="tab-content">
-              <div role="tabpanel" class="tab-pane fade in active" id="salicon">
+              <div role="tabpanel" class="tab-pane fade in active" id="websaly">
                 <div class="well">
                   <div class="row" ng-if="evalMode">
                     <div class="col-md-11">
@@ -655,7 +655,7 @@
                       </div>
                     </div>
                     <br>
-                    <canvas id="salicon-canvas" width="600" height="600"></canvas>
+                    <canvas id="websaly-canvas" width="600" height="600"></canvas>
                   </div>
                 </div>
 
