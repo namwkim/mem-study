@@ -1,8 +1,11 @@
 *.png
 *.mat
-*.csv
+clicks*.csv
+*.m~
+salicon-click.csv
 train
 target_blurred
+targets_salicon
 target
 validation
 *.jpg
