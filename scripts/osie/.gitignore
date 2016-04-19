@@ -2,7 +2,7 @@
 *.mat
 clicks*.csv
 *.m~
-salicon-click.csv
+osie-click.csv
 train
 target_blurred
 targets_salicon
@@ -10,3 +10,5 @@ target
 validation
 *.jpg
 *.json
+clicks*.csv
+targets_osie

@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>{{ title }}</title>
+  <link rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap.min.css' />
+  <link rel='stylesheet' href='/bower_components/bootstro/bootstro.min.css' />
+  <link rel='stylesheet' href='/stylesheets/bubble.css' />
+
+  <script src="/javascripts/turkify.js"></script>
+  <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="/bower_components/bootstro/bootstro.min.js"></script>
+  <script src="/bower_components/underscore/underscore-min.js"></script>
+  <script src="/bower_components/bootbox/bootbox.js"></script>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <script src="/bower_components/jsdiff/diff.js"></script>
+
+
+  <script type="text/javascript">
+    var INTRO = 0,
+      CONSENT = 1,
+      PRAC_INST = 2,
+      REAL_INST = 3,
+      STUDY = 4,
+      DEBRIEF = 5;
+    var MIN_DESC = 150,
+      BLUR_RADIUS = 30,
+      BUBBLE_RADIUS = 30; // IMG_WIDTH = 700, IMG_HEIGHT=700;
+    var WAIT_TIME = 2000,
+        VIEW_TIME = 10000;
+
+    var stage = INTRO;
+    var formSelector = "#mturk-form";
+    var images = null;
+    var realImages = null;
+    var practiceImages = null;
+    var base_url = "/images/osie-db-pilot/";
+    var logs = null;
+    var isPractice = false;
+
+    var curIdx = 0;
+    var curImg = null;
+    var curBlurImg = null;
+    var size = {
+      width: 0,
+      height: 0,
+      screenWidth: 0,
+      screenHeight: 0
+    };
+    var assignmentId, hitId, workerId;
+    var clickCount = 0,
+      totalClickCount = 0,
+      charCount = 0;
+
+
+    var originalDesc = "";
+    var updatedDesc = "";
+    $(document).ready(function() {
+      Initialize();
+    });
+
+    function Initialize() {
+      size.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+      size.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+      size.screenWidth = screen.width;
+      size.screenHeight = screen.height;
+
+      $("#consent").hide();
+      $("#prac-inst").hide();
+      $("#real-inst").hide();
+      $("#bubble").hide();
+      $("#debrief").hide();
+
+      // set up AMT form
+      assignmentId = gup("assignmentId");
+      hitId = gup("hitId");
+      workerId = gup("workerId");
+      console.log(hitId);
+      console.log(assignmentId);
+      console.log(workerId);
+      //HACK:
+      // BLUR_RADIUS = parseInt(gup("blur"));
+      // if ([30, 50].indexOf(BLUR_RADIUS)==-1){
+      //   bootbox.alert("Blur radius should be one of 30, 50.");
+      //   $("#intro").hide();
+      //   return;
+      // }
+      // view_time_in_sec = parseInt(gup("time"));
+      // VIEW_TIME = view_time_in_sec*1000;
+      //update time info
+      $(".view_time").text(VIEW_TIME/1000);
+      $(".hit_time").text(Math.ceil((VIEW_TIME/1000)*17/60));
+
+      b = gup("blur");
+      if (assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE") { //preview mode
+        $('#intro-start-button').hide(); //do not allow a worker to proceed
+        $('#recaptcha').hide();
+        return;
+      } else if (assignmentId == "" || hitId == "" || workerId == "") { // invalid access
+        bootbox.alert("You must visit this website through Amazon Mechanical Turk!");
+        $("#intro").hide();
+        return;
+      }
+      turkify(formSelector);
+
+      //load target images
+      $.get('/osie/images', {
+        hitId: hitId
+      }, function(res) {
+        if (res.targets.length == 0) {
+          bootbox.alert("Failed to retrieve images. HIT ID is not valid (" + hitId + ").", function() {
+            $("#submit-btn").trigger("click", [true]);
+          });
+        }
+        //set experimental parameters
+
+        console.log("bubble_radius: " + BUBBLE_RADIUS);
+        console.log("blur_radius: " + BLUR_RADIUS);
+        console.log("view_time: " + VIEW_TIME/1000);
+        realImages = res;
+        //HACK: change image path
+        realImages.blurred.forEach(function(url, i){
+          url = url.replace("targets_blurred", "targets_blurred_"+BLUR_RADIUS);
+          realImages.blurred[i] = url;
+        });
+        console.log(realImages);
+      });
+
+      //load practice images
+      practiceImages = {
+        targets: [],
+        blurred: []
+      };
+      practiceImages.targets.push(base_url +
+        "osie-practice.jpg");
+      //practiceImages.targets.push(base_url+"bubble-practice-2.jpg");
+
+      practiceImages.blurred.push(base_url +
+        "osie-practice-blurred_" + BLUR_RADIUS + ".jpg");
+      //practiceImages.blurred.push(base_url+"bubble-practice-2-blurred.jpg");
+      /*
+      randomized = _.take(_.shuffle(_.zip(practiceImages.targets, practiceImages.blurred)),2);
+      practiceImages.targets = _.map(randomized, function(arr){ return arr[0]; });
+      practiceImages.blurred = _.map(randomized, function(arr){ return arr[1]; });*/
+      console.log(practiceImages);
+
+      //Set up callback functions
+
+      $(".next-btn").click(function() {
+        ChangeStage(stage + 1);
+      });
+
+      // $("#bubble-next-btn").click(NextImage);
+
+      $("#submit-btn").click(SubmitForm);
+
+      $('#intro-start-button').click(ConfirmRecaptcha);
+      $('#consent-btn').click(ConsentForm);
+
+      $('#practice-btn').click(StartPractice);
+      $('#real-btn').click(StartExperiment);
+
+      $('#bubble-vis-desc').keyup(function() {
+        $('#char-count').text($('#bubble-vis-desc').val().length);
+      })
+
+
+      // $("#bubble-vis-desc").focusin(function() {
+      //   console.log("in focus");
+      //   originalDesc = $("#bubble-vis-desc").val();
+      //   //$("#msg").text($("#textbox").val());
+      // });
+      //
+      // $("#bubble-vis-desc").focusout(function() {
+      //   console.log("out focus");
+      //   updatedDesc = $("#bubble-vis-desc").val();
+      //
+      //   var diff = JsDiff.diffChars(originalDesc, updatedDesc);
+      //   var data = {
+      //     is_practice: isPractice,
+      //     image: images.targets[curIdx],
+      //     desc_log: diff
+      //   }
+      //   LogAction("desc-change", data);
+      // });
+
+      //bootstro initialization (tutorial)
+      $('#canvas').addClass("bootstro")
+        .attr("data-bootstro-title", "Click Image")
+        .attr("data-bootstro-content", "Click to reveal small, circular areas of the image to inspect the full details.")
+        .attr("data-bootstro-placement", "right")
+        .attr("data-bootstro-step", 0);
+
+    }
+
+    function ConfirmRecaptcha() {
+      //check reCAPTCHA
+      //console.log(grecaptcha.getResponse());
+      $.post('/osie/recaptcha', {
+        recaptcha_response: grecaptcha.getResponse()
+      }, function(res) {
+        console.log(res);
+        if (res.code != 0) {
+          console.log("reCAPTCHA failed!");
+          bootbox.alert("Verification Failed! Please Try Again...");
+        } else {
+          console.log("reCAPTCHA success!");
+          ChangeStage(stage + 1);
+
+        }
+      })
+    }
+
+    function ConsentForm() {
+      var first = $("input:radio[name=radioFirst]:checked").val();
+      var second = $("input:radio[name=radioSecond]:checked").val();
+      var third = $("input:radio[name=radioThird]:checked").val();
+
+      if (first == "no" || second == "no" || third == "no") {
+        bootbox.alert("Sorry, You are not allowed to participate in this study.", function() {
+          $("#submit-btn").trigger("click", [true]);
+        });
+
+      } else {
+        ChangeStage(stage + 1);
+      }
+    }
+
+    function StartPractice() {
+      console.log("StartPractice");
+      images = practiceImages;
+      isPractice = true;
+      curIdx = clickCount = totalClickCount = 0;
+      LogAction("start-practice", null);
+      ChangeStage(STUDY);
+
+      //start tutorial instruction
+      $("#tutorial-msg").show();
+      $("#main-msg").text("Click anywhere you want to look.");
+      bootstro.start(".bootstro", {
+        nextButtonText: "Next »",
+        prevButtonText: "Prev »"
+      });
+      // $("#bubble-vis-desc").val("Two people are riding horses to climb rocky mountains. While the person ahead is wearing a black cap, the other person following behind is wearing a yellow bucket hat.");
+      // $('#char-count').text($('#bubble-vis-desc').val().length);
+    }
+
+    function StartExperiment() {
+      console.log("StartExperiment");
+      images = realImages;
+      isPractice = false;
+      curIdx = clickCount = totalClickCount = 0;
+      LogAction("start-experiment", null);
+      ChangeStage(STUDY);
+
+      $("#tutorial-msg").hide();
+      $("#main-msg").text("Click anywhere you want to look.");
+      $("#sub-msg").text("");
+    }
+
+    function SetupImage(idx) {
+      // reset click count
+      clickCount = 0;
+      var canvas = $("#canvas");
+      var ctx = canvas[0].getContext('2d');
+      ctx.clearRect(0, 0, canvas.width(), canvas.height());
+      curImg = new Image();
+      curImg.onload = function() {
+        curBlurImg = new Image();
+        curBlurImg.onload = function() {
+          // draw blurred image first
+          //console.log($(curBlurImg).width() + ", " + console.log($(curBlurImg).height()));
+          var canvas = $("#canvas");
+          canvas.off('click');
+          canvas.on('click', {
+            width: this.naturalWidth,
+            height: this.naturalHeight
+          }, OnClickDrawMask);
+          var ctx = canvas[0].getContext('2d');
+          ctx.clearRect(0, 0, canvas.width(), canvas.height());
+          var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, canvas.width(), canvas.height());
+          ctx.drawImage(curBlurImg, 0, 0, newSize.width, newSize.height);
+
+          setTimeout(function(){
+            console.log("Waiting Time Start!")
+            if (isPractice==false && clickCount<2){
+              bootbox.alert("Sorry, you have to click at least twice for each image. ", function() {
+                $("#submit-btn").trigger("click", [true]);
+              });
+            }
+            NextImage();// disappear the image
+          }, VIEW_TIME)//5second
+        }
+        curBlurImg.src = images.blurred[idx];
+      }
+      curImg.src = images.targets[idx];
+    }
+
+    function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {
+      console.log("(canvasWidth, canvasHeight) = " + canvasWidth + ", " + canvasHeight);
+      console.log("(oldWidth, oldHeight) = " + imgWidth + ", " + imgHeight);
+      var newWidth = imgWidth;
+
+      if (newWidth > canvasWidth) {
+        newWidth = canvasWidth;
+        var wratio = canvasWidth / imgWidth;
+        imgHeight = wratio * imgHeight;
+      }
+      var newHeight = imgHeight;
+      if (newHeight > canvasHeight) {
+        newHeight = canvasHeight;
+        var hratio = canvasHeight / imgHeight;
+        newWidth = hratio * newWidth;
+      }
+      console.log("(newWidth, newHeight) = " + newWidth + ", " + newHeight);
+      return {
+        width: newWidth,
+        height: newHeight
+      };
+    }
+
+    function OnClickDrawMask(e) {
+      var canvas = $("#canvas");
+      var ctx = canvas[0].getContext('2d');
+
+      ctx.save();
+
+      var rect = canvas[0].getBoundingClientRect();
+
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+
+      console.log("x, y = " + x + ", " + y);
+      //reset previous cicle
+      var newSize = CalcNewImageSize(e.data.width, e.data.height, canvas.width(), canvas.height());
+      console.log(newSize);
+      ctx.drawImage(curBlurImg, 0, 0, newSize.width, newSize.height);
+
+      //draw the circle
+      ctx.beginPath();
+      ctx.arc(x, y, BUBBLE_RADIUS, 0, 2 * Math.PI, false);
+      ctx.clip();
+      ctx.drawImage(curImg, 0, 0, newSize.width, newSize.height);
+      ctx.arc(x, y, BUBBLE_RADIUS, 0, 2 * Math.PI, false);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#ff0000';
+      ctx.stroke();
+      ctx.restore();
+
+      //log click actio
+      data = {
+        is_practice: isPractice,
+        image: images.targets[curIdx],
+        center_x: x,
+        center_y: y,
+        bubble_radius: BUBBLE_RADIUS,
+        blur_radius: BLUR_RADIUS,
+        view_time: VIEW_TIME/1000,
+        size: size
+      }
+      LogAction("click", data);
+      clickCount++;
+      $("#click-count").text(clickCount);
+      totalClickCount++;
+      console.log(totalClickCount);
+    }
+
+    function NextImage() {
+      //log description
+      console.log('clickCount = ' + clickCount);
+      //increase image index
+      curIdx++;
+      if (curIdx < images.targets.length) {
+        //hide the canvas for 2 second, before showing the next image
+        $('#canvas').hide();
+        $("#main-msg").text("Waiting for a next image...");
+        //setup a new image
+        SetupImage(curIdx);
+        setTimeout(function(){
+          console.log("Next Image if Available!")
+          $('#canvas').show();
+          $("#main-msg").text("Click anywhere you want to look.");
+        }, WAIT_TIME)//5second
+      } else {
+        //all images are used, move on to the next stage
+        if (isPractice == true) {
+          return ChangeStage(REAL_INST);
+        } else {
+          return ChangeStage(DEBRIEF);
+        }
+      }
+
+    }
+
+    function ChangeStage(newStage) {
+      HideStage(stage);
+      stage = newStage;
+      switch (stage) {
+        case INTRO:
+          LogAction("introduction", null);
+          console.log("INTRO");
+          break;
+        case CONSENT:
+          LogAction("consent-form", null);
+          console.log("CONSENT");
+          $("#consent").show();
+          break;
+        case PRAC_INST:
+          LogAction("practice-instruction", null);
+          console.log("PRAC_INST");
+          $("#prac-inst").show();
+          break;
+        case REAL_INST:
+          LogAction("realstudy-instruction", null);
+          console.log("REAL_INST");
+          $("#real-inst").show();
+          break;
+        case STUDY:
+          console.log("STUDY");
+          $("#bubble").show();
+          SetupImage(curIdx);
+          break;
+        case DEBRIEF:
+          console.log("DEBRIEF");
+          $("#debrief").show();
+          LogAction("end", null);
+      }
+    }
+
+    function HideStage(prevStage) {
+      switch (prevStage) {
+        case INTRO:
+          $("#intro").hide();
+          break;
+        case CONSENT:
+          $("#consent").hide();
+          break;
+        case PRAC_INST:
+          $("#prac-inst").hide();
+          break;
+        case REAL_INST:
+          $("#real-inst").hide();
+          break;
+        case STUDY:
+          $("#bubble").hide();
+          break;
+        case DEBRIEF:
+          $("#debrief").hide();
+          break;
+      }
+    }
+
+    function LogAction(action, data, callback) {
+      var log = {
+        timestamp: $.now(),
+        hitId: hitId,
+        assignmentId: assignmentId,
+        workerId: workerId,
+        action: action,
+        data: data
+      };
+      $.post("/osie/log", log, function(res) {
+        if (res.code != 0) {
+          bootbox.alert("Failed to log a worker action!");
+        } else {
+          if (callback) callback.call();
+        }
+      });
+
+    }
+
+    function SubmitForm(e, notQualified) {
+      if (notQualified == true) { //failed to pass the consent form
+        $("<input type='hidden' name='consentForm' value='notQualified'>").appendTo($(formSelector));
+        $(formSelector).submit();
+        return;
+      }
+      //generating answer data (name-value pairs)
+
+      // 1. Target Image Count
+      $("<input type='hidden' name='imageCount' value='" + images.targets.length + "'>").appendTo($(formSelector));
+      // 2. Total Click Count
+      $("<input type='hidden' name='clickCount' value='" + totalClickCount + "'>").appendTo($(formSelector));
+      // 3. Avg Click Count
+      $("<input type='hidden' name='avgClickCount' value='" + (totalClickCount / images.targets.length) + "'>").appendTo($(formSelector));
+
+      var gender = $("input:radio[name=gender]:checked").val();
+      var age = $("input:radio[name=ageGroup]:checked").val();
+      var ethnic = "";
+      if ($("#ethnicAsian").prop('checked')) ethnic += "/" + $("#ethnicAsian").val();
+      if ($("#ethnicLatino").prop('checked')) ethnic += "/" + $("#ethnicLatino").val();
+      if ($("#ethnicPacific").prop('checked')) ethnic += "/" + $("#ethnicPacific").val();
+      if ($("#ethnicAfrican").prop('checked')) ethnic += "/" + $("#ethnicAfrican").val();
+      if ($("#ethnicMiddle").prop('checked')) ethnic += "/" + $("#ethnicMiddle").val();
+      if ($("#ethnicWhite").prop('checked')) ethnic += "/" + $("#ethnicWhite").val();
+      if ($("#ethnicEastInd").prop('checked')) ethnic += "/" + $("#ethnicEastInd").val();
+      if ($("#ethnicNative").prop('checked')) ethnic += "/" + $("#ethnicNative").val();
+      if ($("#ethnicOther").prop('checked')) ethnic += "/" + $("#ethnicOther").val();
+      if ($("#ethnicNotToSay").prop('checked')) ethnic += "/" + $("#ethnicNotToSay").val();
+
+      var feedback = $("#survey-feedback").val();
+
+      // // submit the form to the mturk site
+      console.log("Submiting mturk-form...");
+      console.log("imageCount: " + images.targets.length);
+      console.log('totalClickCount = ' + totalClickCount);
+      console.log('avgClickCount = ' + (totalClickCount / images.targets.length));
+
+      console.log(gender);
+      console.log(age);
+      console.log(ethnic);
+      console.log(feedback);
+
+      LogAction("survey", {
+        gender: gender,
+        age: age,
+        ethnic: ethnic,
+        feedback: feedback,
+        bubble_radius: BUBBLE_RADIUS,
+        blur_radius: BLUR_RADIUS,
+        view_time: VIEW_TIME/1000
+      }, function() {
+        $(formSelector).submit();
+      });
+
+      // console.log("assignmentId: " + $("#mturk-form input[name=assignmentId]").val());
+      // console.log("targetNumber: " + $("#mturk-form input[name=targetNumber]").val());
+      // console.log("correctNumber: " + $("#mturk-form input[name=correctNumber]").val());
+
+    }
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div id="intro">
+        <div class="row">
+          <div class="col-md-12">
+            <h2>BubbleView Study</h2>
+            <p class="text-justify">
+              In this HIT you will be presented with a series of images containing natural scences and asked to explore the images freely by clicking to reveal anywhere you want to look.
+              <br>
+              <br> The HIT should take about <strong><span class="hit_time">3</span> minutes</strong> to complete.
+              <br>
+              <br> * You need to have normal or corrected-to-normal vision. You can check your vision status here:
+              <a href="http://colorvisiontesting.com/ishihara.htm" target="_blank" > test link </a>
+            </p>
+            <img class="img-responsive center-block thumbnail" width="400" src="/images/osie-db-pilot/osie-study-overview.png">
+
+            <div id="recaptcha" class="g-recaptcha" align="center" data-sitekey="6LcvMf8SAAAAAOAE34JZH6i7v_8lOrSD38mPkuGG"></div>
+            <br>
+            <button id="intro-start-button" type="button" class="btn btn-success btn-lg btn-block">
+              <span class="glyphicon glyphicon-play"></span> Start
+            </button>
+
+          </div>
+        </div>
+      </div>
+      <div id="consent">
+        <div class="row">
+          <div class="col-md-12">
+            <h2>STATEMENT OF INFORMED CONSENT</h2>
+            <p class="text-justify">
+              <br>
+              <strong>Purpose of research:</strong> I am studying human visual understanding of various types of images including graphs, posters, and natural scences. This study focuses on recording and logging how humans shift their attention during
+              visual exploration and learning salient elements in the images.
+              <br>
+              <br>
+              <strong>What your participation in this study will involve:</strong>
+              <br> Reading a summary of relevant background information.
+              <br> Viewing and clicking images .
+              <br>
+              <br>
+              <strong>Time required:</strong> Participation will take approximately <span class="hit_time">3</span> minutes.
+              <br>
+              <br>
+              <strong>Risks:</strong> There are no anticipated risks associated with participating in this study. The effects of viewing the images should be comparable to those you would experience from viewing a computer monitor for <span class="hit_time">3</span> minutes.
+              <br>
+              <br>
+              <strong>Confidentiality:</strong> Your participation in this study will remain confidential, and your identity will not be stored with your data. Your responses will be assigned a code number, and the list connecting your Amazon worker ID
+              with this code number will be kept in a locked room and will be destroyed upon completion of the project.
+              <br>
+              <br>
+              <strong>Participation and withdrawal:</strong> Your participation in this study is completely voluntary, and you may withdraw at any time without penalty. You may skip any questions/tasks that you do not want to complete.
+              <br>
+              <br>
+              <strong>Researcher Contact Information:</strong> If you have questions about this research, please contact Nam Wook Kim, (Maxwell Dworkin 142, 33 Oxford St , Cambridge, MA, 02138, namwkim@seas.harvard.edu).
+              <br>
+              <br>
+              <strong>Faculty Sponsor:</strong> Prof. Hanspeter Pfister (33 Oxford Street, Maxwell-Dworkin Rm 227, Cambridge, MA 02138, pfister@seas.harvard.edu, 617-496-8269)
+              <br>
+              <br>
+              <strong>Agreement:</strong> The nature and purpose of this research have been satisfactorily explained to me and I agree to become a participant in the study as described above. I understand that I am free to discontinue participation at
+              any time if I so choose, and that the investigator will gladly answer any questions that arise during the course of the research.
+              <br>
+              <br>
+
+            </p>
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th colspan="2">
+                        The experimenter will now verify the following information:
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>1. You are age 18 or older.</td>
+                      <td>
+                        <label class="radio-inline text-right" align="right">
+                          <input type="radio" name="radioFirst" id="radioFirst1" value="yes"> Yes
+                        </label>
+                        <label class="radio-inline">
+                          <input type="radio" name="radioFirst" id="radioFirst2" value="no" checked> No
+                        </label>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>2. You have read and understand the information above.</td>
+                      <td>
+                        <label class="radio-inline">
+                          <input type="radio" name="radioSecond" id="radioSecond1" value="yes"> Yes
+                        </label>
+                        <label class="radio-inline">
+                          <input type="radio" name="radioSecond" id="radioSecond2" value="no" checked> No
+                        </label>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>3. You want to participate in this research and continue with the research activity</td>
+                      <td>
+                        <label class="radio-inline">
+                          <input type="radio" name="radioThird" id="radioThird1" value="yes"> Yes
+                        </label>
+                        <label class="radio-inline">
+                          <input type="radio" name="radioThird" id="radioThird2" value="no" checked> No
+                        </label>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <button id="consent-btn" type="button" class="btn btn-success btn-lg btn-block">
+              <span class="glyphicon glyphicon-ok"></span> Confirm
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="prac-inst">
+        <div class="row">
+          <div class="col-md-12">
+            <h2>BubbleView Study Instruction</h2>
+            <p class="text-justify">
+              Welcome! In this HIT you will be presented with a series of images containing natural scences.
+              <br>
+              <br>
+              <!--You will be paid <strong>$0.40</strong> for participating in this study which is expected to last about <strong>3 minutes</strong>.
+              <br><br>-->
+              For each image, you will be asked to <strong>explore the image</strong> for <strong><span class="view_time">10</span></strong> seconds. The image is <strong>heavily blurred</strong> so that you can only see a rough outline of the image. However,
+              you can <strong>click to reveal</strong> small, circular areas of the image ("bubbles") to inspect the full details.
+              <br>
+              <br> We will only pay for successfully completed work.
+              <br>
+              <br> We will start with a tutorial. Please make sense of how 10 seconds feel like. Please <strong>click the button</strong> below when you are ready to begin.
+            </p>
+            <img class="img-responsive center-block thumbnail" width="400" src="/images/osie-db-pilot/osie-study-overview.png">
+            <button id="practice-btn" type="button" class="btn btn-success btn-lg btn-block">
+              <span class="glyphicon glyphicon-play"></span> Continue
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="real-inst">
+        <div class="row">
+          <div class="col-md-12">
+            <h2>BubbleView Study Instruction</h2>
+            <p class="text-justify">
+              Great job! Now you will start the real study. The real study will be just like the practice you just did, except a bit longer.
+              <br>
+              <br> Please <strong>click the "Start" button</strong> below when you are ready to begin.
+            </p>
+            <br>
+            <img class="img-responsive center-block thumbnail" width="400" src="/images/osie-db-pilot/osie-study-overview.png">
+            <br>
+            <button id="real-btn" type="button" class="btn btn-success btn-lg btn-block">
+              <span class="glyphicon glyphicon-play"></span> Start
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="bubble">
+        <h3 class="text-muted"><span id="tutorial-msg" class="label label-danger">Tutorial</span> <span id="main-msg"></span></h3>
+        <div id="sub-msg" class="text-danger">This is how long <span class="view_time">10</span> seconds is.</div>
+        <div class="row">
+          <div class="col-md-12 center-block">
+            <canvas id="canvas" width="640" height="480"></canvas>
+          </div>
+        </div>
+      </div>
+      <div id="debrief">
+        <h2>Completed!</h2>
+        <div class="row">
+          <div class="col-md-12">
+            <p class="text-justify">
+              Thanks for your participation! Upon our confirming your completion of the study, payment will be deposited in your Amazon Payments account.
+              <br>
+              <br>
+            </p>
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th colspan="2">
+                        Survey
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Gender</td>
+                      <td>
+                        <label class="radio-inline text-right" align="right">
+                          <input type="radio" name="gender" id="genderMale" value="female"> Female
+                        </label>
+                        <label class="radio-inline">
+                          <input type="radio" name="gender" id="genderFemale" value="male"> Male
+                        </label>
+                        <label class="radio-inline">
+                          <input type="radio" name="gender" id="genderOther" value="other"> Prefer not to say
+                        </label>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Age</td>
+                      <td>
+                        <div class="radio">
+                          <label class="radio-inline">
+                            <input type="radio" name="ageGroup" id="ageGroup1" value="ageGroup18"> 18 to 24
+                          </label>
+                          <label class="radio-inline">
+                            <input type="radio" name="ageGroup" id="ageGroup2" value="ageGroup25"> 25 to 34
+                          </label>
+                          <label class="radio-inline">
+                            <input type="radio" name="ageGroup" id="ageGroup3" value="ageGroup35"> 35 to 44
+                          </label>
+                        </div>
+                        <div class="radio">
+                          <label class="radio-inline">
+                            <input type="radio" name="ageGroup" id="ageGroup4" value="ageGroup45"> 45 to 54
+                          </label>
+                          <label class="radio-inline">
+                            <input type="radio" name="ageGroup" id="ageGroup5" value="ageGroup55"> 55 to 64
+                          </label>
+                          <label class="radio-inline">
+                            <input type="radio" name="ageGroup" id="ageGroup6" value="ageGroup65"> 65 and over
+                          </label>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Ethnicity</td>
+                      <td>
+                        <div class="checkbox">
+                          <label class="checkbox-inline">
+                            <input type="checkbox" id="ethnicAsian" value="Asian"> Asian
+                          </label>
+                          <label class="checkbox-inline">
+                            <input type="checkbox" id="ethnicLatino" value="Latino_Hispanic"> Latino / Hispanic
+                          </label>
+                          <label class="checkbox-inline">
+                            <input type="checkbox" id="ethnicPacific" value="Pacific_Islander"> Pacific Islander
+                          </label>
+                        </div>
+                        <div class="checkbox">
+                          <label class="checkbox-inline">
+                            <input type="checkbox" id="ethnicAfrican" value="Black_African"> Black / African Descent
+                          </label>
+                          <label class="checkbox-inline">
+                            <input type="checkbox" id="ethnicMiddle" value="Middle_Eastern"> Middle Eastern
+                          </label>
+                          <label class="checkbox-inline">
+                            <input type="checkbox" id="ethnicWhite" value="White_Caucasian"> White / Caucasian
+                          </label>
+                        </div>
+                        <div class="checkbox">
+                          <label class="checkbox-inline">
+                            <input type="checkbox" id="ethnicEastInd" value="East_Indian"> East Indian
+                          </label>
+                          <label class="checkbox-inline">
+                            <input type="checkbox" id="ethnicNative" value="Native_American"> Native American
+                          </label>
+                          <label class="checkbox-inline">
+                            <input type="checkbox" id="ethnicOther" value="Other"> Other
+                          </label>
+                          <label class="checkbox-inline">
+                            <input type="checkbox" id="ethnicNotToSay" value="NotToSay"> Prefer not to say
+                          </label>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Feedback</td>
+                      <td>
+                        <textarea id="survey-feedback" name="feedback" class="form-control" rows="3" placeholder="If you have any feedback, comments, or suggestions, please describe them here."></textarea>
+                      </td>
+                    </tr>
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <!--<div class="col-md-4">
+          <img src="/images/teaser.png" class="img-responsive img-rounded">
+        </div>-->
+        </div>
+        <form id="mturk-form">
+          <button id="submit-btn" type="button" class="btn btn-success btn-lg btn-block">
+            <span class="glyphicon glyphicon-send"></span> Submit
+          </button>
+        </form>
+      </div>
+    </div>
+    <div>
+</body>
+
+</html>
