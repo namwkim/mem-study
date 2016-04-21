@@ -26,9 +26,9 @@
       DEBRIEF = 5;
     var MIN_DESC = 150,
       BLUR_RADIUS = 50,
-      BUBBLE_RADIUS = 70; // IMG_WIDTH = 700, IMG_HEIGHT=700;
+      BUBBLE_RADIUS = 50; // IMG_WIDTH = 700, IMG_HEIGHT=700;
     var WAIT_TIME = 2000,
-        VIEW_TIME = 30000;
+        VIEW_TIME = 10000;
 
     var stage = INTRO;
     var formSelector = "#mturk-form";
@@ -551,7 +551,7 @@
             <p class="text-justify">
               In this HIT you will be presented with a series of images containing web pages and asked to explore the images freely by clicking to reveal anywhere you want to look.
               <br>
-              <br> The HIT should take about <strong><span class="hit_time">3</span> minutes</strong> to complete. Please stay focused throughout the study. Otherwise, you valuable time may not get paid.
+              <br> The HIT should take about <strong><span class="hit_time">3</span> minutes</strong> to complete. Please <strong>stay focused</strong> throughout the study. Otherwise, you valuable time may not get paid.
               <br>
               <br> * You need to have normal or corrected-to-normal vision. You can check your vision status here:
               <a href="http://colorvisiontesting.com/ishihara.htm" target="_blank" > test link </a>
