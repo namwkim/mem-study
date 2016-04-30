@@ -29,6 +29,8 @@
       BUBBLE_RADIUS = 30; // IMG_WIDTH = 700, IMG_HEIGHT=700;
     var WAIT_TIME = 2000,
         VIEW_TIME = 5000;
+    var SAMPLE_RATE = 10;//100HZ = 0.01
+    var logClick = true;// only log at the sampling rate.
 
     var stage = INTRO;
     var formSelector = "#mturk-form";
@@ -288,11 +290,15 @@
           // draw blurred image first
           //console.log($(curBlurImg).width() + ", " + console.log($(curBlurImg).height()));
           var canvas = $("#canvas");
-          canvas.off('click');
+          canvas.off('mousemove');
           canvas.on('mousemove', {
             width: this.naturalWidth,
             height: this.naturalHeight
-          }, OnClickDrawMask);
+          }, OnMouseMove);
+          canvas.on('mouseout', {
+            width: this.naturalWidth,
+            height: this.naturalHeight
+          }, OnMouseOut);
           var ctx = canvas[0].getContext('2d');
           ctx.clearRect(0, 0, canvas.width(), canvas.height());
           var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, canvas.width(), canvas.height());
@@ -314,8 +320,8 @@
     }
 
     function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {
-      console.log("(canvasWidth, canvasHeight) = " + canvasWidth + ", " + canvasHeight);
-      console.log("(oldWidth, oldHeight) = " + imgWidth + ", " + imgHeight);
+      // console.log("(canvasWidth, canvasHeight) = " + canvasWidth + ", " + canvasHeight);
+      // console.log("(oldWidth, oldHeight) = " + imgWidth + ", " + imgHeight);
       var newWidth = imgWidth;
 
       if (newWidth > canvasWidth) {
@@ -329,14 +335,20 @@
         var hratio = canvasHeight / imgHeight;
         newWidth = hratio * newWidth;
       }
-      console.log("(newWidth, newHeight) = " + newWidth + ", " + newHeight);
+      // console.log("(newWidth, newHeight) = " + newWidth + ", " + newHeight);
       return {
         width: newWidth,
         height: newHeight
       };
     }
-
-    function OnClickDrawMask(e) {
+    function OnMouseOut(e){
+      var canvas = $("#canvas");
+      var ctx = canvas[0].getContext('2d');
+      ctx.clearRect(0, 0, canvas.width(), canvas.height());
+      var newSize = CalcNewImageSize(e.data.width, e.data.height, canvas.width(), canvas.height());
+      ctx.drawImage(curBlurImg, 0, 0, newSize.width, newSize.height);
+    }
+    function OnMouseMove(e) {
       var canvas = $("#canvas");
       var ctx = canvas[0].getContext('2d');
 
@@ -347,10 +359,11 @@
       var x = e.clientX - rect.left;
       var y = e.clientY - rect.top;
 
-      console.log("x, y = " + x + ", " + y);
+      // console.log("x, y = " + x + ", " + y);
       //reset previous cicle
+      ctx.clearRect(0, 0, canvas.width(), canvas.height());
       var newSize = CalcNewImageSize(e.data.width, e.data.height, canvas.width(), canvas.height());
-      console.log(newSize);
+      // console.log(newSize);
       ctx.drawImage(curBlurImg, 0, 0, newSize.width, newSize.height);
 
       //draw the circle
@@ -365,21 +378,29 @@
       ctx.restore();
 
       //log click actio
-      data = {
-        is_practice: isPractice,
-        image: images.targets[curIdx],
-        center_x: x,
-        center_y: y,
-        bubble_radius: BUBBLE_RADIUS,
-        blur_radius: BLUR_RADIUS,
-        view_time: VIEW_TIME/1000,
-        size: size
+      if (logClick){
+        data = {
+          is_practice: isPractice,
+          image: images.targets[curIdx],
+          center_x: x,
+          center_y: y,
+          bubble_radius: BUBBLE_RADIUS,
+          blur_radius: BLUR_RADIUS,
+          view_time: VIEW_TIME/1000,
+          size: size
+        }
+        LogAction("click", data);
+        clickCount++;
+        $("#click-count").text(clickCount);
+        totalClickCount++;
+        console.log("Total Click Count:" + totalClickCount);
+        logClick = false;
+        setTimeout(function(){
+          logClick = true;
+        }, SAMPLE_RATE)//5second
       }
-      LogAction("click", data);
-      clickCount++;
-      $("#click-count").text(clickCount);
-      totalClickCount++;
-      console.log(totalClickCount);
+
+
     }
 
     function NextImage() {
