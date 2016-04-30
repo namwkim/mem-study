@@ -12,6 +12,13 @@ router.get('/', function(req, res) {
     title: 'BubbleView Experiment'
   });
 });
+
+router.get('/move', function(req, res) {
+  console.log(req.params);
+  res.render('salicon_move', {
+    title: 'BubbleView Experiment'
+  });
+});
 router.get('/eval', function(req, res) {
     console.log(req.params);
     res.render('salicon_eval', { title: 'BubbleView Experiment Admin' });
