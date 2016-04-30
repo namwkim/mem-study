@@ -16,7 +16,9 @@
   <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <script src="/bower_components/jsdiff/diff.js"></script>
 
-
+  <style>
+    canvas {cursor: none;}
+  </style>
   <script type="text/javascript">
     var INTRO = 0,
       CONSENT = 1,
