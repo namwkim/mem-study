@@ -417,7 +417,7 @@
         setTimeout(function(){
           console.log("Next Image if Available!")
           $('#canvas').show();
-          $("#main-msg").text("Click anywhere you want to look.");
+          $("#main-msg").text("Move anywhere you want to look.");
         }, WAIT_TIME)//5second
       } else {
         //all images are used, move on to the next stage
