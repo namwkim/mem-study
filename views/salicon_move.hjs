@@ -422,6 +422,9 @@
       } else {
         //all images are used, move on to the next stage
         if (isPractice == true) {
+          var canvas = $("#canvas");
+          var ctx = canvas[0].getContext('2d');
+          ctx.clearRect(0, 0, canvas.width(), canvas.height());
           return ChangeStage(REAL_INST);
         } else {
           return ChangeStage(DEBRIEF);
