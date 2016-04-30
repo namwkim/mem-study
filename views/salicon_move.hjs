@@ -255,7 +255,7 @@
 
       //start tutorial instruction
       $("#tutorial-msg").show();
-      $("#main-msg").text("Click anywhere you want to look.");
+      $("#main-msg").text("Move anywhere you want to look.");
       bootstro.start(".bootstro", {
         nextButtonText: "Next »",
         prevButtonText: "Prev »"
@@ -273,7 +273,7 @@
       ChangeStage(STUDY);
 
       $("#tutorial-msg").hide();
-      $("#main-msg").text("Click anywhere you want to look.");
+      $("#main-msg").text("Move anywhere you want to look.");
       $("#sub-msg").text("");
     }
 
