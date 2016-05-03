@@ -26,35 +26,33 @@ router.get('/images', function(req, res) {
     }
 
     if (result) {
-      res.json({
-        images: result
-      });
+      res.json(result);
     }
   });
 });
-router.get('/pageimages', function(req, res){
-    var db = req.saliencydb;
-    console.log(req.query);
-    var pageSize = parseInt(req.query.pageSize);
-    var pageNum  = parseInt(req.query.pageNum);
-    db.collection('images').count(function(err, count){
-        db.collection('images').find({}, null, {
-            limit:  pageSize,
-            skip:   pageNum > 1 ? ((pageNum - 1) * pageSize) : 0,
-            sort: {
-                '_id': -1
-            }
-        }).toArray(function(err, result){
-            if (err) {
-                return console.log(new Date(), 'error in loading images', err);
-            }
-            console.log('loaded: ' + result.length);
+// router.get('/pageimages', function(req, res){
+//     var db = req.saliencydb;
+//     console.log(req.query);
+//     var pageSize = parseInt(req.query.pageSize);
+//     var pageNum  = parseInt(req.query.pageNum);
+//     db.collection('images').count(function(err, count){
+//         db.collection('images').find({}, null, {
+//             limit:  pageSize,
+//             skip:   pageNum > 1 ? ((pageNum - 1) * pageSize) : 0,
+//             sort: {
+//                 '_id': -1
+//             }
+//         }).toArray(function(err, result){
+//             if (err) {
+//                 return console.log(new Date(), 'error in loading images', err);
+//             }
+//             console.log('loaded: ' + result.length);
 
-            res.json({ pageNum : pageNum, pageSize:pageSize, totalPage: Math.ceil(count*1.0/pageSize), logs : result});
-        });
-    });
+//             res.json({ pageNum : pageNum, pageSize:pageSize, totalPage: Math.ceil(count*1.0/pageSize), logs : result});
+//         });
+//     });
 
-})
+// })
 router.post('/recaptcha', function(req, res) {
   var postData = {
     secret: '6LcvMf8SAAAAANwRhpM0Mt7JH46AqFDwnfMzMiHg',
