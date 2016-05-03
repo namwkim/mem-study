@@ -11,6 +11,7 @@ var saliconRouter    = require('./routes/salicon');
 var osieRouter    = require('./routes/osie');
 var websalyRouter    = require('./routes/websaly');
 var gdesignRouter    = require('./routes/gdesign');
+var saliencyRouter    = require('./routes/saliency');
 var recallRouter    = require('./routes/recall');
 var codingRouter    = require('./routes/coding');
 var doiRouter    = require('./routes/socialdoi/index');
@@ -30,6 +31,7 @@ var recalldb = mongo.db("mongodb://localhost:27017/recallstudy", {native_parser:
 var codingdb = mongo.db("mongodb://localhost:27017/coding", {native_parser: true});
 var socialdoidb = mongo.db("mongodb://localhost:27017/socialdoi", {native_parser: true});
 var gdesigndb = mongo.db("mongodb://localhost:27017/gdesignstudy", {native_parser: true});
+var saliencydb = mongo.db("mongodb://localhost:27017/saliency", {native_parser: true});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -55,6 +57,8 @@ app.use(function(req, res, next){
     req.osiedb = osiedb;
     req.websalydb = websalydb;
     req.recalldb = recalldb;
+    req.saliencydb = saliencydb;
+
     req.socialdoi = socialdoidb
     req.toObjectID = mongo.helper.toObjectID;
     next();
@@ -68,6 +72,7 @@ app.use('/websaly', websalyRouter);
 app.use('/salicon', saliconRouter);
 app.use('/recall', recallRouter);
 app.use('/gdesign', gdesignRouter);
+app.use('/saliency', saliencyRouter);
 app.use('/socialdoi', doiRouter.budgetRouter);
 //app.use('/users', users);
 
