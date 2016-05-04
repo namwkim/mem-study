@@ -11,6 +11,7 @@ if __name__ == "__main__":
         for file in files:
             if file.startswith('.'):
                 continue
+            
             result = imgCol.insert_one({'filename':file})
             print file, "'s id:", result.inserted_id
 

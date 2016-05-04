@@ -22,8 +22,9 @@
   <script src="/javascripts/turkify.js"></script>
 
   <script type="text/javascript">
-    var PAGE_SIZE = 30;
+    var PAGE_SIZE = 12;
     var pageNum = 0;
+    var imgNum  = 0;
     var totalPage = 597;
     var loadComplete = 0;
     var progress = 0;
@@ -48,16 +49,16 @@
         }
       };
     });
-    app.controller('imageCtrl', function($scope, $http) {
+    app.controller('imageCtrl', function($scope, $http, $timeout) {
 
-      $scope.pages      = {};
+      $scope.pages      = [];
       $scope.totalPage  = null;
       $scope._          = window._;     
       $scope.images     = null;
       $scope.allImages  = null;
       $scope.checks     = null;
       $scope.checkMap   = {};
-      $scope.IMG_PATH   = "images/all5k/";
+      $scope.IMG_PATH   = "/images/all5k/";
 
 
       $scope.rater = gup("rater")
@@ -85,38 +86,45 @@
 
           //construct page
           for (var i=0; i<$scope.totalPage; i++){
-            var images  = allImages.slice(i*PAGE_SIZE, i*(PAGE_SIZE+1));
+            var from  = i*PAGE_SIZE;
+            var to    = from + PAGE_SIZE;
+            var images  = allImages.slice(from, to);
+            console.log("paginating images ("+ from +" ~ " + to +"):");
+            console.log(images);
             var allDone = true;
             images.forEach(function(img){
               var check = _.findWhere(checks, {
                 image: img.filename
               });
+              console.log(check)
               if (check==undefined){
-                allDone   = false;  
-                img.done  = false;
+                allDone  = false;  
+                img.use  = null;
               }else{
-                img.done  = true;
-                checkMap[img.filename] = check;
+                img.use  = check.use;
+                $scope.checkMap[img.filename] = check;
               }
             })
-            $scope.pages[i] = {
+            console.log(allDone)
+            $scope.pages.push({
               images: images,
               done: allDone
-            }
+            });
           }
-
+          console.log("pages:")
+          console.log($scope.pages)
           loadComplete = 1;
         });
       })
 
-
+      
       $scope.onCheck = function() {
         //update check status for image
         var img = _.findWhere($scope.images, {
           filename: $scope.check.image
         });
         
-        img.done = true;
+        img.use = $scope.check.use;
 
         // update evaluation
         $http.post('/saliency/check', $scope.check)
@@ -124,36 +132,103 @@
             console.log("check updated!");
           })
         //update page check status
-        $scope.pages[pageNum].allDone = $scope.pages[pageNum].images.every(function(img){
-          return img.done;
-        });
+        $scope.pages[pageNum].done = $scope.pages[pageNum].images.every(function(img){
+          return img.use!=null;
+        });  
+
+        $scope.nextImage();
+
+      }
+      $scope.prevImage = function(){
+        //move to prev image
+        if ((imgNum-1) >= 0){
+          
+          $timeout(function() {
+            angular.element("#image-elem-"+(imgNum-1)).triggerHandler('click')  
+          });
+        }else if ( (pageNum-1)>=0){//prev page
+          $timeout(function() {
+            angular.element("#page-elem-"+(pageNum-1)).triggerHandler('click');
+            $timeout(function() {
+              angular.element("#image-elem-"+(PAGE_SIZE-1)).triggerHandler('click'); 
+            }, 100);
+          });
+        }
+      }
+      $scope.nextImage = function(){
+        //move to next image
+        if ((imgNum+1) < $scope.pages[pageNum].images.length){
+          
+          $timeout(function() {
+            angular.element("#image-elem-"+(imgNum+1)).triggerHandler('click')  
+          });
+        }else if ( (pageNum+1)<$scope.pages.length){//next page
+          $timeout(function() {
+            angular.element("#page-elem-"+(pageNum+1)).triggerHandler('click');
+          });
+        }
       }
 
 
-      $scope.onClickImage = function(e, filename) {
+      $scope.onClickImage = function(e, filename, inum) {
         if (e != null) {
           $("#image-list a.active").removeClass("active");
           $(e.currentTarget).addClass("active");
         }
-        $scope.check = checkMap[filename];
+        console.log("image clicked: " + filename);
+        imgNum = inum;
+        if ($scope.checkMap[filename]){
+          $scope.check = $scope.checkMap[filename];
+          console.log(filename + "' check:");
+          console.log($scope.check)
+        }else{
+          $scope.check = {
+            image: filename,
+            rater: $scope.rater,
+            use: null
+          }
+          $scope.checkMap[filename]=$scope.check;
+        }
+        
         drawImage($scope.IMG_PATH+filename);
 
       }
       $scope.onClickPage = function(e, pnum) {
-
+        console.log("pageNum: ");
+        console.log(pnum)
         pageNum = pnum;
         if (e != null) {
           $("ul.pagination li.active").removeClass("active");
           $(e.currentTarget).addClass("active");
         }
-        if ($scope.pages[pageNum] == null) { // if not loaded
-          $scope.images = $scope.pages[pageNum].images;
-
+        console.log($scope.pages[pageNum])
+        $scope.images = $scope.pages[pageNum].images;
+        console.log("current images:");
+        console.log($scope.images);
+      }
+      $scope.onKeydown = function(e){
+        // console.log("key: " + e.keyCode + ", " + e.shiftKey);
+        if (e.keyCode==65){
+          // $("#chk-use").click();
+          $scope.check.use = "true";
+          $scope.onCheck();
+          e.preventDefault();
+        }else if (e.keyCode==83){
+          // $("#chk-dontuse").click();
+          $scope.check.use = "false";
+          $scope.onCheck();
+          e.preventDefault();
+        }else if (e.keyCode==39){ //next image
+          $scope.nextImage();
+          e.preventDefault();
+        }else if (e.keyCode==37){ //prev image
+          $scope.prevImage();
+          e.preventDefault();
         }
+        
+        
 
       }
-
-      //$scope.onClickPage(null, 0);
     });
 
     function Initialize() {
@@ -186,6 +261,7 @@
     }
 
     function drawImage(imagePath, callback) {
+      console.log("imagePath: " + imagePath);
       //draw image
       var img = new Image();
       img.onload = function() {
@@ -229,7 +305,7 @@
   </script>
 </head>
 
-<body ng-app="myApp" ng-controller="imageCtrl">
+<body ng-app="myApp" ng-controller="imageCtrl"  ng-keydown="onKeydown($event)">
   <!-- Progress Modal -->
   <div class="modal fade" id="progress-modal" tabindex="-1" role="dialog" aria-labelledby="progress-modal-label" aria-hidden="true">
     <div class="modal-dialog">
@@ -252,16 +328,19 @@
       <div class="col-md-2">
         <div class="panel panel-default">
           <div class="panel-heading">Pages</div>
-          <nav class="text-center">
+          
 
-        <!--     <ul class="pagination pagination-sm" style="margin:0 auto; float: none;" >
-              <li class="animate-repeat" ng-repeat="x in pages" ng-class="{active: $first}" ng-click="onClickPage($event, x)" repeat-end>
-                <a href="#">
-                  <% x %>
-                </a>
-              </li>
-            </ul> -->
-          </nav>
+           <ul class="pagination pagination-sm" style="margin:0 auto; float: none;" >
+            <li class="animate-repeat" ng-repeat="x in pages" ng-class="{active: $first}" 
+            id="<%'page-elem-' + $index %>"
+             ng-click="onClickPage($event, $index)" repeat-end>
+              <a href="#" style="width:53px;">
+                <span class="glyphicon glyphicon-ok text-success" style="margin-right:8px;" aria-hidden="true" ng-show="x.done"></span>
+                <% $index+1 %>
+              </a>
+            </li>
+          </ul>
+          
         </div>
       </div>
       <div class="col-md-2">
@@ -270,8 +349,11 @@
           <!-- Default panel contents -->
           <div class="panel-heading">Images</div>
           <!-- List group -->
-          <div id="image-list" class="list-group" style="max-height:1000px;overflow-y:scroll;">
-            <a href="#" class='list-group-item' ng-repeat="x in images" ng-class="{active: $first}" ng-click="onClickImage($event, x.filename)" style="word-break: break-all;" repeat-end><span class="glyphicon glyphicon-ok text-success" style="margin-right:8px;" aria-hidden="true" ng-show="x.doneCheck"></span><% x.filename %></a>
+          <div id="image-list" class="list-group" style="max-height:738px;overflow-y:scroll;">
+            <a href="#" class='list-group-item' ng-repeat="x in images" ng-class="{active: $first}" 
+            id="<%'image-elem-' + $index %>"
+            ng-click="onClickImage($event, x.filename, $index)" style="word-break: break-all;" repeat-end><span ng-class="{ 'glyphicon glyphicon-plus text-success':x.use=='true', 
+            'glyphicon glyphicon-minus text-success':x.use=='false'}" style="margin-right:8px;" aria-hidden="true" ng-show="x.use!=null"></span><% x.filename %></a>
           </div>
         </div>
       </div>
@@ -285,9 +367,9 @@
                 <br>
                 <span style="margin-left:20px;"></span>
                 <label class="radio-inline">
-                  <input type="radio" name="filter" ng-model="check.filter" value="1" ng-change="onCheck()">Use</label>
+                  <input id="chk-use" type="radio" name="filter" ng-model="check.use" value="true" ng-change="onCheck()">Use</label>
                 <label class="radio-inline">
-                  <input type="radio" name="filter" ng-model="check.filter" value="2" ng-change="onCheck()">Do Not Use</label>
+                  <input id="chk-dontuse" type="radio" name="filter" ng-model="check.use" value="false" ng-change="onCheck()">Do Not Use</label>
 
               </div>
             </div>

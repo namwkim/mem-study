@@ -107,7 +107,7 @@ router.post('/check', function(req, res){
    
     check.image             = req.body.image;
     check.rater             = req.body.rater;
-    check.filter            = req.body.filter;
+    check.use               = req.body.use;
     console.log(check);
     db.collection('checks').update(
         {image: check.image, rater: check.rater},
