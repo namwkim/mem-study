@@ -330,7 +330,7 @@
           <div class="panel-heading">Pages</div>
           
 
-           <ul class="pagination pagination-sm" style="max-height:738px;" >
+           <ul class="pagination pagination-sm">
             <li class="animate-repeat" ng-repeat="x in pages" ng-class="{active: $first}" 
             id="<%'page-elem-' + $index %>"
              ng-click="onClickPage($event, $index)" repeat-end>
@@ -349,7 +349,7 @@
           <!-- Default panel contents -->
           <div class="panel-heading">Images</div>
           <!-- List group -->
-          <div id="image-list" class="list-group" style="max-height:738px;overflow-y:scroll;">
+          <div id="image-list" class="list-group">
             <a href="#" class='list-group-item' ng-repeat="x in images" ng-class="{active: $first}" 
             id="<%'image-elem-' + $index %>"
             ng-click="onClickImage($event, x.filename, $index)" style="word-break: break-all;" repeat-end><span ng-class="{ 'glyphicon glyphicon-plus text-success':x.use=='true', 
