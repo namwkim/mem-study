@@ -330,7 +330,7 @@
           <div class="panel-heading">Pages</div>
           
 
-           <ul class="pagination pagination-sm" style="margin:0 auto; float: none;" >
+           <ul class="pagination pagination-sm" style="max-height:738px;" >
             <li class="animate-repeat" ng-repeat="x in pages" ng-class="{active: $first}" 
             id="<%'page-elem-' + $index %>"
              ng-click="onClickPage($event, $index)" repeat-end>
