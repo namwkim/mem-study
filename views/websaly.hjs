@@ -28,7 +28,7 @@
       BLUR_RADIUS = 50,
       BUBBLE_RADIUS = 30; // IMG_WIDTH = 700, IMG_HEIGHT=700;
     var WAIT_TIME = 2000,
-        VIEW_TIME = 10000;
+        VIEW_TIME = 30000;
 
     var stage = INTRO;
     var formSelector = "#mturk-form";
