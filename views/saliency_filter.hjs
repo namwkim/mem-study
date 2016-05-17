@@ -293,8 +293,8 @@
       if (newHeight > canvasHeight) {
         newHeight = canvasHeight;
         var hratio = canvasHeight / imgHeight;
-        newHeight = wratio * newHeight;
-        newWidth  = wratio * newWidth;
+        newHeight = hratio * newHeight;
+        newWidth  = hratio * newWidth;
       }
       //console.log("(newWidth, newHeight) = " + newWidth + ", " + newHeight);
       return {
