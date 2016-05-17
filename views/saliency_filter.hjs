@@ -286,14 +286,15 @@
       var newWidth = imgWidth;
       var newHeight = imgHeight;
       if (newWidth > canvasWidth) {
-        newWidth = canvasWidth;
         var wratio = canvasWidth / imgWidth;
         newHeight = wratio * newHeight;
+        newWidth  = wratio * newWidth;
       }
       if (newHeight > canvasHeight) {
         newHeight = canvasHeight;
         var hratio = canvasHeight / imgHeight;
-        newWidth = hratio * newWidth;
+        newHeight = wratio * newHeight;
+        newWidth  = wratio * newWidth;
       }
       //console.log("(newWidth, newHeight) = " + newWidth + ", " + newHeight);
       return {
