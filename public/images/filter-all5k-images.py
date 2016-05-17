@@ -33,7 +33,11 @@ for root, dirs, files in os.walk(source_dir):
         		# move filtered images
         		shutil.move('./all5k/'+file, './filtered_all5k/'+file)
         	if os.path.isfile("./all5k/" + file):
-    			im=Image.open("./all5k/" + file)
+                	try:
+                    		im=Image.open("./all5k/" + file)
+                	except IOError as msg:
+                		print file, 'is not recognized (', msg,')'
+                    		continue
     			ratio = im.size[0]/float(im.size[1])
     			if ratio<0.5 or ratio > 2.0:
     				print filename, ratio, labelMap[filename][1]
