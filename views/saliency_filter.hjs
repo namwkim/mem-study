@@ -291,7 +291,6 @@
         newWidth  = wratio * newWidth;
       }
       if (newHeight > canvasHeight) {
-        newHeight = canvasHeight;
         var hratio = canvasHeight / imgHeight;
         newHeight = hratio * newHeight;
         newWidth  = hratio * newWidth;
