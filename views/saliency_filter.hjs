@@ -283,25 +283,6 @@
     function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {
       var ratio = Math.min(canvasWidth / imgWidth, canvasHeight / imgHeight);
       return { width: imgWidth*ratio, height: imgHeight*ratio };
-      //console.log("(canvasWidth, canvasHeight) = " + canvasWidth + ", " + canvasHeight);
-      //console.log("(oldWidth, oldHeight) = " + imgWidth + ", " + imgHeight);
-      // var newWidth = imgWidth;
-      // var newHeight = imgHeight;
-      // if (newWidth > canvasWidth) {
-      //   var wratio = canvasWidth / imgWidth;
-      //   newHeight = wratio * newHeight;
-      //   newWidth  = wratio * newWidth;
-      // }
-      // if (newHeight > canvasHeight) {
-      //   var hratio = canvasHeight / imgHeight;
-      //   newHeight = hratio * newHeight;
-      //   newWidth  = hratio * newWidth;
-      // }
-      // //console.log("(newWidth, newHeight) = " + newWidth + ", " + newHeight);
-      // return {
-      //   width: newWidth,
-      //   height: newHeight
-      // };
     }
 
   </script>

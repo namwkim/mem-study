@@ -209,7 +209,7 @@
 			    	$scope.survey = x.survey;
 
 			    	$scope.clickData = x.clicks;
-			    	$scope.imagePath = x.clicks[0].data.image;
+			    	$scope.imagePath = x.clicks[0].data.image.replace('bubble-db-pilot', 'bubble-db');
 			    	$scope.blurredImage = $scope.imagePath.replace("targets", "targets_blurred");
 			    	   	
 			    	//set a time slider
