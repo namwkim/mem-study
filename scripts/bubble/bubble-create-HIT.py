@@ -33,7 +33,7 @@ AWS_SECRET_KEY = ''
 
 ######  BUBBLE CONFIGURATION PARAMETRS  ######
 BASE_URI = "/images/bubble-db-pilot/targets_dec/"
-BASE_URI_BLUR = "/images/bubble-db-pilot/targets_blurred/"
+BASE_URI_BLUR = "/images/bubble-db-pilot/targets_blurred_dec/"
 #######################################
 
 def create_blocklist(conn, qualtype, blockfile):
