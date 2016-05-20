@@ -37,7 +37,9 @@ router.get('/images', function(req, res){
             var images = result;
 
             if (hitId.search("TEST")!=-1){
-                images = _.sample(images, 2);
+                economist_daily_chart_268
+                // images = _.sample(images, 2);
+                images = _.filter(images, function(img){ return img.img_url.indexOf("economist_daily_chart_268")!=-1})
             }
             // target images
 						var shuffled = _.shuffle(images);
