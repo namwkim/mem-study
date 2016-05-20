@@ -357,7 +357,7 @@
               </div>
             </div>
             
-            <canvas id="saliency-canvas" width="1000" height="600"></canvas>
+            <canvas id="saliency-canvas" width="500" height="500"></canvas>
           </div>
 
         </div>
