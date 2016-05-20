@@ -32,7 +32,7 @@ AWS_SECRET_KEY = ''
 # Your Amazon Web Services IAM User Name (private)
 
 ######  BUBBLE CONFIGURATION PARAMETRS  ######
-BASE_URI = "/images/bubble-db-pilot/targets/"
+BASE_URI = "/images/bubble-db-pilot/targets_dec/"
 BASE_URI_BLUR = "/images/bubble-db-pilot/targets_blurred/"
 #######################################
 
