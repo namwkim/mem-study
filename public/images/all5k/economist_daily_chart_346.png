@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:og="http://ogp.me/ns#" xmlns:fb="http://www.facebook.com/2008/fbml" >
+<head>
+	<meta charset="utf-8" />
+	<meta name="description" content="Our motoring and petrol utilities allow you to work out your motoring costs & find cheaper petrol in your area, compare world petrol prices and compare the cheapest cities in the world." />
+	<meta property="og:title" content="UK Petrol Price Dashboard" /> 
+	<meta property="og:url" content="http://www.staveleyhead.co.uk/utilities/" /> 
+	<meta property="fb:admins" content="509995009" /> 
+	<meta property="og:type" content="website" /> 
+	<meta property="og:site_name" content="UK Petrol Price Dashboard" /> 
+	<meta property="og:image" content="http://www.staveleyhead.co.uk/utilities/img/header-logo.png" /> 
+	<meta property="og:description" content="Our motoring and petrol utilities allow you to work out your motoring costs & find cheaper petrol in your area, compare world petrol prices and compare the cheapest cities in the world." /> 
+	<title>Petrol Price Utilities, UK Motoring Costs &amp; Global Fuel Prices</title>
+	<link rel="shortcut icon" href="favicon.ico" />
+	<link rel="stylesheet" href="css/style.css" />
+	<script src="js/lib/prototype.js"></script>
+	<script src="js/lib/jsonp.js"></script>
+	<script src="js/common.js"></script>
+	<!--[if (gte IE 5.5)]>
+	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<!--[if (gte IE 6)&(lte IE 8)]>
+	  <script src="js/lib/selectivizr.js"></script>
+	<![endif]-->
+	<script type="text/javascript"> 
+	 var _gaq = _gaq || [];
+	 _gaq.push(['_setAccount', 'UA-8917955-10']);
+	 _gaq.push(['_trackPageview']);
+	 (function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	 })();	 
+	</script> 
+</head>
+
+<body>
+
+<div id="wrapper">
+
+  <div id="product-links">
+  	<ul>
+    	<li><a href="http://www.staveleyhead.co.uk/commercial-vehicle-insurance/van/"><img src="img/products/van-insurance.jpg" alt="Van Insurance" />Van Insurance</a></li>
+    	<li><a href="http://www.staveleyhead.co.uk/taxi/"><img src="img/products/taxi-insurance.jpg" alt="Taxi Insurance" />Taxi Insurance</a></li>
+    	<li><a href="http://www.staveleyhead.co.uk/motortrade/"><img src="img/products/trade-insurance.jpg" alt="Motor Trade Insurance" />Motor Trade Insurance</a></li>
+    	<li><a href="http://www.staveleyhead.co.uk/hgv/"><img src="img/products/hgv-insurance.jpg" alt="HGV Insurance" />HGV Insurance</a></li>
+    	<li><a href="http://www.staveleyhead.co.uk/fleet/"><img src="img/products/fleet-insurance.jpg" alt="Fleet Insurance" />Fleet Insurance</a></li>
+    </ul>
+  </div>
+
+	<header>
+		<a id="logo" href="http://www.staveleyhead.co.uk/utilities/"><img src="img/dashboard-logo.png" alt="UK Petrol Prices Utilities" /></a>
+		<h1>Free Petrol Utilities</h1>
+		<h2>We've investigated Petrol Prices in the UK and created these tools to help you.</h2>
+		<div id="social-media-buttons">
+			<a href="http://twitter.com/share?text=Petrol%20Price%20Utilities%2C%20UK%20Motoring%20Costs%20and%20Global%20Fuel%20Prices&related=StaveleyHead&url=http://www.staveleyhead.co.uk/utilities/" id="twitter-button"><img src="img/social-media/icon-twitter.png" alt="Tweet this" /></a>
+			<a href="#" id="facebook-button"><iframe src="http://www.facebook.com/plugins/like.php?width=31&amp;height=31&amp;href=http://www.staveleyhead.co.uk/utilities/" scrolling="no" frameborder="0" allowtransparency="true"></iframe><img src="img/social-media/icon-facebook.png" alt="Like this on Facebook" /></a>
+			<a href="http://www.reddit.com/submit?url=http://www.staveleyhead.co.uk/utilities/" id="reddit-button"><img src="img/social-media/icon-reddit.png" alt="Submit to Reddit" /></a>
+			<a href="http://www.stumbleupon.com/submit?url=http://www.staveleyhead.co.uk/utilities/" id="stumbleupon-button"><img src="img/social-media/icon-stumbleupon.png" alt="Submit to Stumbleupon" /></a>
+			<a href="http://digg.com/submit?url=http://www.staveleyhead.co.uk/utilities/" id="digg-button"><img src="img/social-media/icon-digg.png" alt="Digg this" /></a>
+		</div>
+	</header>
+	
+	<ul id="widget-list">
+		<li>
+    	<a href="http://www.staveleyhead.co.uk/utilities/petrol-prices/"><img src="img/widgets/petrol-comparison.png" alt="Compare UK petrol prices with countries in Europe & the World with this historical graph of fuel prices per gallon." /></a>
+      <h3><a href="http://www.staveleyhead.co.uk/utilities/petrol-prices/">UK petrol price comparison with the rest of the world.</a></h3>
+      <p>Beyond our own borders the price of a barrel of oil and ultimately what motorists pay for petrol, has had many contributing factors through history.</p>
+			<p>Apart from having an impact on motorists, to cost of oil and petrol can have a dramatic effect on the price of goods in general including clothing and food.</p>
+			<p>Our years of collated data allow you to compare countries around the world and display the changing costs to the motorists and the effects of the prices at the pumps.</p>
+    </li>
+		<li>
+    	<a href="http://www.staveleyhead.co.uk/utilities/petrol-prices-dashboard/"><img src="img/widgets/petrol-dashboard.png" alt="All the information you need about Petrol Prices in the UK - local prices, countrywide prices, historical data, car fuel economy" /></a>
+      <h3><a href="http://www.staveleyhead.co.uk/utilities/petrol-prices-dashboard/">UK petrol prices mapped out across the country, work out your motoring costs and find the cheapest petrol in your area.</a></h3>
+			<p>Before you fill up, check your local petrol prices on our dash board.</p>
+			<p>Our latest addition to the petrol price index allows you to calculate cost of driving and work out your fuel consumption. We feature the average price for diesel and petrol in the UK with historical data from 2003.</p>
+			<p>Help make savings on your motoring costs to combat the increasing energy prices by making considerable savings at the pump. The average motorist could potentially save hundreds of pounds by simply driving down the road to fill up.</p>
+    </li>
+		<li>
+    	<a href="http://www.staveleyhead.co.uk/utilities/cheapest-petrol/"><img src="img/widgets/cheapest-petrol.png" alt="Top Ten Cheapest - World Petrol Prices" /></a>
+      <h3><a href="http://www.staveleyhead.co.uk/utilities/cheapest-petrol/">Top 10 cheapest cities for petrol in the world.</a></h3>
+			<p>With record highs at the pumps our latest infographic reveals how the UK amongst the highest prices in the world for petrol, compare the UK against the top 10 cheapest cities and see how they compare to your price at the pump.</p>
+			<p>2p a litre in Caracas compared to 135p per litre in London shows the extremes in world prices and hints at how political and geographical factors influence the price of oil and petrol.</p>
+			<p>See how Norway and the UK tax their motorists to inflate the cost of petrol into the world's top 3 most expensive cities to fill up.</p>
+    </li>
+		<li>
+    	<a href="http://www.staveleyhead.co.uk/utilities/uk-france-diesel-price-comparison/"><img src="img/widgets/uk-france-diesel-price-comparison.png" alt="UK and France Diesel Price Comparison Over 10 Years" /></a>
+      <h3><a href="http://www.staveleyhead.co.uk/utilities/uk-france-diesel-price-comparison/">UK and France Diesel Price Comparison Over 10 Years.</a></h3>
+			<p>Do we pay more for diesel in the UK compared to France? Compare the price of diesel in the UK and France over the past ten years and see!</p>
+      <p>You might be surprised by the difference in costs, especially when the amount of tax and duty is taken into account. The second graph on this page shows the last ten year's worth of data and compares how much tax the UK pays for diesel with how much they pay in France.</p>
+    </li>
+		<li>
+    	<a href="http://www.staveleyhead.co.uk/utilities/most-expensive-petrol/"><img src="img/widgets/most-expensive-petrol.png" alt="Top 10 Most Expensive Countries For Petrol" /></a>
+      <h3><a href="http://www.staveleyhead.co.uk/utilities/most-expensive-petrol/">Top 10 Most Expensive Countries For Petrol.</a></h3>
+			<p>With record highs at the pumps our latest graphic reveals how the UK compares against the rest of the world for petrol prices.</p>
+			<p>The UK is currently the seventh most expensive country to buy a litre of unleaded petrol in the world.  Unsurprisingly, European countries dominate the list, with nine out of the top 10 countries on the list being in Europe.</p>
+			<p>We also take a look at the average monthly disposable income people in each of the countries mentioned has after tax, meaning we can reveal how much percentage of monthly income is spent on petrol in each country.</p>
+    </li>
+		<li>
+    	<a href="http://www.staveleyhead.co.uk/utilities/fuel-economy/"><img src="img/widgets/fuel-economy.png" alt="Fuel Economy - Get the most from your tank of petrol" /></a>
+      <h3><a href="http://www.staveleyhead.co.uk/utilities/fuel-economy/">Fuel Economy - Get the Most from Your Tank of Petrol</a></h3>
+			<p>Fuel consumption has a lot to do with the car you buy, but whatever you drive there are things you can do to save money and reduce energy use, CO2, emissions and pollution.</p>
+      <p>Follow these tips to save fuel and money and waste less petrol.</p>
+    </li>
+	<li>
+    	<a href="http://www.staveleyhead.co.uk/utilities/traffic-congestion/"><img src="img/widgets/traffic-congestion.png" alt="Traffic Congestion - Traffic congestion is a condition on road networks that occurs as use increases" /></a>
+      <h3><a href="http://www.staveleyhead.co.uk/utilities/traffic-congestion/">Traffic Congestion</a></h3>
+			<p>Traffic congestion is a condition on road networks that occurs as use increases, and is characterized by slower speeds, longer trip times, and increased vehicular queueing. The most common example is the physical use of roads by vehicles. When traffic demand is great enough that the interaction between vehicles slows the speed of the traffic stream, this results in congestion.</p>
+    </li>
+	<li>
+    	<a href="http://www.staveleyhead.co.uk/utilities/air-pollution/"><img src="img/widgets/air-pollution.png" alt="Air Pollution - Find out what affect air pollution has on the world we live in." /></a>
+      <h3><a href="http://www.staveleyhead.co.uk/utilities/air-pollution/">Air Pollution</a></h3>
+			<p>Find out what affect air pollution has on the world we live in. </p>
+    </li>
+	<li>
+    	<a href="http://www.staveleyhead.co.uk/utilities/luxurious-cars/"><img src="img/widgets/luxurious-cars.png" alt="The World's Most Expensive Cars - Fast and the Luxurious" /></a>
+      <h3><a href="http://www.staveleyhead.co.uk/utilities/luxurious-cars/">The World's Most Expensive Cars - Fast and the Luxurious</a></h3>
+			<p>The Fast and the Luxurious - Find Out Who Owns the Most Expensive Cars in the World.</p>
+    </li>
+	</ul>
+  
+	<footer>
+		<p>&copy; Staveley Head 2012</p>
+	</footer>
+	
+</div>
+	
+</body>
+
+</html>
