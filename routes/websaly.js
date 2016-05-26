@@ -12,6 +12,12 @@ router.get('/', function(req, res) {
     title: 'BubbleView Experiment'
   });
 });
+router.get('/desc', function(req, res) {
+  console.log(req.params);
+  res.render('websaly_desc', {
+    title: 'BubbleView Experiment'
+  });
+});
 router.get('/eval', function(req, res) {
     console.log(req.params);
     res.render('websaly_eval', { title: 'BubbleView Experiment Admin' });

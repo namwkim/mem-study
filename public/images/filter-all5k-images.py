@@ -37,6 +37,7 @@ for root, dirs, files in os.walk(source_dir):
                     		im=Image.open("./all5k/" + file)
                 	except IOError as msg:
                 		print file, 'is not recognized (', msg,')'
+				shutil.move('./all5k/'+file, './filtered_all5k/'+file)
                     		continue
     			ratio = im.size[0]/float(im.size[1])
     			if ratio<0.5 or ratio > 2.0:

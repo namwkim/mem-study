@@ -281,8 +281,11 @@
 
    
     function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {
-      var ratio = Math.min(canvasWidth / imgWidth, canvasHeight / imgHeight);
-      return { width: imgWidth*ratio, height: imgHeight*ratio };
+        var ratio = Math.min(Math.min(canvasWidth / imgWidth, canvasHeight / imgHeight), 1.0);
+        return {
+            width: imgWidth * ratio,
+            height: imgHeight * ratio
+        };
     }
 
   </script>
@@ -357,7 +360,7 @@
               </div>
             </div>
             
-            <canvas id="saliency-canvas" width="500" height="500"></canvas>
+            <canvas id="saliency-canvas" width="600" height="600"></canvas>
           </div>
 
         </div>
