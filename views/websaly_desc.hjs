@@ -288,6 +288,9 @@
 
         function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {
             var ratio = Math.min(Math.min(canvasWidth / imgWidth, canvasHeight / imgHeight), 1.0);
+            if (ratio>1.0){
+                ratio = 1.0;
+            }
             return {
                 width: imgWidth * ratio,
                 height: imgHeight * ratio
