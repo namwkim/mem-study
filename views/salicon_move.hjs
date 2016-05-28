@@ -579,7 +579,7 @@
           <div class="col-md-12">
             <h2>BubbleView Study</h2>
             <p class="text-justify">
-              In this HIT you will be presented with a series of images containing natural scences and asked to explore the images freely by clicking to reveal anywhere you want to look.
+              In this HIT you will be presented with a series of images containing natural scences and asked to explore the images freely by moving a mouse cursor to reveal anywhere you want to look.
               <br>
               <br> The HIT should take about <strong><span class="hit_time">3</span> minutes</strong> to complete.
               <br>
@@ -609,7 +609,7 @@
               <br>
               <strong>What your participation in this study will involve:</strong>
               <br> Reading a summary of relevant background information.
-              <br> Viewing and clicking images .
+              <br> Viewing and moving a cursor over images .
               <br>
               <br>
               <strong>Time required:</strong> Participation will take approximately <span class="hit_time">3</span> minutes.
@@ -702,7 +702,7 @@
               <!--You will be paid <strong>$0.40</strong> for participating in this study which is expected to last about <strong>3 minutes</strong>.
               <br><br>-->
               For each image, you will be asked to <strong>explore the image</strong> for <strong><span class="view_time">10</span></strong> seconds. The image is <strong>heavily blurred</strong> so that you can only see a rough outline of the image. However,
-              you can <strong>click to reveal</strong> small, circular areas of the image ("bubbles") to inspect the full details.
+              you can <strong>move your mouse cursor to reveal</strong> small, circular areas of the image ("bubbles") to inspect the full details.
               <br>
               <br> We will only pay for successfully completed work.
               <br>
