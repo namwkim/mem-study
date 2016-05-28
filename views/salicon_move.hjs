@@ -207,8 +207,8 @@
 
       //bootstro initialization (tutorial)
       $('#canvas').addClass("bootstro")
-        .attr("data-bootstro-title", "Click Image")
-        .attr("data-bootstro-content", "Click to reveal small, circular areas of the image to inspect the full details.")
+        .attr("data-bootstro-title", "Move Mouse over Image")
+        .attr("data-bootstro-content", "Move your cursor to reveal small, circular areas of the image to inspect the full details.")
         .attr("data-bootstro-placement", "right")
         .attr("data-bootstro-step", 0);
 
@@ -303,7 +303,7 @@
           setTimeout(function(){
             console.log("Waiting Time Start!")
             if (isPractice==false && clickCount<2){
-              bootbox.alert("Sorry, you have to click at least twice for each image. ", function() {
+              bootbox.alert("Sorry, you have to move your mouse to look at each image. ", function() {
                 $("#submit-btn").trigger("click", [true]);
               });
             }
