@@ -308,6 +308,15 @@
             NextImage();// disappear the image
           }, VIEW_TIME + WAIT_TIME)//5second
           //event listener
+          canvas.off('mousemove');
+          canvas.on('mousemove', {
+            width: this.naturalWidth,
+            height: this.naturalHeight
+          }, OnMouseMove);
+          canvas.on('mouseout', {
+            width: this.naturalWidth,
+            height: this.naturalHeight
+          }, OnMouseOut);
         }
         curBlurImg.src = images.blurred[idx];
       }
@@ -394,25 +403,14 @@
       curIdx++;
       if (curIdx < images.targets.length) {
         //hide the canvas for 2 second, before showing the next image
-        $('#canvas').hide();
+        $('#canvas').css("visibility", "hidden");
         $("#main-msg").text("Waiting for a next image...");
         //setup a new image
         SetupImage(curIdx);
         setTimeout(function(){
           console.log("Next Image if Available!")
-          $('#canvas').show();
+          $('#canvas').css("visibility", "visible");
           $("#main-msg").text("Move anywhere you want to look.");
-          var canvas = $("#canvas");
-          canvas.off('mousemove');
-          canvas.on('mousemove', {
-            width: this.naturalWidth,
-            height: this.naturalHeight
-          }, OnMouseMove);
-          canvas.on('mouseout', {
-            width: this.naturalWidth,
-            height: this.naturalHeight
-          }, OnMouseOut);
-          
         }, WAIT_TIME)//5second
       } else {
         //all images are used, move on to the next stage
