@@ -292,9 +292,6 @@
           // draw blurred image first
           //console.log($(curBlurImg).width() + ", " + console.log($(curBlurImg).height()));
           var canvas = $("#canvas");
-
-          var ctx = canvas[0].getContext('2d');
-          ctx.clearRect(0, 0, canvas.width(), canvas.height());
           var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, canvas.width(), canvas.height());
           ctx.drawImage(curBlurImg, 0, 0, newSize.width, newSize.height);
 
@@ -403,10 +400,10 @@
       curIdx++;
       if (curIdx < images.targets.length) {
         //hide the canvas for 2 second, before showing the next image
-        $('#canvas').css("visibility", "hidden");
         $("#main-msg").text("Waiting for a next image...");
         //setup a new image
         SetupImage(curIdx);
+        $('#canvas').css("visibility", "hidden");
         setTimeout(function(){
           console.log("Next Image if Available!")
           $('#canvas').css("visibility", "visible");
