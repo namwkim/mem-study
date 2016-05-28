@@ -408,11 +408,12 @@
         //setup a new image
         acceptMouseEvent = false;
         SetupImage(curIdx);
-        $('#canvas').css("visibility", "hidden");
+        // $('#canvas').css("visibility", "hidden");
+        
         setTimeout(function(){
           acceptMouseEvent = true;
           console.log("Next Image if Available!")
-          $('#canvas').css("visibility", "visible");
+          // $('#canvas').css("visibility", "visible");
           $("#main-msg").text("Move anywhere you want to look.");
         }, WAIT_TIME)//5second
       } else {
