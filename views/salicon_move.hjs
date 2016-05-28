@@ -289,8 +289,10 @@
       console.log("canvas cleared"  + canvas.width() + ", " + canvas.height());
       curImg = new Image();
       curImg.onload = function() {
+        console.log("-- curimg onload");
         curBlurImg = new Image();
         curBlurImg.onload = function() {
+          console.log("-- curBlurImg onload");
           // draw blurred image first
           //console.log($(curBlurImg).width() + ", " + console.log($(curBlurImg).height()));
           var canvas = $("#canvas");
@@ -409,7 +411,7 @@
         acceptMouseEvent = false;
         SetupImage(curIdx);
         // $('#canvas').css("visibility", "hidden");
-        
+
         setTimeout(function(){
           acceptMouseEvent = true;
           console.log("Next Image if Available!")
