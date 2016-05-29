@@ -28,7 +28,7 @@
       DEBRIEF = 5;
     var MIN_DESC = 150,
       BLUR_RADIUS = 30,
-      BUBBLE_RADIUS = 30; // IMG_WIDTH = 700, IMG_HEIGHT=700;
+      BUBBLE_RADIUS = 50; // IMG_WIDTH = 700, IMG_HEIGHT=700;
     var WAIT_TIME = 2000,
         VIEW_TIME = 5000;
     var SAMPLE_RATE = 10;//100HZ = 0.01
@@ -207,8 +207,8 @@
 
       //bootstro initialization (tutorial)
       $('#canvas').addClass("bootstro")
-        .attr("data-bootstro-title", "Click Image")
-        .attr("data-bootstro-content", "Click to reveal small, circular areas of the image to inspect the full details.")
+        .attr("data-bootstro-title", "Move Mouse over Image")
+        .attr("data-bootstro-content", "Move your cursor to reveal small, circular areas of the image to inspect the full details.")
         .attr("data-bootstro-placement", "right")
         .attr("data-bootstro-step", 0);
 
@@ -279,19 +279,37 @@
       $("#sub-msg").text("");
     }
 
-    function SetupImage(idx) {
+    function SetupImage(idx, callback) {
       // reset click count
       clickCount = 0;
       var canvas = $("#canvas");
       var ctx = canvas[0].getContext('2d');
       ctx.clearRect(0, 0, canvas.width(), canvas.height());
+      console.log("canvas cleared"  + canvas.width() + ", " + canvas.height());
       curImg = new Image();
+
       curImg.onload = function() {
+        console.log("-- curimg onload");
         curBlurImg = new Image();
         curBlurImg.onload = function() {
+          
+          console.log("-- curBlurImg onload");
           // draw blurred image first
           //console.log($(curBlurImg).width() + ", " + console.log($(curBlurImg).height()));
           var canvas = $("#canvas");
+          var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, canvas.width(), canvas.height());
+          ctx.drawImage(curBlurImg, 0, 0, newSize.width, newSize.height);
+
+          setTimeout(function(){
+            console.log("Waiting Time Start!")
+            if (isPractice==false && clickCount<2){
+              bootbox.alert("Sorry, you have to move your mouse to look at each image. ", function() {
+                $("#submit-btn").trigger("click", [true]);
+              });
+            }
+            NextImage();// disappear the image
+          }, VIEW_TIME + WAIT_TIME)//5second
+          //event listener
           canvas.off('mousemove');
           canvas.on('mousemove', {
             width: this.naturalWidth,
@@ -301,20 +319,8 @@
             width: this.naturalWidth,
             height: this.naturalHeight
           }, OnMouseOut);
-          var ctx = canvas[0].getContext('2d');
-          ctx.clearRect(0, 0, canvas.width(), canvas.height());
-          var newSize = CalcNewImageSize(this.naturalWidth, this.naturalHeight, canvas.width(), canvas.height());
-          ctx.drawImage(curBlurImg, 0, 0, newSize.width, newSize.height);
 
-          setTimeout(function(){
-            console.log("Waiting Time Start!")
-            if (isPractice==false && clickCount<2){
-              bootbox.alert("Sorry, you have to click at least twice for each image. ", function() {
-                $("#submit-btn").trigger("click", [true]);
-              });
-            }
-            NextImage();// disappear the image
-          }, VIEW_TIME)//5second
+          if (callback) callback.call();
         }
         curBlurImg.src = images.blurred[idx];
       }
@@ -322,8 +328,14 @@
     }
 
     function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {
-      var ratio = Math.min(canvasWidth / imgWidth, canvasHeight / imgHeight);
-      return { width: imgWidth*ratio, height: imgHeight*ratio };
+        var ratio = Math.min(Math.min(canvasWidth / imgWidth, canvasHeight / imgHeight), 1.0);
+        if (ratio>1.0){
+            ratio = 1.0;
+        }
+        return {
+            width: imgWidth * ratio,
+            height: imgHeight * ratio
+        };
     }
 
     function OnMouseOut(e){
@@ -376,9 +388,9 @@
         }
         LogAction("click", data);
         clickCount++;
-        $("#click-count").text(clickCount);
+        // $("#click-count").text(clickCount);
         totalClickCount++;
-        console.log("Total Click Count:" + totalClickCount);
+        // console.log("Total Click Count:" + totalClickCount);
         logClick = false;
         setTimeout(function(){
           logClick = true;
@@ -395,21 +407,23 @@
       curIdx++;
       if (curIdx < images.targets.length) {
         //hide the canvas for 2 second, before showing the next image
-        $('#canvas').hide();
         $("#main-msg").text("Waiting for a next image...");
         //setup a new image
-        SetupImage(curIdx);
-        setTimeout(function(){
-          console.log("Next Image if Available!")
-          $('#canvas').show();
-          $("#main-msg").text("Move anywhere you want to look.");
-        }, WAIT_TIME)//5second
+        $('#canvas').css("visibility", "hidden");
+        SetupImage(curIdx, function(){
+          setTimeout(function(){
+            console.log("Next Image if Available!")
+            $('#canvas').css("visibility", "visible");
+            $("#main-msg").text("Move anywhere you want to look.");
+          }, WAIT_TIME)//5second  
+        });
       } else {
         //all images are used, move on to the next stage
         if (isPractice == true) {
           var canvas = $("#canvas");
           var ctx = canvas[0].getContext('2d');
           ctx.clearRect(0, 0, canvas.width(), canvas.height());
+          console.log("clear image before real study - "  + canvas.width() + ", " + canvas.height());
           return ChangeStage(REAL_INST);
         } else {
           return ChangeStage(DEBRIEF);
@@ -565,14 +579,14 @@
           <div class="col-md-12">
             <h2>BubbleView Study</h2>
             <p class="text-justify">
-              In this HIT you will be presented with a series of images containing natural scences and asked to explore the images freely by clicking to reveal anywhere you want to look.
+              In this HIT you will be presented with a series of images containing natural scences and asked to explore the images freely by moving a mouse cursor to reveal anywhere you want to look.
               <br>
               <br> The HIT should take about <strong><span class="hit_time">3</span> minutes</strong> to complete.
               <br>
               <br> * You need to have normal or corrected-to-normal vision. You can check your vision status here:
               <a href="http://colorvisiontesting.com/ishihara.htm" target="_blank" > test link </a>
             </p>
-            <img class="img-responsive center-block thumbnail" width="400" src="/images/salicon-db-pilot/salicon-study-overview.png">
+            <img class="img-responsive center-block thumbnail" width="400" src="/images/salicon-db-pilot/salicon-study-overview-move.png">
 
             <div id="recaptcha" class="g-recaptcha" align="center" data-sitekey="6LcvMf8SAAAAAOAE34JZH6i7v_8lOrSD38mPkuGG"></div>
             <br>
@@ -595,7 +609,7 @@
               <br>
               <strong>What your participation in this study will involve:</strong>
               <br> Reading a summary of relevant background information.
-              <br> Viewing and clicking images .
+              <br> Viewing and moving a cursor over images .
               <br>
               <br>
               <strong>Time required:</strong> Participation will take approximately <span class="hit_time">3</span> minutes.
@@ -688,13 +702,13 @@
               <!--You will be paid <strong>$0.40</strong> for participating in this study which is expected to last about <strong>3 minutes</strong>.
               <br><br>-->
               For each image, you will be asked to <strong>explore the image</strong> for <strong><span class="view_time">10</span></strong> seconds. The image is <strong>heavily blurred</strong> so that you can only see a rough outline of the image. However,
-              you can <strong>click to reveal</strong> small, circular areas of the image ("bubbles") to inspect the full details.
+              you can <strong>move your mouse cursor to reveal</strong> small, circular areas of the image ("bubbles") to inspect the full details.
               <br>
               <br> We will only pay for successfully completed work.
               <br>
-              <br> We will start with a tutorial. Please make sense of how 10 seconds feel like. Please <strong>click the button</strong> below when you are ready to begin.
+              <br> We will start with a tutorial. Please make sense of how <span class="view_time">10</span> seconds feel like. Please <strong>click the button</strong> below when you are ready to begin.
             </p>
-            <img class="img-responsive center-block thumbnail" width="400" src="/images/salicon-db-pilot/salicon-study-overview.png">
+            <img class="img-responsive center-block thumbnail" width="400" src="/images/salicon-db-pilot/salicon-study-overview-move.png">
             <button id="practice-btn" type="button" class="btn btn-success btn-lg btn-block">
               <span class="glyphicon glyphicon-play"></span> Continue
             </button>
@@ -712,7 +726,7 @@
               <br> Please <strong>click the "Start" button</strong> below when you are ready to begin.
             </p>
             <br>
-            <img class="img-responsive center-block thumbnail" width="400" src="/images/salicon-db-pilot/salicon-study-overview.png">
+            <img class="img-responsive center-block thumbnail" width="400" src="/images/salicon-db-pilot/salicon-study-overview-move.png">
             <br>
             <button id="real-btn" type="button" class="btn btn-success btn-lg btn-block">
               <span class="glyphicon glyphicon-play"></span> Start
