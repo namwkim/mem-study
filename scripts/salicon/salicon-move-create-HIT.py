@@ -5,7 +5,7 @@ import os, pymongo, sys, random, time, csv
 
 ######  AMT CONFIGURATION PARAMETRS  ######
 
-SANDBOX = False  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
+SANDBOX = True  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 HIT_URL = "https://study.namwkim.org/salicon/move"  # Provide the URL that you want workers to sent sent to complete you task
 
 NUMBER_OF_HITS = 3  # Number of different HITs posted for this task
