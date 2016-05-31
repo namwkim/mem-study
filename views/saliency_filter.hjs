@@ -53,7 +53,7 @@
 
       $scope.pages      = [];
       $scope.totalPage  = null;
-      $scope._          = window._;     
+      $scope._          = window._;
       $scope.images     = null;
       $scope.allImages  = null;
       $scope.checks     = null;
@@ -77,7 +77,7 @@
           console.log(allImages);
           console.log("checks:");
           console.log(checks);
-          
+
 
           $scope.allImages = allImages;
           $scope.totalPage = Math.ceil(allImages.length/PAGE_SIZE);
@@ -98,7 +98,7 @@
               });
               console.log(check)
               if (check==undefined){
-                allDone  = false;  
+                allDone  = false;
                 img.use  = null;
               }else{
                 img.use  = check.use;
@@ -117,13 +117,19 @@
         });
       })
 
-      
+      $scope.onGraphicCheck = function() {
+        // update evaluation
+        $http.post('/saliency/check', $scope.check)
+          .success(function() {
+            console.log("check updated!");
+          })
+      }
       $scope.onCheck = function() {
         //update check status for image
         var img = _.findWhere($scope.images, {
           filename: $scope.check.image
         });
-        
+
         img.use = $scope.check.use;
 
         // update evaluation
@@ -134,7 +140,7 @@
         //update page check status
         $scope.pages[pageNum].done = $scope.pages[pageNum].images.every(function(img){
           return img.use!=null;
-        });  
+        });
 
         $scope.nextImage();
 
@@ -142,15 +148,15 @@
       $scope.prevImage = function(){
         //move to prev image
         if ((imgNum-1) >= 0){
-          
+
           $timeout(function() {
-            angular.element("#image-elem-"+(imgNum-1)).triggerHandler('click')  
+            angular.element("#image-elem-"+(imgNum-1)).triggerHandler('click')
           });
         }else if ( (pageNum-1)>=0){//prev page
           $timeout(function() {
             angular.element("#page-elem-"+(pageNum-1)).triggerHandler('click');
             $timeout(function() {
-              angular.element("#image-elem-"+(PAGE_SIZE-1)).triggerHandler('click'); 
+              angular.element("#image-elem-"+(PAGE_SIZE-1)).triggerHandler('click');
             }, 100);
           });
         }
@@ -158,9 +164,9 @@
       $scope.nextImage = function(){
         //move to next image
         if ((imgNum+1) < $scope.pages[pageNum].images.length){
-          
+
           $timeout(function() {
-            angular.element("#image-elem-"+(imgNum+1)).triggerHandler('click')  
+            angular.element("#image-elem-"+(imgNum+1)).triggerHandler('click')
           });
         }else if ( (pageNum+1)<$scope.pages.length){//next page
           $timeout(function() {
@@ -189,7 +195,7 @@
           }
           $scope.checkMap[filename]=$scope.check;
         }
-        
+
         drawImage($scope.IMG_PATH+filename);
 
       }
@@ -207,7 +213,7 @@
         console.log($scope.images);
       }
       $scope.onKeydown = function(e){
-        // console.log("key: " + e.keyCode + ", " + e.shiftKey);
+        console.log("key: " + e.keyCode + ", " + e.shiftKey);
         if (e.keyCode==65){
           // $("#chk-use").click();
           $scope.check.use = "true";
@@ -224,9 +230,13 @@
         }else if (e.keyCode==37){ //prev image
           $scope.prevImage();
           e.preventDefault();
+        }else if (e.keyCode==71){ //graphic
+          $scope.check.is_graphic = "true";
+          $scope.onGraphicCheck();
+          e.preventDefault();
         }
-        
-        
+
+
 
       }
     });
@@ -279,7 +289,7 @@
       img.src = imagePath;
     }
 
-   
+
     function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {
         var ratio = Math.min(Math.min(canvasWidth / imgWidth, canvasHeight / imgHeight), 1.0);
         return {
@@ -314,10 +324,10 @@
       <div class="col-md-2">
         <div class="panel panel-default">
           <div class="panel-heading">Pages</div>
-          
+
 
            <ul class="pagination pagination-sm">
-            <li class="animate-repeat" ng-repeat="x in pages" ng-class="{active: $first}" 
+            <li class="animate-repeat" ng-repeat="x in pages" ng-class="{active: $first}"
             id="<%'page-elem-' + $index %>"
              ng-click="onClickPage($event, $index)" repeat-end>
               <a href="#" style="width:53px;">
@@ -326,7 +336,7 @@
               </a>
             </li>
           </ul>
-          
+
         </div>
       </div>
       <div class="col-md-2">
@@ -336,9 +346,9 @@
           <div class="panel-heading">Images</div>
           <!-- List group -->
           <div id="image-list" class="list-group">
-            <a href="#" class='list-group-item' ng-repeat="x in images" ng-class="{active: $first}" 
+            <a href="#" class='list-group-item' ng-repeat="x in images" ng-class="{active: $first}"
             id="<%'image-elem-' + $index %>"
-            ng-click="onClickImage($event, x.filename, $index)" style="word-break: break-all;" repeat-end><span ng-class="{ 'glyphicon glyphicon-plus text-success':x.use=='true', 
+            ng-click="onClickImage($event, x.filename, $index)" style="word-break: break-all;" repeat-end><span ng-class="{ 'glyphicon glyphicon-plus text-success':x.use=='true',
             'glyphicon glyphicon-minus text-success':x.use=='false'}" style="margin-right:8px;" aria-hidden="true" ng-show="x.use!=null"></span><% x.filename %></a>
           </div>
         </div>
@@ -358,8 +368,19 @@
                   <input id="chk-dontuse" type="radio" name="filter" ng-model="check.use" value="false" ng-change="onCheck()">Do Not Use</label>
 
               </div>
+              <br>
+              <div class="input-group">
+                <strong>Graphic Design? </strong>
+                <br>
+                <span style="margin-left:20px;"></span>
+                <label class="radio-inline">
+                  <input id="chk-graphic" type="radio" name="is_graphic" ng-model="check.is_graphic" value="true" ng-change="onGraphicCheck()">Yes</label>
+                <label class="radio-inline">
+                  <input id="chk-not-graphic" type="radio" name="is_graphic" ng-model="check.is_graphic" value="false" ng-change="onGraphicCheck()">No</label>
+
+              </div>
             </div>
-            
+
             <canvas id="saliency-canvas" width="600" height="600"></canvas>
           </div>
 

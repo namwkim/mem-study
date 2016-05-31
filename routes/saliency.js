@@ -104,10 +104,11 @@ router.get('/checks', function(req, res){
 router.post('/check', function(req, res){
     var db      = req.saliencydb;
     var check  = {};
-   
+
     check.image             = req.body.image;
     check.rater             = req.body.rater;
     check.use               = req.body.use;
+    check.is_graphic        = req.body.is_graphic;
     console.log(check);
     db.collection('checks').update(
         {image: check.image, rater: check.rater},
