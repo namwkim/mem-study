@@ -7,8 +7,8 @@ import os, pymongo, sys, random, time, csv
 
 SANDBOX = True  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 HIT_URL = "https://study.namwkim.org/bubble"  # Provide the URL that you want workers to sent sent to complete you task
-
-NUMBER_OF_HITS = 34  # Number of different HITs posted for this task
+##TEMPORARY COMMENT: batch 10 has 40 HITS
+NUMBER_OF_HITS = 41  # Number of different HITs posted for this task
 NUMBER_OF_ASSIGNMENTS = 5  # Number of tasks that DIFFERENT workers will be able to take for each HIT
 LIFETIME = 60 * 60 * 24 * 7  # How long that the task will stay visible if not taken by a worker (in seconds)
 REWARD = 0.5  # Base payment value for completing the task (in dollars)
@@ -32,8 +32,8 @@ AWS_SECRET_KEY = ''
 # Your Amazon Web Services IAM User Name (private)
 
 ######  BUBBLE CONFIGURATION PARAMETRS  ######
-BASE_URI = "/images/bubble-db-pilot/targets_dec/"
-BASE_URI_BLUR = "/images/bubble-db-pilot/targets_blurred_dec/"
+BASE_URI = "/images/saliency/batch-1/"
+BASE_URI_BLUR = "/images/saliency/batch-1-blurred/"
 #######################################
 
 def create_blocklist(conn, qualtype, blockfile):
@@ -70,14 +70,14 @@ def create_hits(keyfile, blockfile):
 
 	# collect target image filenames
 	targets = []
-	for root, dirs, files in os.walk("../../public/images/bubble-db-pilot/targets_dec"):
+	for root, dirs, files in os.walk("../../public"+BASE_URI):
 		for file in files:
 			if file.startswith('.'):
 				continue
 			targets.append(file)
 
 	targets_blurred = []
-	for root, dirs, files in os.walk("../../public/images/bubble-db-pilot/targets_blurred_dec"):
+	for root, dirs, files in os.walk("../../public"+BASE_URI_BLUR):
 		for file in files:
 			if file.startswith('.'):
 				continue

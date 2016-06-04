@@ -5,7 +5,6 @@
 	    <link rel='stylesheet' href='/bower_components/bootstrap/dist/css/bootstrap.min.css' />
 	    <link rel='stylesheet' href='/bower_components/bootstro/bootstro.min.css' />
 	    <link rel='stylesheet' href='/stylesheets/bubble.css'/>
-
 	    <script src="/javascripts/turkify.js"></script>
 	    <script src="/bower_components/jquery/dist/jquery.min.js"></script>
 	    <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -235,26 +234,17 @@
 				}
 				curImg.src = images.targets[idx];
 			}
-			function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {
-				console.log("(canvasWidth, canvasHeight) = " + canvasWidth + ", " + canvasHeight);
-				console.log("(oldWidth, oldHeight) = " + imgWidth + ", " + imgHeight);
-				var newWidth 	= imgWidth;
-
-				if (newWidth>canvasWidth){
-					newWidth 	= canvasWidth;
-					var wratio 	= canvasWidth/imgWidth;
-					imgHeight 	= wratio*imgHeight;
-				}
-				var newHeight	= imgHeight;
-				if (newHeight>canvasHeight){
-					newHeight 	= canvasHeight;
-					var hratio 	= canvasHeight/imgHeight;
-					newWidth 	= hratio*newWidth;
-				}
-				console.log("(newWidth, newHeight) = " + newWidth + ", " + newHeight);
-				return {width: newWidth, height: newHeight};
-			}
-			function OnClickDrawMask(e){
+      function CalcNewImageSize(imgWidth, imgHeight, canvasWidth, canvasHeight) {
+          var ratio = Math.min(Math.min(canvasWidth / imgWidth, canvasHeight / imgHeight), 1.0);
+          if (ratio>1.0){
+              ratio = 1.0;
+          }
+          return {
+              width: imgWidth * ratio,
+              height: imgHeight * ratio
+          };
+      }
+      function OnClickDrawMask(e){
 				var canvas = $("#canvas");
 				var ctx = canvas[0].getContext('2d');
 
@@ -455,7 +445,7 @@
 		    	<div id="intro">
 					<div class="row">
 						<div class="col-md-12">
-							<h2>Bubble Study</h2>
+							<h2>BubbleView Study</h2>
 							<p class="text-justify">
 								In this HIT you will be presented with a series of images containing graphs and diagrams, and asked to describe the images in as much detail as possible.
 								<br><br>
@@ -483,7 +473,7 @@
 								<br><br>
 								<strong>What your participation in this study will involve:</strong><br>
 								Reading a summary of relevant background information.<br>
-								Seeing a visualization image and describing the image.
+								Seeing/clicking a visualization image and describing the image.
 								<br><br>
 								<strong>Time required:</strong> Participation will take approximately 5 minutes.
 								<br><br>
@@ -559,7 +549,7 @@
 				<div id="prac-inst">
 					<div class="row">
 						<div class="col-md-12">
-							<h2>Bubble Study Instruction</h2>
+							<h2>BubbleView Study Instruction</h2>
 							<p class="text-justify">
 								Welcome! In this HIT you will be presented with a series of images containing graphs and diagrams.
 								<br><br>
@@ -584,7 +574,7 @@
 				<div id="real-inst">
 					<div class="row">
 						<div class="col-md-12">
-							<h2>Bubble Study Instruction</h2>
+							<h2>BubbleView Study Instruction</h2>
 							<p class="text-justify">
 								Great job! Now you will start the real study. The real study will be just like the practice you just did, except a bit longer.
 								<br><br>
@@ -629,7 +619,7 @@
 							</p>
 							<div class="panel panel-default">
   								<div class="panel-body">
-									<table class="table table-hover">
+									<table class="table table-condensed">
 										<thead>
 											<tr>
 												<th colspan="2">
@@ -639,6 +629,33 @@
 										</thead>
 										<tbody>
 											<tr>
+                        <td>Familarity</td>
+                        <td>
+                          <div>
+                            How familiar are you with the conents depicted in the images?
+                          </div>
+                          <div class="radio">
+                            <label class="radio-inline text-right" align="right">
+                              <input type="radio" name="familarity" id="familarity1" value="1"> 1. Not at all familiar
+                            </label>
+                            <label class="radio-inline">
+                              <input type="radio" name="familarity" id="familarity2" value="2"> 2. Slightly familiar
+                            </label>
+                            <label class="radio-inline">
+                              <input type="radio" name="familarity" id="familarity3" value="3"> 3. Moderately familiar
+                            </label>
+                          </div>
+                          <div class="radio">
+                            <label class="radio-inline">
+  													  <input type="radio" name="familarity" id="familarity4" value="4"> 4. Very familiar
+  													</label>
+                            <label class="radio-inline">
+  													  <input type="radio" name="familarity" id="familarity5" value="5"> 5. Extremely familiar
+  													</label>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
 												<td>Gender</td>
 												<td>
 													<label class="radio-inline text-right" align="right">

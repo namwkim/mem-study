@@ -8,16 +8,16 @@ var router  = express.Router();
 
 router.get('/', function(req, res) {
 	console.log(req.params);
-  	res.render('bubble', { title: 'Bubble Experiment' });
+  	res.render('bubble', { title: 'BubbleView Experiment' });
 });
 
 router.get('/admin', function(req, res) {
     console.log(req.params);
-    res.render('bubble_eval', { title: 'Bubble Experiment Admin' });
+    res.render('bubble_eval', { title: 'BubbleView Experiment Admin' });
 });
 router.get('/eval', function(req, res) {
     console.log(req.query);
-    res.render('bubble_eval', { title: 'Bubble Evaluation Admin' });
+    res.render('bubble_eval', { title: 'BubbleView Evaluation Admin' });
 });
 
 router.get('/images', function(req, res){
@@ -37,12 +37,10 @@ router.get('/images', function(req, res){
             var images = result;
 
             if (hitId.search("TEST")!=-1){
-                economist_daily_chart_268
-                // images = _.sample(images, 2);
-                images = _.filter(images, function(img){ return img.img_url.indexOf("economist_daily_chart_268")!=-1})
+                images = _.sample(images, 3);
             }
             // target images
-						var shuffled = _.shuffle(images);
+			var shuffled = _.shuffle(images);
             var targets = _.map(shuffled, function(img){ return img.img_url; })
             // filler images
             var blurred = _.map(shuffled, function(img){ return img.blur_img_url; })

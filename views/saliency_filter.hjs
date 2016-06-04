@@ -117,7 +117,7 @@
         });
       })
 
-      $scope.onGraphicCheck = function() {
+      $scope.onTypeCheck = function() {
         // update evaluation
         $http.post('/saliency/check', $scope.check)
           .success(function() {
@@ -232,7 +232,15 @@
           e.preventDefault();
         }else if (e.keyCode==71){ //graphic
           $scope.check.is_graphic = "true";
-          $scope.onGraphicCheck();
+          $scope.onTypeCheck();
+          e.preventDefault();
+        }else if (e.keyCode==84){ //graphic
+          $scope.check.is_table = "true";
+          $scope.onTypeCheck();
+          e.preventDefault();
+        }else if (e.keyCode==73){ //graphic
+          $scope.check.is_infographic = "true";
+          $scope.onTypeCheck();
           e.preventDefault();
         }
 
@@ -374,10 +382,28 @@
                 <br>
                 <span style="margin-left:20px;"></span>
                 <label class="radio-inline">
-                  <input id="chk-graphic" type="radio" name="is_graphic" ng-model="check.is_graphic" value="true" ng-change="onGraphicCheck()">Yes</label>
+                  <input id="chk-graphic" type="radio" name="is_graphic" ng-model="check.is_graphic" value="true" ng-change="onTypeCheck()">Yes</label>
                 <label class="radio-inline">
-                  <input id="chk-not-graphic" type="radio" name="is_graphic" ng-model="check.is_graphic" value="false" ng-change="onGraphicCheck()">No</label>
+                  <input id="chk-not-graphic" type="radio" name="is_graphic" ng-model="check.is_graphic" value="false" ng-change="onTypeCheck()">No</label>
 
+              </div>
+              <div class="input-group">
+                <strong>Table ? </strong>
+                <br>
+                <span style="margin-left:20px;"></span>
+                <label class="radio-inline">
+                  <input id="chk-table" type="radio" name="is_table" ng-model="check.is_table" value="true" ng-change="onTypeCheck()">Yes</label>
+                <label class="radio-inline">
+                  <input id="chk-not-table" type="radio" name="is_table" ng-model="check.is_table" value="false" ng-change="onTypeCheck()">No</label>
+              </div>
+              <div class="input-group">
+                <strong>Infographic ? </strong>
+                <br>
+                <span style="margin-left:20px;"></span>
+                <label class="radio-inline">
+                  <input id="chk-infographic" type="radio" name="is_infographic" ng-model="check.is_infographic" value="true" ng-change="onTypeCheck()">Yes</label>
+                <label class="radio-inline">
+                  <input id="chk-not-infographic" type="radio" name="is_infographic" ng-model="check.is_infographic" value="false" ng-change="onTypeCheck()">No</label>
               </div>
             </div>
 
