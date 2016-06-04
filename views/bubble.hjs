@@ -396,8 +396,9 @@
 	    		// 3. Avg Click Count
 	    		$("<input type='hidden' name='avgClickCount' value='" + (totalClickCount/images.targets.length) + "'>").appendTo($(formSelector));
 
-	    		var gender 	= $("input:radio[name=gender]:checked").val();
-	    		var age 	= $("input:radio[name=ageGroup]:checked").val();
+          var familarity 	= $("input:radio[name=familarity]:checked").val();
+	    		var gender 	    = $("input:radio[name=gender]:checked").val();
+	    		var age 	      = $("input:radio[name=ageGroup]:checked").val();
 	    		var ethnic 	= "";
 	    		if ($("#ethnicAsian").prop('checked'))		ethnic += "/" + $("#ethnicAsian").val();
 	    		if ($("#ethnicLatino").prop('checked'))		ethnic += "/" + $("#ethnicLatino").val();
@@ -424,6 +425,7 @@
 	   			console.log(feedback);
 
 	   			LogAction("survey", {
+            familarity: familarity,
 	   				gender : gender,
 	   				age : age,
 	   				ethnic: ethnic,
