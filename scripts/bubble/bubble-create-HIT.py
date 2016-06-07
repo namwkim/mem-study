@@ -126,7 +126,7 @@ def create_hits(keyfile, blockfile):
 	images	= db.images
 
 	#remove existing documents
-	images.remove({})
+	images.deleteMany({})
 
 	# calculate the number of images for each HIT
 	hitSize = len(targets)/len(hitIDs);
