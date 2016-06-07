@@ -35,7 +35,8 @@ def delete_all_hit(keyfile):
 	conn = MTurkConnection(aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, host=mturk_url)
 
 	for hit in conn.get_all_hits():
-
+		conn.expire_hit(hit.HITId)
+		time.sleep(0.25)
 		# Update Hit
 		hit = conn.get_hit(hit_id=hit.HITId)[0];
 		print "HIT " + hit.HITId + "(Status: "+hit.HITStatus+")"

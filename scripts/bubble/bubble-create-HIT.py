@@ -5,7 +5,7 @@ import os, pymongo, sys, random, time, csv
 
 ######  AMT CONFIGURATION PARAMETRS  ######
 
-SANDBOX = False  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
+SANDBOX = True# Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 HIT_URL = "https://study.namwkim.org/bubble"  # Provide the URL that you want workers to sent sent to complete you task
 ##TEMPORARY COMMENT: batch 10 has 40 HITS
 NUMBER_OF_HITS = 41  # Number of different HITs posted for this task
@@ -32,8 +32,8 @@ AWS_SECRET_KEY = ''
 # Your Amazon Web Services IAM User Name (private)
 
 ######  BUBBLE CONFIGURATION PARAMETRS  ######
-BASE_URI = "/images/saliency/batch-1/"
-BASE_URI_BLUR = "/images/saliency/batch-1-blurred/"
+BASE_URI = "/images/saliency/batch-3/"
+BASE_URI_BLUR = "/images/saliency/batch-3-blurred/"
 #######################################
 
 def create_blocklist(conn, qualtype, blockfile):
