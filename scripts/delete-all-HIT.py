@@ -45,7 +45,7 @@ def delete_all_hit(keyfile):
 			for assignment in assignments:
 				print "Approving " + assignment.AssignmentId + "(Status: " + assignment.AssignmentStatus + ")"
 				conn.approve_assignment(assignment.AssignmentId);
-			conn.dispose_hit(hit.HITId)
+		conn.dispose_hit(hit.HITId)
 
 if __name__ == "__main__":
 	import time
