@@ -27,7 +27,7 @@
     var MIN_DESC = 150,
       BLUR_RADIUS = 40,
       BUBBLE_RADIUS = 32; // IMG_WIDTH = 700, IMG_HEIGHT=700;
-      HIT_SIZE = 10;
+      
     var WAIT_TIME = 2000,
         VIEW_TIME = 10000;
 
@@ -98,9 +98,7 @@
       }
 
 
-      // update time info
-      $(".view_time").text(VIEW_TIME/1000);
-      $(".hit_time").text(Math.ceil((VIEW_TIME/1000)*HIT_SIZE/60));
+
 
       if (assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE") { //preview mode
         $('#intro-start-button').hide(); //do not allow a worker to proceed
@@ -128,6 +126,10 @@
         console.log("blur_radius: " + BLUR_RADIUS);
         console.log("view_time: " + VIEW_TIME/1000);
         realImages = res;
+
+              // update time info
+        $(".view_time").text(VIEW_TIME/1000);
+        $(".hit_time").text(Math.ceil((VIEW_TIME/1000)*realImages.targets.length/60));
         //HACK: change image path
         // realImages.blurred.forEach(function(url, i){
         //   url = url.replace("targets_blurred", "targets_blurred_"+BLUR_RADIUS);
