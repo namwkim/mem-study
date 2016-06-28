@@ -5,7 +5,7 @@ import sys
 
 ######  CONFIGURATION PARAMETRS  ######
 
-SANDBOX = True  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
+SANDBOX = False  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 
 # Your Amazon Web Services Access Key (private)
 AWS_ACCESS_KEY = '' # <-- TODO: Enter your access key here
@@ -46,7 +46,7 @@ def delete_all_hit(keyfile):
 			for assignment in assignments:
 				print "Approving " + assignment.AssignmentId + "(Status: " + assignment.AssignmentStatus + ")"
 				conn.approve_assignment(assignment.AssignmentId);
-		conn.dispose_hit(hit.HITId)
+			conn.dispose_hit(hit.HITId)
 
 if __name__ == "__main__":
 	import time

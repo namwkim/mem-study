@@ -1,15 +1,16 @@
 from boto.mturk.connection import MTurkConnection, MTurkRequestError
 from boto.mturk.question import ExternalQuestion
 from boto.mturk.qualification import LocaleRequirement, PercentAssignmentsApprovedRequirement, Qualifications, Requirement
-import os, pymongo, sys, random, time, csv
+import os, pymongo, sys, random, time, csv, math
 
 ######  AMT CONFIGURATION PARAMETRS  ######
 
-SANDBOX = True# Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
+SANDBOX = False# Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 HIT_URL = "https://study.namwkim.org/bubble"  # Provide the URL that you want workers to sent sent to complete you task
 ##TEMPORARY COMMENT: batch 10 has 40 HITS
 NUMBER_OF_HITS = 41  # Number of different HITs posted for this task
-NUMBER_OF_ASSIGNMENTS = 10  # Number of tasks that DIFFERENT workers will be able to take for each HIT
+HIT_SIZE = 3 #  NUMBER OF HITS x HIT_SIZE ~ IMAGE SIZE
+NUMBER_OF_ASSIGNMENTS = 6  # Number of tasks that DIFFERENT workers will be able to take for each HIT
 LIFETIME = 60 * 60 * 24 * 7  # How long that the task will stay visible if not taken by a worker (in seconds)
 REWARD = 0.5  # Base payment value for completing the task (in dollars)
 DURATION = 60*45  # How long the worker will be able to work on a single task (in seconds)
@@ -32,8 +33,8 @@ AWS_SECRET_KEY = ''
 # Your Amazon Web Services IAM User Name (private)
 
 ######  BUBBLE CONFIGURATION PARAMETRS  ######
-BASE_URI = "/images/saliency/batch-3/"
-BASE_URI_BLUR = "/images/saliency/batch-3-blurred/"
+BASE_URI = "/images/saliency/batch-10/"
+BASE_URI_BLUR = "/images/saliency/batch-10-blurred/"
 #######################################
 
 def create_blocklist(conn, qualtype, blockfile):
@@ -87,7 +88,10 @@ def create_hits(keyfile, blockfile):
 	if len(targets)!=len(targets_blurred):
 		print "target!=targets_blurred";
 		sys.exit(0)
-
+	
+	# Calculate number of hits
+	NUMBER_OF_HITS = int(math.ceil(len(targets)/float(HIT_SIZE)))
+	print "NUMBER OF HITS:", NUMBER_OF_HITS	
 	# Create External Question
 	q = ExternalQuestion(external_url=HIT_URL, frame_height=800)
 	conn = MTurkConnection(aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, host=mturk_url)
@@ -126,12 +130,13 @@ def create_hits(keyfile, blockfile):
 	images	= db.images
 
 	#remove existing documents
-	images.deleteMany({})
+	images.delete_many({})
 
 	# calculate the number of images for each HIT
-	hitSize = len(targets)/len(hitIDs);
+	# hitSize = len(targets)/len(hitIDs);
 
 	# shuffle
+
 	z = zip(targets, targets_blurred)
 	random.shuffle(z)
 	targets, targets_blurred = zip(*z)
@@ -139,22 +144,20 @@ def create_hits(keyfile, blockfile):
 	hitIdx 	= 0
 	hitID 	= hitIDs[hitIdx]
 	count 	= 0
+	print "Image Size:", len(targets)
 	print("HIT ID: " + hitID)
 	for i in range(len(targets)):
 		count +=1
 		images.insert_one({"hit_id": hitID, "group": hitIdx, "img_url": BASE_URI+targets[i], "blur_img_url": BASE_URI_BLUR+targets_blurred[i]}) # insert an image into the db with HIT ID assigned
-		print (" - Image #"+str(count)+": "+(BASE_URI+targets[i]))
-		if count>=hitSize:
+		print (" - Image #"+str(i)+": "+(BASE_URI+targets[i]))
+		if count>=HIT_SIZE:
+			print("HIT SIZE: " + str(count));
 			count   = 0
 			hitIdx += 1
 			if hitIdx>=len(hitIDs):
 				break
 			hitID 	= hitIDs[hitIdx]
 			print("HIT ID: " + hitID)
-
-	# for image in images.find():
-	# 	print image
-	print("HIT SIZE: " + str(hitSize));
 
 if __name__ == "__main__":
 	blockfile = None

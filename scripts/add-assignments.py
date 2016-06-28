@@ -5,7 +5,7 @@ import sys
 
 ######  CONFIGURATION PARAMETRS  ######
 
-SANDBOX = True  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
+SANDBOX = False# Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 
 # Your Amazon Web Services Access Key (private)
 AWS_ACCESS_KEY = '' # <-- TODO: Enter your access key here
@@ -46,9 +46,8 @@ def add_asignments(keyfile, numAsmt):
 		hit = conn.get_hit(hit_id=hit.HITId)[0];
 		# print hit.expired
 		# print "HIT " + hit.HITId + "(Status: "+hit.HITStatus+")"
-		if hit.HITStatus == "Reviewable":
-            conn.extend_hit(hit_id=hit.HITId, assignments_increment=5)
+            	conn.extend_hit(hit_id=hit.HITId, assignments_increment=numAsmt)
 
 if __name__ == "__main__":
 	import time
-	approve_all_hits(sys.argv[1], sys.argv[2])
+	add_asignments(sys.argv[1], sys.argv[2])
