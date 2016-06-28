@@ -41,7 +41,7 @@ router.get('/images', function(req, res) {
       var images = result;
 
       if (hitId.search("TEST")!=-1){
-          images = _.sample(images, 17);
+          images = _.sample(images, 10);
       }
       // target images
       var shuffled = _.shuffle(images);

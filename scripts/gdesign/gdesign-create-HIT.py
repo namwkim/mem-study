@@ -5,11 +5,11 @@ import os, pymongo, sys, random, time, csv
 
 ######  AMT CONFIGURATION PARAMETRS  ######
 
-SANDBOX = False  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
+SANDBOX = True  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 HIT_URL = "https://study.namwkim.org/gdesign"  # Provide the URL that you want workers to sent sent to complete you task
-
-NUMBER_OF_HITS = 3  # Number of different HITs posted for this task
-NUMBER_OF_ASSIGNMENTS = 10  # Number of tasks that DIFFERENT workers will be able to take for each HIT
+NUMBER_OF_HITS = 20  # Number of different HITs posted for this task
+HIT_SIZE = 18 #  NUMBER OF HITS x HIT_SIZE ~ IMAGE SIZE
+NUMBER_OF_ASSIGNMENTS = 9  # Number of tasks that DIFFERENT workers will be able to take for each HIT
 LIFETIME = 60 * 60 * 24 * 7  # How long that the task will stay visible if not taken by a worker (in seconds)
 REWARD = 0.3  # Base payment value for completing the task (in dollars)
 DURATION = 60*45  # How long the worker will be able to work on a single task (in seconds)
@@ -32,8 +32,8 @@ AWS_SECRET_KEY = ''
 # Your Amazon Web Services IAM User Name (private)
 
 ######  BUBBLE CONFIGURATION PARAMETRS  ######
-BASE_URI = "/images/gdesign-db-pilot/targets/"
-BASE_URI_BLUR = "/images/gdesign-db-pilot/targets_blurred/"
+BASE_URI = "/images/graphic/batch-1/"
+BASE_URI_BLUR = "/images/graphic/batch-1-blurred/"
 #######################################
 
 def create_blocklist(conn, qualtype, blockfile):
@@ -70,14 +70,14 @@ def create_hits(keyfile, blockfile):
 
 	# collect target image filenames
 	targets = []
-	for root, dirs, files in os.walk("../../public/images/gdesign-db-pilot/targets"):
+	for root, dirs, files in os.walk("../../public"+BASE_URI):
 		for file in files:
 			if file.startswith('.'):
 				continue
 			targets.append(file)
 
 	targets_blurred = []
-	for root, dirs, files in os.walk("../../public/images/gdesign-db-pilot/targets_blurred_10"):
+	for root, dirs, files in os.walk("../../public"+BASE_URI_BLUR):
 		for file in files:
 			if file.startswith('.'):
 				continue
@@ -126,12 +126,13 @@ def create_hits(keyfile, blockfile):
 	images	= db.images
 
 	#remove existing documents
-	images.remove({})
+	images.delete_many({})
 
 	# calculate the number of images for each HIT
-	hitSize = len(targets)/len(hitIDs);
+	# hitSize = len(targets)/len(hitIDs);
 
 	# shuffle
+
 	z = zip(targets, targets_blurred)
 	random.shuffle(z)
 	targets, targets_blurred = zip(*z)
@@ -139,22 +140,20 @@ def create_hits(keyfile, blockfile):
 	hitIdx 	= 0
 	hitID 	= hitIDs[hitIdx]
 	count 	= 0
+	print "Image Size:", len(targets)
 	print("HIT ID: " + hitID)
 	for i in range(len(targets)):
 		count +=1
-		images.insert({"hit_id": hitID, "group": hitIdx, "img_url": BASE_URI+targets[i], "blur_img_url": BASE_URI_BLUR+targets_blurred[i]}) # insert an image into the db with HIT ID assigned
-		print (" - Image #"+str(count)+": "+(BASE_URI+targets[i]))
-		if count>=hitSize:
+		images.insert_one({"hit_id": hitID, "group": hitIdx, "img_url": BASE_URI+targets[i], "blur_img_url": BASE_URI_BLUR+targets_blurred[i]}) # insert an image into the db with HIT ID assigned
+		print (" - Image #"+str(i)+": "+(BASE_URI+targets[i]))
+		if count>=HIT_SIZE:
+			print("HIT SIZE: " + str(count));
 			count   = 0
 			hitIdx += 1
 			if hitIdx>=len(hitIDs):
 				break
 			hitID 	= hitIDs[hitIdx]
 			print("HIT ID: " + hitID)
-
-	# for image in images.find():
-	# 	print image
-	print("HIT SIZE: " + str(hitSize));
 
 if __name__ == "__main__":
 	blockfile = None
