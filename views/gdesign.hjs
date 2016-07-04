@@ -137,7 +137,8 @@
         // });
         console.log(realImages);
         if (gup("is_demo")=="yes"){
-          StartExperiment();
+          console.log("this is a demo");
+          StartExperiment()
         }
       });
 
