@@ -96,7 +96,10 @@
                 }
                 console.log(res);
                 realImages = res;
-                StartExperiment()
+                if (gup("is_demo")=="yes"){
+                  StartExperiment()
+                }
+
             });
 
             //load practice images
