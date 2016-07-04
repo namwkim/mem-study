@@ -136,7 +136,7 @@
         //   realImages.blurred[i] = url;
         // });
         console.log(realImages);
-        if (gup("is_demo")!="yes"){
+        if (gup("is_demo")=="yes"){
           StartExperiment();
         }
       });
