@@ -97,6 +97,7 @@
                 console.log(res);
                 realImages = res;
                 if (gup("is_demo")=="yes"){
+                  console.log("this is a demo");
                   StartExperiment()
                 }
 
