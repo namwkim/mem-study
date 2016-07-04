@@ -27,7 +27,7 @@
     var MIN_DESC = 150,
       BLUR_RADIUS = 40,
       BUBBLE_RADIUS = 32; // IMG_WIDTH = 700, IMG_HEIGHT=700;
-      
+
     var WAIT_TIME = 2000,
         VIEW_TIME = 10000;
 
@@ -136,6 +136,9 @@
         //   realImages.blurred[i] = url;
         // });
         console.log(realImages);
+        if (gup("is_demo")!="yes"){
+          StartExperiment();
+        }
       });
 
       //load practice images
