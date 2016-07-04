@@ -32,8 +32,8 @@ AWS_SECRET_KEY = ''
 # Your Amazon Web Services IAM User Name (private)
 
 ######  BUBBLE CONFIGURATION PARAMETRS  ######
-BASE_URI = "/images/graphic/batch-1/"
-BASE_URI_BLUR = "/images/graphic/batch-1-blurred/"
+BASE_URI = "/images/graphic/batch-3/"
+BASE_URI_BLUR = "/images/graphic/batch-3-blurred/"
 #######################################
 
 def create_blocklist(conn, qualtype, blockfile):
