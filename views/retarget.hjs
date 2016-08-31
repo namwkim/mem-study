@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="stylesheets/modal.css">
+    <!-- the following font is for the modals -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+</head>
+
+
+<!----------------------------BEGIN STYLE DECLARATIONS---------------------------->
+<style>
+    .checkboxgroup {
+        display: inline-block;
+        text-align: center;
+    }
+
+    .checkboxgroup label {
+        display: block;
+    }
+    /* main image (original image) */
+
+    #mainim {
+        max-width: 300px;
+        max-height: 300px;
+    }
+    /* all thumbnails should fit in a box 300x300, so that they are no wider or taller than the original iamge (mainim) */
+
+    #designs1 {
+        max-width: 300px;
+        max-height: 300px;
+    }
+
+    #designs2 {
+        max-width: 300px;
+        max-height: 300px;
+    }
+
+    #designs3 {
+        max-width: 300px;
+        max-height: 300px;
+    }
+
+    #designs4 {
+        max-width: 300px;
+        max-height: 300px;
+    }
+
+    #designs5 {
+        max-width: 300px;
+        max-height: 300px;
+    }
+
+    #designs6 {
+        max-width: 300px;
+        max-height: 300px;
+    }
+    /* box outlining each thumbnail and radio buttons */
+
+    #box {
+        width: 320px;
+        padding: 10px;
+        border: 5px solid gray;
+        margin: 0;
+    }
+</style>
+<!----------------------------END STYLE DECLARATIONS---------------------------->
+
+<!----------------------------BEGIN HTML BODY---------------------------->
+
+<!-- when task begins:
+ (1) read in filelisting.txt
+ (2) permute the filenames and select an order for the filenames
+ (3) insert validation (sentinel) tasks
+ (4) permute the types of redesigns/thumbnails
+ (5) populate the page with the original design and the redesigns
+ (6) clear the radio buttons, prep the progress text
+
+ when task ends and submit button is pressed:
+ save inside variables:
+ (1) assignmentId: the MTurk assignmentId
+ (2) scores_final: the scores for each design on each page
+ (3) file_names_seen: the order of designs shown across the pages
+ (4) thumbnail_order_seen: the order of redesigns/thumbnails shown per page
+ -->
+
+<body onload="loadFilenames();">
+    <!-- DATA TO BE SUBMITTED AND ACTION TO BE CARRIED OUT ON SUBMIT -->
+    <div class="ui container">
+        <form id="mturk_form" name="mturk_form" method="POST" onsubmit="return saveVariables()" action="https://workersandbox.mturk.com/mturk/externalSubmit">
+            <!-- replace the sandbox with the real turk task -->
+
+            <!-- all the variables to be saved and submitted with HIT -->
+            <!-- the onsubmit function will assign the values to the variables -->
+            <input type="hidden" id="assignmentId" name="assignmentId" value="">
+            <input type="hidden" id="scores_final" name="scores_final" value="">
+            <input type="hidden" id="file_names_seen" name="file_names_seen" value="">
+            <input type="hidden" id="thumbnail_order_seen" name="thumbnail_order_seen" value="">
+            <!----------------------------------------------->
+
+            <!-----------------BEGIN MAIN HTML CONTENT----------------->
+
+
+            <!-----------------INSTRUCTIONS----------------->
+            <!-----------------ORIGINAL IMAGE + REDESIGNS----------------->
+
+            <div class="ui red segment">
+                <a class="ui red ribbon huge label">Give your design opinion</a>
+                <div class="ui stackable three column grid">
+                    <div class="row">
+                        <div class="ten wide column">
+
+                            <h3 class="ui red dividing header" style="margin:10px 0px 5px 0px;">Instruction</h3>
+                            <!-- <div class="ui header">Instruction</div> -->
+                            Your goal is to <strong>rate different designs</strong>, made for each poster that needs to be redesigned to a landscape size.
+
+                            <div class="ui bulleted list">
+                                <strong>Evaluation rublic:</strong>
+                                <div class="item">The main parts of the design should be present in the redesign. Key information should not be missing.</div>
+                                <div class="item">The style of the design should be as similar as possible to the original. The new design should not be distorted.</div>
+                                <div class="item">A bad design should receive a score of 1.</div>
+                                <div class="item">An excellent design should receive a score of 5.</div>
+                            </div>
+                            When you are done rating all six variants, click the <strong>Done button</strong>, which will appear at the bottom of the page. The <strong>Submit button</strong> will appear when you have completed all the pages.
+
+                        </div>
+                        <div class="six wide column">
+                            <h3 class="ui red dividing header" style="margin:10px 0px 5px 0px;">Original design</h3>
+                            <img id="mainim" class="ui bordered bordered rounded image" src="">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="sixteen wide column">
+                            <h3 class="ui red dividing header" style="margin:0px;">Evaluate Redesigns</h3>
+                        </div>
+                    </div>
+                    <div class="row" style="padding:0px">
+                        <div class="column">
+                            <img id="designs1" class="ui centered bordered bordered rounded image" src="">
+                            <div class="ui form" style="margin:5px 0px 0px 25px;">
+                                <div class="inline fields">
+                                    <label for="my_radio_button_id1">Very poor</label>
+                                    <div class="field">
+                                      <label for="my_radio_button_id1">1</label>
+                                      <input type="radio" name="radio1" id="opt1_1" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id2">2</label>
+                                      <input type="radio" name="radio1" id="opt1_2" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id3">3</label>
+                                      <input type="radio" name="radio1" id="opt1_3" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id4">4</label>
+                                      <input type="radio" name="radio1" id="opt1_4" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id5">5</label>
+                                      <input type="radio" name="radio1" id="opt1_5" onclick="radioclick();" />
+                                    </div>
+                                    <label>Very good</label>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="column">
+                            <img id="designs2" class="ui centered bordered rounded image" src="">
+                            <div class="ui form" style="margin:5px 0px 0px 25px;">
+                                <div class="inline fields">
+                                    <label for="my_radio_button_id1">Very poor</label>
+                                    <div class="field">
+                                      <label for="my_radio_button_id1">1</label>
+                                      <input type="radio" name="radio2" id="opt2_1" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id2">2</label>
+                                      <input type="radio" name="radio2" id="opt2_2" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id3">3</label>
+                                      <input type="radio" name="radio2" id="opt2_3" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id4">4</label>
+                                      <input type="radio" name="radio2" id="opt2_4" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id5">5</label>
+                                      <input type="radio" name="radio2" id="opt2_5" onclick="radioclick();" />
+                                    </div>
+                                    <label>Very good</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <img id="designs3" class="ui centered bordered rounded image" name="designs" src="">
+                            <div class="ui form" style="margin:5px 0px 0px 25px;">
+                                <div class="inline fields">
+                                    <label for="my_radio_button_id1">Very poor</label>
+                                    <div class="field">
+                                      <label for="my_radio_button_id1">1</label>
+                                      <input type="radio" name="radio3" id="opt3_1" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id2">2</label>
+                                      <input type="radio" name="radio3" id="opt3_2" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id3">3</label>
+                                      <input type="radio" name="radio3" id="opt3_3" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id4">4</label>
+                                      <input type="radio" name="radio3" id="opt3_4" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id5">5</label>
+                                      <input type="radio" name="radio3" id="opt3_5" onclick="radioclick();" />
+                                    </div>
+                                    <label>Very good</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="column">
+                            <img id="designs4" class="ui centered bordered rounded image" name="designs" src="">
+                            <div class="ui form" style="margin:5px 0px 0px 25px;">
+                                <div class="inline fields">
+                                    <label for="my_radio_button_id1">Very poor</label>
+                                    <div class="field">
+                                      <label for="my_radio_button_id1">1</label>
+                                      <input type="radio" name="radio4" id="opt4_1" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id2">2</label>
+                                      <input type="radio" name="radio4" id="opt4_2" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id3">3</label>
+                                      <input type="radio" name="radio4" id="opt4_3" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id4">4</label>
+                                      <input type="radio" name="radio4" id="opt4_4" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id5">5</label>
+                                      <input type="radio" name="radio4" id="opt4_5" onclick="radioclick();" />
+                                    </div>
+                                    <label>Very good</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <img id="designs5" class="ui centered bordered rounded image" name="designs" src="">
+                            <div class="ui form" style="margin:5px 0px 0px 25px;">
+                                <div class="inline fields">
+                                    <label for="my_radio_button_id1">Very poor</label>
+                                    <div class="field">
+                                      <label for="my_radio_button_id1">1</label>
+                                      <input type="radio" name="radio5" id="opt5_1" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id2">2</label>
+                                      <input type="radio" name="radio5" id="opt5_2" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id3">3</label>
+                                      <input type="radio" name="radio5" id="opt5_3" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id4">4</label>
+                                      <input type="radio" name="radio5" id="opt5_4" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id5">5</label>
+                                      <input type="radio" name="radio5" id="opt5_5" onclick="radioclick();" />
+                                    </div>
+                                    <label>Very good</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <img id="designs6" class="ui centered bordered rounded image" name="designs" src="">
+                            <div class="ui form" style="margin:5px 0px 0px 25px;">
+                                <div class="inline fields">
+                                    <label for="my_radio_button_id1">Very poor</label>
+                                    <div class="field">
+                                      <label for="my_radio_button_id1">1</label>
+                                      <input type="radio" name="radio6" id="opt6_1" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id2">2</label>
+                                      <input type="radio" name="radio6" id="opt6_2" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id3">3</label>
+                                      <input type="radio" name="radio6" id="opt6_3" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id4">4</label>
+                                      <input type="radio" name="radio6" id="opt6_4" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id5">5</label>
+                                      <input type="radio" name="radio6" id="opt6_5" onclick="radioclick();" />
+                                    </div>
+                                    <label>Very good</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="centered row">
+                        <div class="sixteen wide column">
+                          <!-----------------DONE AND SUBMIT BUTTONS----------------->
+                          <!-- <div id="progress" class="label"></div> -->
+                          <button id="doneButton" type="button"
+                            class="fluid ui primary button"
+                            onclick="checkIfDone()"></button>
+                          <button id="submitButton" type="submit" class="fluid ui primary button"
+                            disabled="true" style="display:none;">Submit</button>
+                          <div id="progressBar" class="ui tiny indicating progress">
+                            <div class="bar"></div>
+                            <div class="label"></div>
+                          </div>
+                          <!-- <input  type="button" name="doneButton" value="Done" onclick="checkIfDone()"> -->
+                          <!-- NOTE: turns into Done when all designs rated; otherwise, reports progress -->
+                          <!-- <input id="submitButton"  name="submitButton" value="Submit" disabled="true" style="visibility:hidden; "> -->
+                          <!-- NOTE: will only become visible when last page is completed -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-----------------END MAIN HTML CONTENT----------------->
+
+        </form>
+
+        <!-----------------REQUIRED IRB TEXT/DISCLAIMER----------------->
+        <div class="ui message" style="margin-bottom:10px;">
+          <div class="header">
+            Informed Consent.
+          </div>
+          <p>By completing this HIT, you are participating in a study being performed by computer scientists in the MIT Computer Science and Artificial Intelligence Lab. If you have questions about this resarch, please contact zoya@mit.edu. Your participation in this
+          research is voluntary. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.</p>
+        </div>
+
+    </div>
+</body>
+
+<!-----------------------------END HTML BODY-------------------------------------->
+
+<!-----------------------------BEGIN SCRIPT AND FUNCTIONS-------------------------------------->
+<script src="javascripts/modal.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js"></script>
+<script type="text/javascript">
+    // -----------------------------BEGIN VARIABLE DECLARATIONS-----------------------------
+    var nfiles = 12; // how many pages are in this task
+    var current = 0; // which page currently on
+
+    var scores_all = []; // ratings given to all thumbnails on all pages
+    var thumbnail_order = []; // order of thumbnails displayed
+
+    // for all the redesign/thumbnail boxes:
+    var radio_options = ["radio1", "radio2", "radio3", "radio4", "radio5", "radio6"];
+    var thumbnail_ims = ["designs1", "designs2", "designs3", "designs4", "designs5", "designs6"];
+    var imagetypes = ["Resized", "Edge_energy", "GT_imp", "GT_imp_crop", "GT_imp_straight", "Jumbled"];
+    //var imagetypes = ["Resized","Edge_energy","Pred_imp","Pred_imp_crop","Pred_imp_straight","Jumbled"];
+    var imagetypesOrder = []; // order in which imagetypes will be shown in boxes on page
+
+    // the values of all the radio buttons:
+    // options[i][j] is the j-th radio button in the i-th box
+    var options = [
+        ['opt1_1', 'opt1_2', 'opt1_3', 'opt1_4', 'opt1_5'],
+        ['opt2_1', 'opt2_2', 'opt2_3', 'opt2_4', 'opt2_5'],
+        ['opt3_1', 'opt3_2', 'opt3_3', 'opt3_4', 'opt3_5'],
+        ['opt4_1', 'opt4_2', 'opt4_3', 'opt4_4', 'opt4_5'],
+        ['opt5_1', 'opt5_2', 'opt5_3', 'opt5_4', 'opt5_5'],
+        ['opt6_1', 'opt6_2', 'opt6_3', 'opt6_4', 'opt6_5']
+    ];
+
+
+    var fileNames = []; // all the filenames read from the filelisting.txt file
+    var fileNamesOrder = []; // during init will be populated with a permuted set of filenames
+    var fineNamesSeen = []; // added to after each page; should be same as fileNamesOrder at the end
+
+    var maindir = "https://people.csail.mit.edu/zoya/Auto_retargeting/"; // where to find all the images
+
+    // validationFiles:
+    // These files will be added to the sequence of files shown to participants
+    // they exist in all the relevant thumbnail directories and among the original images
+    // the difference is that they are not in the filelisting.txt - to separately guarantee
+    // that they get inserted into the experiment sequence exactly twice
+    var validationFiles = ["47_113569013_faed4e79cd_b.png", "146_344098515_af4947bcfa_b.png"];
+    // -----------------------------END VARIABLE DECLARATIONS-----------------------------
+
+
+    // -----------------------------BEGIN FUNCTION DECLARATIONS-----------------------------
+
+    // first function to be executed when page loads:
+    // this function loads in the filelisting.txt file, reads each line as a filename
+    // then saves all the filenames inside the fileNames variable
+    // this function also asyncronously calls init() which will permute the order of the filenames
+    function loadFilenames(callback) {
+        var txtFile = new XMLHttpRequest();
+        txtFile.onreadystatechange = function() {
+            //alert('inside function')
+            if (txtFile.readyState === 4) { // document is ready to parse.
+                if (txtFile.status === 200) { // file is found
+                    allText = txtFile.responseText;
+                    fileNames = txtFile.responseText.split("\n");
+                    //alert('lines:'+lines)
+                    //for (var k=0;k<=lines.length-2;k++){
+                    //    fileNames[k] = lines[k];
+                    //}
+                    //alert(fileNames[0]);
+                    init();
+                }
+            }
+        }
+        var filename = '/retargetstudy-imagelist.txt';
+        txtFile.open("GET", filename, true);
+        txtFile.send();
+        //alert(filename)
+
+    }
+
+    // this was used as testing time instead of loadFilenames
+    function loadFilenames_backup() {
+        fileNames = ['36_217641927_49a2ecc877_z.png',
+            '43_403356911_87823b23eb_b.png',
+            '126_318735136_983c879f9d_z.png',
+            '1306_1136128679_62d745f677_z.png'
+        ];
+        init();
+    }
+
+    // this function permutes the files to be displayed during the HIT
+    // and inserts validation (sentinel) files to be used for post-processing/cleaning the data later
+
+    function init() {
+        $('#progressBar')
+          .progress({
+            value:0,
+            total: nfiles,
+            text: {
+              active  : '{value} of {total} images',
+              success : '{total} images completed!'
+            }
+          });
+        resetProgress(true); // recet progress reporting and done button at bottom of page
+
+        // choose an order of files to display
+        permFiles = randperm(fileNames.length);
+        for (var i = 0; i < fileNames.length; i++) {
+            fileNamesOrder[i] = fileNames[permFiles[i]];
+        }
+
+        // choose random indices and swap in the validation files
+
+        var curperm = randperm(nfiles);
+        var curint;
+        for (var i = 0; i < validationFiles.length; i++) {
+            //curint = getRandomInt(0, nfiles) // random integer between min (included) and max (excluded);
+            curint = curperm[i];
+            fileNamesOrder[curint] = validationFiles[i];
+        }
+
+        loadFiles(fileNamesOrder[0]); // start the task by loading the first file
+    }
+
+    // this resents the done button to list the progress (number of designs rated) and current progress (page)
+    function resetProgress(dontInc) {
+        // document.getElementById("progress").innerText = "Page " + String(current + 1) + " of " + String(nfiles);
+        if (!dontInc){
+            $('#progressBar').progress('increment');
+        }
+        document.getElementById("doneButton").innerText = "Rated 0 of " + String(thumbnail_ims.length);
+    }
+
+    // given a filename to use on this page, display the original design
+    // and choose the order in which to display the thumbnails/redesigns
+    function loadFiles(filename) {
+        document.getElementById("mainim").src = maindir + "Orig/" + filename;
+
+        // permute the types of thumbnails
+        var permTypes = randperm(imagetypes.length);
+        for (var i = 0; i < imagetypes.length; i++) {
+            imagetypesOrder[i] = imagetypes[permTypes[i]];
+        }
+
+        for (var i = 0; i < thumbnail_ims.length; i++) {
+            document.getElementById(thumbnail_ims[i]).src = maindir + imagetypesOrder[i] + "/v3/" + filename;
+        } // v3 contains a mix of landscape/portrait designs
+
+        fineNamesSeen.push(filename); // keep track of progress (which images were shown to participants)
+
+    }
+
+    // once all the designs have been rated, save the ratings made on this page
+    function saveSelections() {
+
+        var scores = [];
+        var radios;
+
+        for (var i = 0; i < imagetypes.length; i++) {
+            radios = document.getElementsByName(radio_options[i]);
+            for (var j = 0; j < radios.length; j++) {
+                if (radios[j].checked) {
+                    scores[i] = j + 1;
+                }
+            }
+        }
+        thumbnail_order.push(imagetypesOrder); // keep track of the order in which thumbnails were shown per page
+        scores_all.push(scores); // the ratings given to each thumbnail
+
+        //alert(scores.toString());
+    }
+
+    // reset all the radio buttons (when on a new page)
+    function resetChoices() {
+        var radios;
+        for (var r = 0; r < imagetypes.length; r++) {
+            radios = document.getElementsByName(radio_options[r]);
+            for (var i = 0; i < radios.length; i++) {
+                radios[i].checked = false;
+            }
+        }
+
+    }
+
+    function radioclick() {
+        var curcount = 0;
+        var totcount = 0;
+        var radios;
+        for (var i = 0; i < imagetypes.length; i++) {
+            radios = document.getElementsByName(radio_options[i]);
+            curcount = 0;
+            for (var j = 0; j < radios.length; j++) {
+                if (radios[j].checked) {
+                    curcount = 1;
+                }
+            }
+            totcount += curcount;
+        }
+        document.getElementById("doneButton").innerText = "Rated " + String(totcount) + " of " + String(thumbnail_ims.length);
+
+        if (totcount == thumbnail_ims.length) {
+            document.getElementById("doneButton").innerText = 'Done';
+        }
+        //document.getElementById("doneButton").disabled = true;
+
+    }
+
+    // once done button is pressed, check again if all designs have been rated
+    function checkIfDone() {
+
+        var radios;
+        var numselected = 0; // number designs rated
+        for (var r = 0; r < imagetypes.length; r++) {
+            radios = document.getElementsByName(radio_options[r]);
+            for (var i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    numselected++;
+                }
+            }
+        }
+
+        //alert(numselected)
+
+        if (numselected == thumbnail_ims.length) { // all designs have been rated on current page
+
+            saveSelections();
+
+            if (current == nfiles - 1) { // just completed the last page!
+                document.getElementById("submitButton").disabled = false;
+                document.getElementById("submitButton").style.display = "block";
+
+                document.getElementById("doneButton").disabled = true;
+                document.getElementById("doneButton").style.display = "none";
+
+                openModalSuccessWindow('Congrats, you can submit now!')
+                    //alert('Congrats, you can submit now!')
+                resetProgress();
+            } else { // move on to the next page!
+                resetChoices(); // reset radio buttons
+                displayNextImage();
+            }
+
+
+        } else { // not all designs have been rated on current page
+
+            openModalSuccessWindow('Please rate each design.')
+                //alert('Please rate each design.')
+        }
+
+    }
+
+    // go to the next page: increment the current page, reset the progress, and load the new set of images
+    function displayNextImage() {
+        current += 1;
+        resetProgress();
+        loadFiles(fileNamesOrder[current]);
+    }
+
+    // create a random permutation of the number 0 to maxValue
+    function randperm(maxValue) {
+        // first generate number sequence
+        var permArray = new Array(maxValue);
+        for (var i = 0; i < maxValue; i++) {
+            permArray[i] = i;
+        }
+        // draw out of the number sequence
+        for (var i = (maxValue - 1); i >= 0; --i) {
+            var randPos = Math.floor(i * Math.random());
+            var tmpStore = permArray[i];
+            permArray[i] = permArray[randPos];
+            permArray[randPos] = tmpStore;
+        }
+        return permArray;
+    }
+
+    // generate a random integer between min (included) and max (excluded)
+    function getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min)) + min;
+    }
+
+    // save the variables at the end of the whole MTurk task; this saves all the information needed form this task
+    function saveVariables() {
+        document.getElementById('scores_final').value = 'scores_final:' + scores_all.join();
+        document.getElementById('file_names_seen').value = 'file_names_seen:' + fineNamesSeen.join();
+        document.getElementById('thumbnail_order_seen').value = 'thumbnail_order_seen:' + thumbnail_order.join();
+
+        //save data into database too
+        var xmlhttp = new XMLHttpRequest(); // new HttpRequest instance
+        xmlhttp.open("POST", "/retarget/log");
+        xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xmlhttp.send(JSON.stringify({
+            timestamp: $.now(),
+            hitId: gup("hitId"),
+            assignmentId: gup("assignmentId"),
+            workerId: gup("workerId"),
+            action: 'submit',
+            data: {
+                scores_final: scores_all,
+                file_names_seen: fineNamesSeen,
+                thumbnail_order_seen: thumbnail_order
+            }
+        }));
+
+        //alert(document.getElementById('scores_final').value)
+        //alert(document.getElementById('file_names_seen').value)
+        //alert(document.getElementById('thumbnail_order_seen').value)
+
+    }
+
+    // modal window to show a designed message (instead of a pop-up, which could be blocked)
+    function openModalSuccessWindow(message) {
+        var child = document.createElement('div');
+        child.className = "inside";
+        var text = document.createElement('h1');
+        text.className = "inside-text";
+        text.innerHTML = message;
+        child.appendChild(text);
+
+        //create modal instance and pass in child elements
+        //can be whatever, styled however you want
+        var modal = new Modal(child, true);
+        modal.show(); //open the modal window
+    }
+
+    // parse the assignmentId assigned by Mturk
+    function gup(name) {
+        var regexS = "[\\?&]" + name + "=([^&#]*)";
+        var regex = new RegExp(regexS);
+        var tmpURL = window.location.href;
+        var results = regex.exec(tmpURL);
+        if (results == null)
+            return "";
+        else
+            return results[1];
+    }
+
+    // -----------------------------END FUNCTION DECLARATIONS-----------------------------
+
+    // when HTML page first loads, save the assignmentID
+    // and check if the worker is PREVIEWING the HIT or if they've ACCEPTED the HIT
+    document.getElementById('assignmentId').value = gup('assignmentId');
+
+    if (gup('assignmentId') == "ASSIGNMENT_ID_NOT_AVAILABLE") {
+        // If we're previewing, disable the button
+        document.getElementById("doneButton").disabled = true;
+        //document.getElementById('doneButton').value = "You must ACCEPT the HIT before you can submit the results.";
+        preview = true;
+    }else{
+      var xmlhttp = new XMLHttpRequest(); // new HttpRequest instance
+      xmlhttp.open("POST", "/retarget/log");
+      xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xmlhttp.send(JSON.stringify({
+          timestamp: $.now(),
+          hitId: gup("hitId"),
+          assignmentId: gup("assignmentId"),
+          workerId: gup("workerId"),
+          action: 'start'
+      }));
+    }
+    //else {
+    //  var form = document.getElementById('mturk_form');
+    //  if (document.referrer && ( document.referrer.indexOf('workersandbox') != -1) ) {
+    //      form.action = "https://workersandbox.mturk.com/mturk/externalSubmit";
+    //   }
+    //}
+</script>
+<!-----------------------------END SCRIPT AND FUNCTIONS-------------------------------------->
+
+</html>
