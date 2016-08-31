@@ -4,7 +4,7 @@
 <head>
     <link rel="stylesheet" href="stylesheets/modal.css">
     <!-- the following font is for the modals -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/semantic-ui/2.2.2/semantic.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
 </head>
 
@@ -168,150 +168,172 @@
                         </div>
                         <div class="column">
                             <img id="designs2" class="ui centered bordered rounded image" src="">
-                            <div id="checkboxes2">
-                                <text>bad design</text>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id1">1</label>
-                                    <input type="radio" name="radio2" id="opt2_1" onclick="radioclick();" />
+                            <div class="ui form" style="margin:5px 0px 0px 25px;">
+                                <div class="inline fields">
+                                    <label for="my_radio_button_id1">Very poor</label>
+                                    <div class="field">
+                                      <label for="my_radio_button_id1">1</label>
+                                      <input type="radio" name="radio2" id="opt2_1" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id2">2</label>
+                                      <input type="radio" name="radio2" id="opt2_2" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id3">3</label>
+                                      <input type="radio" name="radio2" id="opt2_3" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id4">4</label>
+                                      <input type="radio" name="radio2" id="opt2_4" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id5">5</label>
+                                      <input type="radio" name="radio2" id="opt2_5" onclick="radioclick();" />
+                                    </div>
+                                    <label>Very good</label>
                                 </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id2">2</label>
-                                    <input type="radio" name="radio2" id="opt2_2" onclick="radioclick();" />
-                                </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id3">3</label>
-                                    <input type="radio" name="radio2" id="opt2_3" onclick="radioclick();" />
-                                </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id4">4</label>
-                                    <input type="radio" name="radio2" id="opt2_4" onclick="radioclick();" />
-                                </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id5">5</label>
-                                    <input type="radio" name="radio2" id="opt2_5" onclick="radioclick();" />
-                                </div>
-                                <text>good design</text>
                             </div>
                         </div>
                         <div class="column">
                             <img id="designs3" class="ui centered bordered rounded image" name="designs" src="">
-                            <div id="checkboxes3">
-                                <text>bad design</text>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id1">1</label>
-                                    <input type="radio" name="radio3" id="opt3_1" onclick="radioclick();" />
+                            <div class="ui form" style="margin:5px 0px 0px 25px;">
+                                <div class="inline fields">
+                                    <label for="my_radio_button_id1">Very poor</label>
+                                    <div class="field">
+                                      <label for="my_radio_button_id1">1</label>
+                                      <input type="radio" name="radio3" id="opt3_1" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id2">2</label>
+                                      <input type="radio" name="radio3" id="opt3_2" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id3">3</label>
+                                      <input type="radio" name="radio3" id="opt3_3" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id4">4</label>
+                                      <input type="radio" name="radio3" id="opt3_4" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id5">5</label>
+                                      <input type="radio" name="radio3" id="opt3_5" onclick="radioclick();" />
+                                    </div>
+                                    <label>Very good</label>
                                 </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id2">2</label>
-                                    <input type="radio" name="radio3" id="opt3_2" onclick="radioclick();" />
-                                </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id3">3</label>
-                                    <input type="radio" name="radio3" id="opt3_3" onclick="radioclick();" />
-                                </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id4">4</label>
-                                    <input type="radio" name="radio3" id="opt3_4" onclick="radioclick();" />
-                                </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id5">5</label>
-                                    <input type="radio" name="radio3" id="opt3_5" onclick="radioclick();" />
-                                </div>
-                                <text>good design</text>
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="column">
                             <img id="designs4" class="ui centered bordered rounded image" name="designs" src="">
-                            <div id="checkboxes4">
-                                <text>bad design</text>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id1">1</label>
-                                    <input type="radio" name="radio4" id="opt4_1" onclick="radioclick();" />
+                            <div class="ui form" style="margin:5px 0px 0px 25px;">
+                                <div class="inline fields">
+                                    <label for="my_radio_button_id1">Very poor</label>
+                                    <div class="field">
+                                      <label for="my_radio_button_id1">1</label>
+                                      <input type="radio" name="radio4" id="opt4_1" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id2">2</label>
+                                      <input type="radio" name="radio4" id="opt4_2" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id3">3</label>
+                                      <input type="radio" name="radio4" id="opt4_3" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id4">4</label>
+                                      <input type="radio" name="radio4" id="opt4_4" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id5">5</label>
+                                      <input type="radio" name="radio4" id="opt4_5" onclick="radioclick();" />
+                                    </div>
+                                    <label>Very good</label>
                                 </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id2">2</label>
-                                    <input type="radio" name="radio4" id="opt4_2" onclick="radioclick();" />
-                                </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id3">3</label>
-                                    <input type="radio" name="radio4" id="opt4_3" onclick="radioclick();" />
-                                </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id4">4</label>
-                                    <input type="radio" name="radio4" id="opt4_4" onclick="radioclick();" />
-                                </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id5">5</label>
-                                    <input type="radio" name="radio4" id="opt4_5" onclick="radioclick();" />
-                                </div>
-                                <text>good design</text>
                             </div>
                         </div>
                         <div class="column">
                             <img id="designs5" class="ui centered bordered rounded image" name="designs" src="">
-                            <div id="checkboxes5">
-                                <text>bad design</text>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id1">1</label>
-                                    <input type="radio" name="radio5" id="opt5_1" onclick="radioclick();" />
+                            <div class="ui form" style="margin:5px 0px 0px 25px;">
+                                <div class="inline fields">
+                                    <label for="my_radio_button_id1">Very poor</label>
+                                    <div class="field">
+                                      <label for="my_radio_button_id1">1</label>
+                                      <input type="radio" name="radio5" id="opt5_1" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id2">2</label>
+                                      <input type="radio" name="radio5" id="opt5_2" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id3">3</label>
+                                      <input type="radio" name="radio5" id="opt5_3" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id4">4</label>
+                                      <input type="radio" name="radio5" id="opt5_4" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id5">5</label>
+                                      <input type="radio" name="radio5" id="opt5_5" onclick="radioclick();" />
+                                    </div>
+                                    <label>Very good</label>
                                 </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id2">2</label>
-                                    <input type="radio" name="radio5" id="opt5_2" onclick="radioclick();" />
-                                </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id3">3</label>
-                                    <input type="radio" name="radio5" id="opt5_3" onclick="radioclick();" />
-                                </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id4">4</label>
-                                    <input type="radio" name="radio5" id="opt5_4" onclick="radioclick();" />
-                                </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id5">5</label>
-                                    <input type="radio" name="radio5" id="opt5_5" onclick="radioclick();" />
-                                </div>
-                                <text>good design</text>
                             </div>
                         </div>
                         <div class="column">
                             <img id="designs6" class="ui centered bordered rounded image" name="designs" src="">
-                            <div id="checkboxes6">
-                                <text>bad design</text>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id1">1</label>
-                                    <input type="radio" name="radio6" id="opt6_1" onclick="radioclick();" />
+                            <div class="ui form" style="margin:5px 0px 0px 25px;">
+                                <div class="inline fields">
+                                    <label for="my_radio_button_id1">Very poor</label>
+                                    <div class="field">
+                                      <label for="my_radio_button_id1">1</label>
+                                      <input type="radio" name="radio6" id="opt6_1" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id2">2</label>
+                                      <input type="radio" name="radio6" id="opt6_2" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id3">3</label>
+                                      <input type="radio" name="radio6" id="opt6_3" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id4">4</label>
+                                      <input type="radio" name="radio6" id="opt6_4" onclick="radioclick();" />
+                                    </div>
+                                    <div class="field">
+                                      <label for="my_radio_button_id5">5</label>
+                                      <input type="radio" name="radio6" id="opt6_5" onclick="radioclick();" />
+                                    </div>
+                                    <label>Very good</label>
                                 </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id2">2</label>
-                                    <input type="radio" name="radio6" id="opt6_2" onclick="radioclick();" />
-                                </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id3">3</label>
-                                    <input type="radio" name="radio6" id="opt6_3" onclick="radioclick();" />
-                                </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id4">4</label>
-                                    <input type="radio" name="radio6" id="opt6_4" onclick="radioclick();" />
-                                </div>
-                                <div class="checkboxgroup">
-                                    <label for="my_radio_button_id5">5</label>
-                                    <input type="radio" name="radio6" id="opt6_5" onclick="radioclick();" />
-                                </div>
-                                <text>good design</text>
                             </div>
                         </div>
                     </div>
+                    <div class="centered row">
+                        <div class="sixteen wide column">
+                          <!-----------------DONE AND SUBMIT BUTTONS----------------->
+                          <!-- <div id="progress" class="label"></div> -->
+                          <button id="doneButton" type="button"
+                            class="fluid ui primary button"
+                            onclick="checkIfDone()"></button>
+                          <button id="submitButton" type="submit" class="fluid ui primary button"
+                            disabled="true" style="display:none;">Submit</button>
+                          <div id="progressBar" class="ui tiny indicating progress">
+                            <div class="bar"></div>
+                            <div class="label"></div>
+                          </div>
+                          <!-- <input  type="button" name="doneButton" value="Done" onclick="checkIfDone()"> -->
+                          <!-- NOTE: turns into Done when all designs rated; otherwise, reports progress -->
+                          <!-- <input id="submitButton"  name="submitButton" value="Submit" disabled="true" style="visibility:hidden; "> -->
+                          <!-- NOTE: will only become visible when last page is completed -->
+                        </div>
+                    </div>
                 </div>
-                <!-----------------DONE AND SUBMIT BUTTONS----------------->
-                <div id="progress"></div><br>
-                <input id="doneButton" type="button" name="doneButton" value="Done" onclick="checkIfDone()" style="font-size:50px; height:100px; width:100px"><br>
-                <!-- NOTE: turns into Done when all designs rated; otherwise, reports progress -->
-                <input id="submitButton" type="submit" name="submitButton" value="Submit" disabled="true" style="visibility:hidden; font-size:50px; height:100px; width:100px">
-                <!-- NOTE: will only become visible when last page is completed -->
-
             </div>
 
 
@@ -321,10 +343,14 @@
         </form>
 
         <!-----------------REQUIRED IRB TEXT/DISCLAIMER----------------->
-        <div class="ui grey segment">
-            By completing this HIT, you are participating in a study being performed by computer scientists in the MIT Computer Science and Artificial Intelligence Lab. If you have questions about this resarch, please contact zoya@mit.edu. Your participation in this
-            research is voluntary. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.
+        <div class="ui message" style="margin-bottom:10px;">
+          <div class="header">
+            Informed Consent.
+          </div>
+          <p>By completing this HIT, you are participating in a study being performed by computer scientists in the MIT Computer Science and Artificial Intelligence Lab. If you have questions about this resarch, please contact zoya@mit.edu. Your participation in this
+          research is voluntary. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.</p>
         </div>
+
     </div>
 </body>
 
@@ -332,6 +358,8 @@
 
 <!-----------------------------BEGIN SCRIPT AND FUNCTIONS-------------------------------------->
 <script src="javascripts/modal.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js"></script>
 <script type="text/javascript">
     // -----------------------------BEGIN VARIABLE DECLARATIONS-----------------------------
     var nfiles = 12; // how many pages are in this task
@@ -416,8 +444,18 @@
 
     // this function permutes the files to be displayed during the HIT
     // and inserts validation (sentinel) files to be used for post-processing/cleaning the data later
+
     function init() {
-        resetProgress(); // recet progress reporting and done button at bottom of page
+        $('#progressBar')
+          .progress({
+            value:0,
+            total: nfiles,
+            text: {
+              active  : '{value} of {total} images',
+              success : '{total} images completed!'
+            }
+          });
+        resetProgress(true); // recet progress reporting and done button at bottom of page
 
         // choose an order of files to display
         permFiles = randperm(fileNames.length);
@@ -439,9 +477,12 @@
     }
 
     // this resents the done button to list the progress (number of designs rated) and current progress (page)
-    function resetProgress() {
-        document.getElementById("progress").innerText = "Page " + String(current + 1) + " of " + String(nfiles);
-        document.getElementById("doneButton").value = "Rated 0 of " + String(thumbnail_ims.length);
+    function resetProgress(dontInc) {
+        // document.getElementById("progress").innerText = "Page " + String(current + 1) + " of " + String(nfiles);
+        if (!dontInc){
+            $('#progressBar').progress('increment');
+        }
+        document.getElementById("doneButton").innerText = "Rated 0 of " + String(thumbnail_ims.length);
     }
 
     // given a filename to use on this page, display the original design
@@ -509,10 +550,10 @@
             }
             totcount += curcount;
         }
-        document.getElementById("doneButton").value = "Rated " + String(totcount) + " of " + String(thumbnail_ims.length);
+        document.getElementById("doneButton").innerText = "Rated " + String(totcount) + " of " + String(thumbnail_ims.length);
 
         if (totcount == thumbnail_ims.length) {
-            document.getElementById("doneButton").value = 'Done';
+            document.getElementById("doneButton").innerText = 'Done';
         }
         //document.getElementById("doneButton").disabled = true;
 
@@ -540,13 +581,14 @@
 
             if (current == nfiles - 1) { // just completed the last page!
                 document.getElementById("submitButton").disabled = false;
-                document.getElementById("submitButton").style.visibility = "visible";
+                document.getElementById("submitButton").style.display = "block";
 
                 document.getElementById("doneButton").disabled = true;
-                document.getElementById("doneButton").style.visibility = "hidden";
+                document.getElementById("doneButton").style.display = "none";
+
                 openModalSuccessWindow('Congrats, you can submit now!')
                     //alert('Congrats, you can submit now!')
-
+                resetProgress();
             } else { // move on to the next page!
                 resetChoices(); // reset radio buttons
                 displayNextImage();
@@ -598,6 +640,7 @@
         document.getElementById('file_names_seen').value = 'file_names_seen:' + fineNamesSeen.join();
         document.getElementById('thumbnail_order_seen').value = 'thumbnail_order_seen:' + thumbnail_order.join();
 
+        //save data into database too
         var xmlhttp = new XMLHttpRequest(); // new HttpRequest instance
         xmlhttp.open("POST", "/retarget/log");
         xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
@@ -658,6 +701,17 @@
         document.getElementById("doneButton").disabled = true;
         //document.getElementById('doneButton').value = "You must ACCEPT the HIT before you can submit the results.";
         preview = true;
+    }else{
+      var xmlhttp = new XMLHttpRequest(); // new HttpRequest instance
+      xmlhttp.open("POST", "/retarget/log");
+      xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xmlhttp.send(JSON.stringify({
+          timestamp: $.now(),
+          hitId: gup("hitId"),
+          assignmentId: gup("assignmentId"),
+          workerId: gup("workerId"),
+          action: 'start'
+      }));
     }
     //else {
     //  var form = document.getElementById('mturk_form');
