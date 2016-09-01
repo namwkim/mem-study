@@ -6,7 +6,7 @@ function gup(name) {
 	var results = regex.exec(window.location.href);
 	if(results == null)
 		return "";
-	else return decodeURI(results[1]);
+	else return unescape(results[1]);
 }
 
 function turkify(form_selector){
