@@ -4,12 +4,9 @@ function gup(name) {
 	var regexS = "[\\?&]"+name+"=([^&#]*)";
 	var regex = new RegExp(regexS);
 	var results = regex.exec(window.location.href);
-	if(results == null){
+	if(results == null)
 		return "";
-	}else{
-		console.log(results[1]);
-		return decodeURIComponent(results[1]);
-	}
+	else return unescape(results[1]);
 }
 
 function turkify(form_selector){
@@ -30,8 +27,6 @@ function turkify(form_selector){
 
 		// Set the Action of the form to the provided "turkSubmitTo" field
 		if((submit_url=gup("turkSubmitTo"))!="") {
-			console.log('submit_url')
-			console.log(submit_url)
 	  		$(form_selector).attr('action', submit_url + '/mturk/externalSubmit');
 		}
 	}
