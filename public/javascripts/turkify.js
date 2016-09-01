@@ -5,9 +5,9 @@ function gup(name) {
 	var regex = new RegExp(regexS);
 	var results = regex.exec(window.location.href);
 	if(results == null){
-		console.log(results[1]);
 		return "";
 	}else{
+		console.log(results[1]);
 		return decodeURIComponent(results[1]);
 	}
 }
