@@ -723,6 +723,7 @@
     }
     $(document).ready(function() {
       turkify("#mturk_form");
+      console.log("action to : " + $("#mturk_form").attr("action"));
     });
     //else {
     //  var form = document.getElementById('mturk_form');
