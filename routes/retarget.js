@@ -8,7 +8,7 @@ var router  = express.Router();
 
 router.get('/', function(req, res) {
 	var db 		= req.retargetdb;
-	console.log('hitID:' + req.query['hitId']);
+	console.log(req.query);
 	if (!req.query['hitId'] || req.query['hitId']=="TEST"){
 		res.render('retarget', { title: 'Retargeted Design Evaluation', type: 1 });
 	}else{
