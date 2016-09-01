@@ -4,10 +4,12 @@ function gup(name) {
 	var regexS = "[\\?&]"+name+"=([^&#]*)";
 	var regex = new RegExp(regexS);
 	var results = regex.exec(window.location.href);
-	if(results == null)
+	if(results == null){
+		console.log(results[1]);
 		return "";
-	console.log(results[1]);
-	else return decodeURIComponent(results[1]);
+	}else{
+		return decodeURIComponent(results[1]);
+	}
 }
 
 function turkify(form_selector){
