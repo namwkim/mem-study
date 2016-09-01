@@ -7,8 +7,19 @@ var qs      = require('querystring');
 var router  = express.Router();
 
 router.get('/', function(req, res) {
-	console.log(req.params);
-  	res.render('retarget', { title: 'Retargeted Design Evaluation' });
+	var db 		= req.retargetdb;
+	if (req.query['hitId']=="TEST"){
+		res.render('retarget', { title: 'Retargeted Design Evaluation', type: 1 });
+	}else{
+		db.collection('experimentType').find_one({'hitId':hitId}, function(err, result) {
+	        if (result) {
+						console.log(req.query['hitId']+", " + result[0]['type']);
+						res.render('retarget', { title: 'Retargeted Design Evaluation', type: result[0]['type'] });
+	        }
+	    });
+		
+	}
+
 });
 
 router.post('/log', function(req, res){

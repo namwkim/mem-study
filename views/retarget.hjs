@@ -88,12 +88,12 @@
 <body onload="loadFilenames();">
     <!-- DATA TO BE SUBMITTED AND ACTION TO BE CARRIED OUT ON SUBMIT -->
     <div class="ui container">
-        <form id="mturk_form" name="mturk_form" method="POST" onsubmit="return saveVariables()" action="https://workersandbox.mturk.com/mturk/externalSubmit">
+        <form id="mturk_form" name="mturk_form" onsubmit="return saveVariables()">
             <!-- replace the sandbox with the real turk task -->
 
             <!-- all the variables to be saved and submitted with HIT -->
             <!-- the onsubmit function will assign the values to the variables -->
-            <input type="hidden" id="assignmentId" name="assignmentId" value="">
+            <!-- <input type="hidden" id="assignmentId" name="assignmentId" value=""> -->
             <input type="hidden" id="scores_final" name="scores_final" value="">
             <input type="hidden" id="file_names_seen" name="file_names_seen" value="">
             <input type="hidden" id="thumbnail_order_seen" name="thumbnail_order_seen" value="">
@@ -348,7 +348,7 @@
           <div class="header">
             Informed Consent.
           </div>
-          <p>By completing this HIT, you are participating in a study being performed by computer scientists in the MIT Computer Science and Artificial Intelligence Lab. If you have questions about this resarch, please contact zoya@mit.edu. Your participation in this
+          <p>By completing this HIT, you are participating in a study being performed by computer scientists in the MIT Computer Science and Artificial Intelligence Lab. If you have questions about this resarch, please contact namwkim@seas.harvard.edu. Your participation in this
           research is voluntary. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.</p>
         </div>
 
@@ -359,6 +359,7 @@
 
 <!-----------------------------BEGIN SCRIPT AND FUNCTIONS-------------------------------------->
 <script src="javascripts/modal.js"></script>
+<script src="javascripts/turkify.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js"></script>
 <script type="text/javascript">
@@ -372,8 +373,13 @@
     // for all the redesign/thumbnail boxes:
     var radio_options = ["radio1", "radio2", "radio3", "radio4", "radio5", "radio6"];
     var thumbnail_ims = ["designs1", "designs2", "designs3", "designs4", "designs5", "designs6"];
-    var imagetypes = ["Resized", "Edge_energy", "GT_imp", "GT_imp_crop", "GT_imp_straight", "Jumbled"];
-    //var imagetypes = ["Resized","Edge_energy","Pred_imp","Pred_imp_crop","Pred_imp_straight","Jumbled"];
+    var experiment = {{type}};
+    var imagetypes;
+    if (experiment==1){
+      imagetypes = ["Resized", "Edge_energy", "GT_imp", "GT_imp_crop", "GT_imp_straight", "Jumbled"];
+    }else {
+      imagetypes = ["Resized","Edge_energy","Pred_imp","Pred_imp_crop","Pred_imp_straight","Jumbled"];
+    }
     var imagetypesOrder = []; // order in which imagetypes will be shown in boxes on page
 
     // the values of all the radio buttons:
@@ -652,6 +658,7 @@
             workerId: gup("workerId"),
             action: 'submit',
             data: {
+                experiment: experiment,
                 scores_final: scores_all,
                 file_names_seen: fineNamesSeen,
                 thumbnail_order_seen: thumbnail_order
@@ -713,6 +720,7 @@
           workerId: gup("workerId"),
           action: 'start'
       }));
+      turkify("#mturk_form");
     }
     //else {
     //  var form = document.getElementById('mturk_form');
