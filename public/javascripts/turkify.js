@@ -6,7 +6,7 @@ function gup(name) {
 	var results = regex.exec(window.location.href);
 	if(results == null)
 		return "";
-	else return unescape(results[1]);
+	else return decodeURIComponent(results[1]);
 }
 
 function turkify(form_selector){
@@ -27,7 +27,7 @@ function turkify(form_selector){
 
 		// Set the Action of the form to the provided "turkSubmitTo" field
 		if((submit_url=gup("turkSubmitTo"))!="") {
-	  		$(form_selector).attr('action', unescape(submit_url) + '/mturk/externalSubmit');
+	  		$(form_selector).attr('action', submit_url + '/mturk/externalSubmit');
 		}
 	}
 }
