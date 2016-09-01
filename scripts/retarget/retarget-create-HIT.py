@@ -94,7 +94,7 @@ def create_hits(keyfile, blockfile):
 	client 	= pymongo.MongoClient('localhost', 27017)
 	db 		= client.retargetstudy
 	experimentType	= db.experimentType
-
+	experimentType.delete_many({})
 	#Create HITs
 	# hitIDs = []
 	experiment = 1
