@@ -30,6 +30,8 @@ function turkify(form_selector){
 
 		// Set the Action of the form to the provided "turkSubmitTo" field
 		if((submit_url=gup("turkSubmitTo"))!="") {
+			console.log('submit_url')
+			console.log(submit_url)
 	  		$(form_selector).attr('action', submit_url + '/mturk/externalSubmit');
 		}
 	}
