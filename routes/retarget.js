@@ -8,7 +8,7 @@ var router  = express.Router();
 
 router.get('/', function(req, res) {
 	var db 		= req.retargetdb;
-	if (req.query['hitId']=="TEST"){
+	if (!req.query['hitId'] || req.query['hitId']=="TEST"){
 		res.render('retarget', { title: 'Retargeted Design Evaluation', type: 1 });
 	}else{
 		db.collection('experimentType').find_one({'hitId':hitId}, function(err, result) {
@@ -17,7 +17,7 @@ router.get('/', function(req, res) {
 						res.render('retarget', { title: 'Retargeted Design Evaluation', type: result[0]['type'] });
 	        }
 	    });
-		
+
 	}
 
 });
