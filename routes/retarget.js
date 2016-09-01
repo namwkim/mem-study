@@ -12,7 +12,7 @@ router.get('/', function(req, res) {
 	if (!req.query['hitId'] || req.query['hitId']=="TEST"){
 		res.render('retarget', { title: 'Retargeted Design Evaluation', type: 1 });
 	}else{
-		db.collection('experimentType').find_one({'hit_id':req.query['hitId']}, function(err, result) {
+		db.collection('experimentType').find({'hit_id':req.query['hitId']}, function(err, result) {
 	        if (result) {
 						console.log(req.query['hitId']+", " + result[0]['type']);
 						res.render('retarget', { title: 'Retargeted Design Evaluation', type: result[0]['type'] });
