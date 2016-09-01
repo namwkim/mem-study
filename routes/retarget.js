@@ -13,10 +13,14 @@ router.get('/', function(req, res) {
 		res.render('retarget', { title: 'Retargeted Design Evaluation', type: 1 });
 	}else{
 		db.collection('experimentType').find({'hit_id':req.query['hitId']}, function(err, result) {
-	        if (result) {
-						console.log(req.query['hitId']+", " + result[0]['type']);
-						res.render('retarget', { title: 'Retargeted Design Evaluation', type: result[0]['type'] });
-	        }
+				if (err) {
+						return console.log(new Date(), 'insert error', err);
+				}
+        if (result) {
+					console.log(result);
+					console.log(req.query['hitId']+", " + result[0]['type']);
+					res.render('retarget', { title: 'Retargeted Design Evaluation', type: result[0]['type'] });
+        }
 	    });
 
 	}
