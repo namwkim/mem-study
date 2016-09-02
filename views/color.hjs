@@ -334,7 +334,7 @@
                             disabled="true" style="display:none;">Submit</button>
                           <div id="progressBar" class="ui tiny indicating progress">
                             <div class="bar"></div>
-                            <div class="label"></div>
+                            <div class="label" style="color:white;"></div>
                           </div>
                           <!-- <input  type="button" name="doneButton" value="Done" onclick="checkIfDone()"> -->
                           <!-- NOTE: turns into Done when all designs rated; otherwise, reports progress -->
