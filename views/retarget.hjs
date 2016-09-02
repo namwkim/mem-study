@@ -473,17 +473,23 @@
         // choose random indices and swap in the validation files
         var minval = Math.floor(nfiles / 4); // don't show validation images earlier than a quarter through the image list
         var ci = range(minval, nfiles);
-        var curperm = randperm(nfiles);
+        var curperm = randperm(ci.length);
         var curint;
         for (var i = 0; i < validationFiles.length; i++) {
-            //curint = getRandomInt(0, nfiles) // random integer between min (included) and max (excluded);
-            curint = curperm[i];
+            curint = ci[curperm[i]];
             fileNamesOrder[curint] = validationFiles[i];
         }
 
         loadFiles(fileNamesOrder[0]); // start the task by loading the first file
     }
-
+    // this function generates a list of values from lowEnd (inclusive) to highEnd (exclusive)
+    function range(lowEnd, highEnd) {
+        var list = [];
+        for (var i = lowEnd; i < highEnd; i++) {
+            list.push(i);
+        }
+        return list;
+    }
     // this resents the done button to list the progress (number of designs rated) and current progress (page)
     function resetProgress(dontInc) {
         // document.getElementById("progress").innerText = "Page " + String(current + 1) + " of " + String(nfiles);
