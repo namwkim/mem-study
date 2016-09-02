@@ -105,7 +105,7 @@
             <!-----------------INSTRUCTIONS----------------->
             <!-----------------ORIGINAL IMAGE + REDESIGNS----------------->
 
-            <div class="ui red segment">
+            <div class="ui segment">
                 <a class="ui red ribbon huge label">Give your design opinion</a>
                 <div class="ui stackable three column grid">
                     <div class="row">
@@ -128,7 +128,7 @@
                         </div>
                         <div class="six wide column">
                             <h3 class="ui red dividing header" style="margin:10px 0px 5px 0px;">Original design</h3>
-                            <img id="mainim" class="ui bordered bordered rounded image" src="">
+                            <img id="mainim" class="ui centered bordered rounded image" src="">
                         </div>
                     </div>
                     <div class="row">
@@ -138,7 +138,7 @@
                     </div>
                     <div class="row" style="padding:0px">
                         <div class="column">
-                            <img id="designs1" class="ui centered bordered bordered rounded image" src="">
+                            <img id="designs1" class="ui centered bordered rounded image" src="">
                             <div class="ui form" style="margin:5px 0px 0px 25px;">
                                 <div class="inline fields">
                                     <label for="my_radio_button_id1">Very poor</label>
@@ -471,7 +471,8 @@
         }
 
         // choose random indices and swap in the validation files
-
+        var minval = Math.floor(nfiles / 4); // don't show validation images earlier than a quarter through the image list
+        var ci = range(minval, nfiles);
         var curperm = randperm(nfiles);
         var curint;
         for (var i = 0; i < validationFiles.length; i++) {
@@ -658,10 +659,11 @@
             workerId: gup("workerId"),
             action: 'submit',
             data: {
-                experiment: experiment,
-                scores_final: scores_all,
-                file_names_seen: fineNamesSeen,
-                thumbnail_order_seen: thumbnail_order
+              study: 'retarget',
+              experiment: experiment,
+              scores_final: scores_all,
+              file_names_seen: fineNamesSeen,
+              thumbnail_order_seen: thumbnail_order
             }
         }));
 
@@ -719,7 +721,11 @@
           hitId: gup("hitId"),
           assignmentId: gup("assignmentId"),
           workerId: gup("workerId"),
-          action: 'start'
+          action: 'start',
+          data:{
+            study: 'retarget',
+            experiment: experiment
+          }
       }));
     }
     $(document).ready(function() {
