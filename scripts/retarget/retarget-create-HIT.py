@@ -93,8 +93,8 @@ def create_hits(keyfile, blockfile):
 	# open db connection
 	client 	= pymongo.MongoClient('localhost', 27017)
 	db 		= client.retargetstudy
-	experimentType	= db.experimentType
-	experimentType.delete_many({})
+	retargetType	= db.retargetType
+	retargetType.delete_many({})
 	#Create HITs
 	# hitIDs = []
 	experiment = 1
@@ -104,7 +104,7 @@ def create_hits(keyfile, blockfile):
 		print("HIT ID: " + create_hit_rs[0].HITId)
 		# save HIT IDs
 		# hitIDs.append();
-		experimentType.insert_one({"hit_id": create_hit_rs[0].HITId, "type": experiment })
+		retargetType.insert_one({"hit_id": create_hit_rs[0].HITId, "type": experiment })
 		experiment+=1
 
 

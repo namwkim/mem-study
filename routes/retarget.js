@@ -12,7 +12,7 @@ router.get('/', function(req, res) {
 	if (!req.query['hitId'] || req.query['hitId']=="TEST"){
 		res.render('retarget', { title: 'Retargeted Design Evaluation', type: 1 });
 	}else{
-		db.collection('experimentType').find({'hit_id':req.query['hitId']}).toArray(function(err, result){
+		db.collection('retargetType').find({'hit_id':req.query['hitId']}).toArray(function(err, result){
 				if (err) {
 						return console.log(new Date(), 'insert error', err);
 				}
@@ -32,7 +32,7 @@ router.get('/color', function(req, res) {
 	if (!req.query['hitId'] || req.query['hitId']=="TEST"){
 		res.render('color', { title: 'Color Theme Evaluation', type: 1 });
 	}else{
-		db.collection('experimentType').find({'hit_id':req.query['hitId']}).toArray(function(err, result){
+		db.collection('colorType').find({'hit_id':req.query['hitId']}).toArray(function(err, result){
 				if (err) {
 						return console.log(new Date(), 'insert error', err);
 				}
