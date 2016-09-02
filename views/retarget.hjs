@@ -668,6 +668,7 @@
         //alert(document.getElementById('scores_final').value)
         //alert(document.getElementById('file_names_seen').value)
         //alert(document.getElementById('thumbnail_order_seen').value)
+        return true;
 
     }
 
