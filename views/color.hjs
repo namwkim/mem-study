@@ -714,16 +714,16 @@
     }
 
     // parse the assignmentId assigned by Mturk
-    function gup(name) {
-        var regexS = "[\\?&]" + name + "=([^&#]*)";
-        var regex = new RegExp(regexS);
-        var tmpURL = window.location.href;
-        var results = regex.exec(tmpURL);
-        if (results == null)
-            return "";
-        else
-            return results[1];
-    }
+    // function gup(name) {
+    //     var regexS = "[\\?&]" + name + "=([^&#]*)";
+    //     var regex = new RegExp(regexS);
+    //     var tmpURL = window.location.href;
+    //     var results = regex.exec(tmpURL);
+    //     if (results == null)
+    //         return "";
+    //     else
+    //         return results[1];
+    // }
 
     // -----------------------------END FUNCTION DECLARATIONS-----------------------------
 
