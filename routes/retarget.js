@@ -26,7 +26,31 @@ router.get('/', function(req, res) {
 	}
 
 });
+router.get('/color', function(req, res) {
+	var db 		= req.retargetdb;
+	console.log(req.query);
+	if (!req.query['hitId'] || req.query['hitId']=="TEST"){
+		res.render('color', { title: 'Color Theme Evaluation', type: 1 });
+	}else{
+		db.collection('experimentType').find({'hit_id':req.query['hitId']}).toArray(function(err, result){
+				if (err) {
+						return console.log(new Date(), 'insert error', err);
+				}
+        if (result) {
+					console.log(result);
+					console.log(req.query['hitId']+", " + result[0]['type']);
+					res.render('color', { title: 'Color Theme Evaluation', type: result[0]['type'] });
+        }
+	    });
 
+	}
+
+});
+router.get('/thumbnail', function(req, res) {
+	var db 		= req.retargetdb;
+	console.log(req.query);
+	res.render('thumbnail', { title: 'Thumbnail Evaluation', type: _.sample([0, 8]) });
+});
 router.post('/log', function(req, res){
 	var db 		= req.retargetdb;
 	var newLog	= {};
