@@ -352,12 +352,12 @@
 
                 </div>
                 <!-----------------END MAIN HTML CONTENT----------------->
-
+              </div>
         </form>
 
         <!-----------------REQUIRED IRB TEXT/DISCLAIMER----------------->
 
-      </div>
+
       <div class="ui message" style="margin-bottom:10px;">
         <div class="header">
           Informed Consent.

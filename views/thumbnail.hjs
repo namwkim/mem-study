@@ -91,6 +91,13 @@
               </div>
             </div>
           </form>
+          <div class="ui message" style="margin-bottom:10px;">
+            <div class="header">
+              Informed Consent.
+            </div>
+            <p>By completing this HIT, you are participating in a study being performed by computer scientists in the MIT Computer Science and Artificial Intelligence Lab. If you have questions about this resarch, please contact namwkim@seas.harvard.edu. Your participation in this
+            research is voluntary. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.</p>
+          </div>
       </div>
     </body>
 
