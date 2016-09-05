@@ -34,7 +34,7 @@
 <body onload="getUrlObj();">
     <!-- This is the first function that get's executed -->
     <div class="ui container">
-        <form id="mturk_form" name="mturk_form" onsubmit="return getChoices()">
+        <form id="mturk_form" name="mturk_form">
             <!-- all elements that are hidden inputs under the form will get submitted during the 'onsubmit' action, but first the onsubmit function will be executed;
                this is a good time to store all the desired values in the input variables -->
             <!-- <input type="hidden" id="assignmentId" name="assignmentId" value=""> -->
@@ -618,8 +618,12 @@
             return unescape(encoded.replace(/\+/g,  " "));
         }
 
-        function getChoices()
+        function getChoices(e)
         {
+            console.log("getChoices")
+            // this code prevents form from actually being submitted
+            e.preventDefault();
+            e.returnValue = false;
             var k = 0;
             for (var i = 0; i<imagesX; i++) {
                 for(var j = 0; j < imagesY; j++) {
@@ -635,7 +639,17 @@
             document.getElementById('seqOfTimestamps').value = 'seqOfTimestamps:'+seqOfTimestamps.join();
 
             //save data into database too
+            _this = $(this);
             var xmlhttp = new XMLHttpRequest(); // new HttpRequest instance
+            xmlhttp.onreadystatechange = function() {
+                if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+                  _this.off('submit');
+                  // actually submit the form
+                  console.log('submitting')
+                  _this.submit();
+
+                }
+            }
             xmlhttp.open("POST", "/retarget/log");
             xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
             xmlhttp.send(JSON.stringify({
@@ -652,7 +666,7 @@
                     timestamp_sequence: seqOfTimestamps
                 }
             }));
-            return true;
+            // return true;
 
         }
 
@@ -696,6 +710,7 @@
         $(document).ready(function() {
           turkify("#mturk_form");
           console.log("action to : " + $("#mturk_form").attr("action"));
+          $("#mturk_form").submit(getChoices);
         });
         //else {
         //  var form = document.getElementById('mturk_form');
