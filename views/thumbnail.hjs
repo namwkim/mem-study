@@ -53,7 +53,7 @@
               <div class="ui stackable three column grid">
                 <div class="row">
                     <div class="sixteen wide column">
-                      <h3 class="ui red dividing header" style="margin:10px 0px 5px 0px;">Instruction</h3>
+                      <h3 class="ui red dividing header" style="margin:10px 0px 5px 0px;">Instructions</h3>
                       <div class="ui ordered list" style="margin-top:5px;">
                           <div class="item">Please wait until all images finish loading.</div>
                           <div class="item">Scroll to find the graphic that matches the caption below. The thumbnails summarize each graphic.</div>

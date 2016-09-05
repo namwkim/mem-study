@@ -100,11 +100,17 @@
                 <div class="ui grid">
                     <div class="row">
                         <div class="sixteen wide column">
-                            <h3 class="ui red dividing header" style="margin:10px 0px 5px 0px;">Instruction</h3>
+                            <h3 class="ui red dividing header" style="margin:10px 0px 5px 0px;">Instructions</h3>
                             <!-- <div class="ui header">Instruction</div> -->
-                            <p style="color:#DCDDDE;">Please rate each of the color themes below, based on how well they represent the color theme of the image. The order of the colors in a palette matters. For instance, the first color should be the most representative of the image. A bad color palette
-                            that does not represent the image well should receive a score of 1. When you are done rating all six variants, click the Done button, which will appear at the bottom of the page. The Submit button will appear when you have
-                            completed all the pages.</p>
+                            <span style="color:#DCDDDE;">Your job is to <strong>rate each of the color themes</strong> below, based on how well they represent the color theme of the image.
+                            <br><br>
+                            <strong style="color:#DCDDDE;">How to rate:</strong>
+                            <div class="ui bulleted list" style="color:#DCDDDE; margin-top:5px;">
+                                <div class="item">If a color theme represents the colors found in the image well, it should receive a high score.</div>
+                                <div class="item">Bad color themes that do not represent the image well should receive a score of 1.</div>
+                                <div class="item">The ordering of the colors matters: the first color should be most representative of the image.</div>
+                            </div>
+                            <span style="color:#DCDDDE;">When you are done rating all six variants, click the <strong>Done button</strong> which will appear at the bottom of the page. The <strong>Submit button</strong> will appear when you have completed all the pages.
                         </div>
                     </div>
                     <div class="row">
