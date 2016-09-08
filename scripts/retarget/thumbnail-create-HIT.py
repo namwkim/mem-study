@@ -12,7 +12,7 @@ NUMBER_OF_HITS = 1  # Number of different HITs posted for this task
 # HIT_SIZE = 3 #  NUMBER OF HITS x HIT_SIZE ~ IMAGE SIZE
 NUMBER_OF_ASSIGNMENTS = 10  # Number of tasks that DIFFERENT workers will be able to take for each HIT
 LIFETIME = 60 * 60 * 24 * 7  # How long that the task will stay visible if not taken by a worker (in seconds)
-REWARD = 0.1  # Base payment value for completing the task (in dollars)
+REWARD = 0.2  # Base payment value for completing the task (in dollars)
 DURATION = 60*45  # How long the worker will be able to work on a single task (in seconds)
 APPROVAL_DELAY = 60*60*24*7  # How long after the task is completed will the worker be automatically paid if not manually approved (in seconds)
 
