@@ -663,7 +663,8 @@
                     experiment: {{ type }},
                     image_selections: imageSelections,
                     image_selection_sequence: seqOfImageSelections,
-                    timestamp_sequence: seqOfTimestamps
+                    timestamp_sequence: seqOfTimestamps,
+                    seg_of_all_images: seqOfAllImages
                 }
             }));
             // return true;
