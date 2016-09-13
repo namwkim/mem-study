@@ -85,7 +85,7 @@
  (4) thumbnail_order_seen: the order of redesigns/thumbnails shown per page
  -->
 
-<body onload="loadFilenames();">
+<body>
     <!-- DATA TO BE SUBMITTED AND ACTION TO BE CARRIED OUT ON SUBMIT -->
     <div class="ui container">
         <form id="mturk_form" name="mturk_form">
@@ -750,9 +750,12 @@
               experiment: experiment
             }
         }));
-        turkify("#mturk_form");
-        console.log("action to : " + $("#mturk_form").attr("action"));
       }
+      turkify("#mturk_form");
+      console.log("action to : " + $("#mturk_form").attr("action"));
+      console.log('experiment condition:', experiment);
+      console.log('imagetypes:', imagetypes);
+      loadFilenames();
     });
     //else {
     //  var form = document.getElementById('mturk_form');
