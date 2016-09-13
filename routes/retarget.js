@@ -43,7 +43,7 @@ router.get('/color', function(req, res) {
 					console.log(req.query['hitId']+", " + result[0]['type']);
 					res.render('color', { title: 'Color Theme Evaluation', type: result[0]['type'] });
         }else{
-					res.render('retarget', { title: 'Retargeted Design Evaluation', type: 1 });
+					res.render('color', { title: 'Color Theme Evaluation', type: 1 });
 				}
 	    });
 
