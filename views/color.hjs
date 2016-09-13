@@ -668,9 +668,14 @@
     }
 
     // save the variables at the end of the whole MTurk task; this saves all the information needed form this task
+    var submitted = false;
     function saveVariables(e) {
         e.preventDefault();
         e.returnValue = false;
+        if (submitted){
+          openModalSuccessWindow("Done. Thanks for your participation.")
+          return;
+        }
         document.getElementById('scores_final').value = 'scores_final:' + scores_all.join();
         document.getElementById('file_names_seen').value = 'file_names_seen:' + fineNamesSeen.join();
         document.getElementById('thumbnail_order_seen').value = 'thumbnail_order_seen:' + thumbnail_order.join();
@@ -684,7 +689,13 @@
               _this.off('submit');
               // actually submit the form
               console.log('submitting')
-              _this.submit();
+              submitted = true;
+              console.log(gup("turkSubmitTo"))
+              if (gup("turkSubmitTo")!=""){
+                  _this.submit();
+              }else{
+                openModalSuccessWindow("Done. Thanks for your participation.")
+              }
 
             }
         }
@@ -751,7 +762,10 @@
 
 
       if (gup("condition")!=''){
-        experiment=parseInt(gup("condition"));
+        experiment = parseInt(gup("condition"));
+      }
+      if (gup("nfiles")!=''){
+        nfiles = parseInt(gup("nfiles"));
       }
       if (experiment == 1) {
           imagetypes = ["GT_10", "Nat_10", "Pred_10", "Judd_10", "Kmeans", "Jumbled"];
@@ -781,8 +795,10 @@
       }
       turkify("#mturk_form");
       console.log("action to : " + $("#mturk_form").attr("action"));
+      $("#mturk_form").submit(saveVariables);
       console.log('experiment condition:', experiment);
       console.log('imagetypes:', imagetypes);
+      console.log('nfiles:', nfiles);
       loadFilenames();
     });
     //else {
