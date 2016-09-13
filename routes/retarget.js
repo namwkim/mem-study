@@ -20,7 +20,9 @@ router.get('/', function(req, res) {
 					console.log(result);
 					console.log(req.query['hitId']+", " + result[0]['type']);
 					res.render('retarget', { title: 'Retargeted Design Evaluation', type: result[0]['type'] });
-        }
+        }else{
+					res.render('retarget', { title: 'Retargeted Design Evaluation', type: 1 });
+				}
 	    });
 
 	}
