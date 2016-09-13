@@ -16,7 +16,7 @@ router.get('/', function(req, res) {
 				if (err) {
 						return console.log(new Date(), 'insert error', err);
 				}
-        if (result) {
+        if (result.length>0) {
 					console.log(result);
 					console.log(req.query['hitId']+", " + result[0]['type']);
 					res.render('retarget', { title: 'Retargeted Design Evaluation', type: result[0]['type'] });
