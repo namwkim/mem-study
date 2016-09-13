@@ -650,7 +650,7 @@
         e.returnValue = false;
         if (submitted){
           openModalSuccessWindow("Done. Thanks for your participation.")
-          return;
+          return false;
         }
         document.getElementById('scores_final').value = 'scores_final:' + scores_all.join();
         document.getElementById('file_names_seen').value = 'file_names_seen:' + fineNamesSeen.join();
@@ -661,7 +661,7 @@
         var xmlhttp = new XMLHttpRequest(); // new HttpRequest instance
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == XMLHttpRequest.DONE) {
-              _this.off('submit');
+              // _this.off('submit');
               // actually submit the form
               console.log('submitting');
               submitted=true;
@@ -694,7 +694,7 @@
         //alert(document.getElementById('scores_final').value)
         //alert(document.getElementById('file_names_seen').value)
         //alert(document.getElementById('thumbnail_order_seen').value)
-        return true;
+        return false;
 
     }
 
