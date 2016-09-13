@@ -382,11 +382,7 @@
     var thumbnail_ims = ["designs1", "designs2", "designs3", "designs4", "designs5", "designs6"];
     var experiment = {{type}};
     var imagetypes;
-    if (experiment == 1) {
-        imagetypes = ["GT_10", "Nat_10", "Pred_10", "Judd_10", "Kmeans", "Jumbled"];
-    } else {
-        imagetypes = ["GT_25", "Nat_25", "Pred_25", "Judd_25", "Kmeans", "Jumbled"];
-    }
+
 
 
     var imagetypesOrder = []; // order in which imagetypes will be shown in boxes on page
@@ -732,30 +728,41 @@
     // and check if the worker is PREVIEWING the HIT or if they've ACCEPTED the HIT
     // document.getElementById('assignmentId').value = gup('assignmentId');
 
-    if (gup('assignmentId') == "ASSIGNMENT_ID_NOT_AVAILABLE") {
-        // If we're previewing, disable the button
-        document.getElementById("doneButton").disabled = true;
-        //document.getElementById('doneButton').value = "You must ACCEPT the HIT before you can submit the results.";
-        preview = true;
-    } else {
-        var xmlhttp = new XMLHttpRequest(); // new HttpRequest instance
-        xmlhttp.open("POST", "/retarget/log");
-        xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        xmlhttp.send(JSON.stringify({
-            timestamp: $.now(),
-            hitId: gup("hitId"),
-            assignmentId: gup("assignmentId"),
-            workerId: gup("workerId"),
-            action: 'start',
-            data: {
-                study: 'color',
-                experiment: experiment
-            }
-        }));
-    }
+
     $(document).ready(function() {
-        turkify("#mturk_form");
-        console.log("action to : " + $("#mturk_form").attr("action"));
+      if (gup('assignmentId') == "ASSIGNMENT_ID_NOT_AVAILABLE") {
+          // If we're previewing, disable the button
+          document.getElementById("doneButton").disabled = true;
+          //document.getElementById('doneButton').value = "You must ACCEPT the HIT before you can submit the results.";
+          preview = true;
+      } else {
+          var xmlhttp = new XMLHttpRequest(); // new HttpRequest instance
+          xmlhttp.open("POST", "/retarget/log");
+          xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+          xmlhttp.send(JSON.stringify({
+              timestamp: $.now(),
+              hitId: gup("hitId"),
+              assignmentId: gup("assignmentId"),
+              workerId: gup("workerId"),
+              action: 'start',
+              data: {
+                  study: 'color',
+                  experiment: experiment
+              }
+          }));
+      }
+
+      if (gup("condition")!=''){
+        experiment=parseInt(gup("condition"));
+      }
+      if (experiment == 1) {
+          imagetypes = ["GT_10", "Nat_10", "Pred_10", "Judd_10", "Kmeans", "Jumbled"];
+      } else {
+          imagetypes = ["GT_25", "Nat_25", "Pred_25", "Judd_25", "Kmeans", "Jumbled"];
+      }
+      turkify("#mturk_form");
+      console.log("action to : " + $("#mturk_form").attr("action"));
+
     });
     //else {
     //  var form = document.getElementById('mturk_form');
