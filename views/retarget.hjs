@@ -88,7 +88,7 @@
 <body onload="loadFilenames();">
     <!-- DATA TO BE SUBMITTED AND ACTION TO BE CARRIED OUT ON SUBMIT -->
     <div class="ui container">
-        <form id="mturk_form" name="mturk_form" onsubmit="return saveVariables()">
+        <form id="mturk_form" name="mturk_form">
             <!-- replace the sandbox with the real turk task -->
 
             <!-- all the variables to be saved and submitted with HIT -->
@@ -111,7 +111,7 @@
                     <div class="row">
                         <div class="ten wide column">
 
-                            <h3 class="ui red dividing header" style="margin:10px 0px 5px 0px;">Instruction</h3>
+                            <h3 class="ui red dividing header" style="margin:10px 0px 5px 0px;">Instructions</h3>
                             <!-- <div class="ui header">Instruction</div> -->
                             Your job is to <strong>rate different designs</strong>, made for each poster (right) that needs to be redesigned to a new size.
                             <br><br>
@@ -644,13 +644,25 @@
     }
 
     // save the variables at the end of the whole MTurk task; this saves all the information needed form this task
-    function saveVariables() {
+    function saveVariables(e) {
+        e.preventDefault();
+        e.returnValue = false;
         document.getElementById('scores_final').value = 'scores_final:' + scores_all.join();
         document.getElementById('file_names_seen').value = 'file_names_seen:' + fineNamesSeen.join();
         document.getElementById('thumbnail_order_seen').value = 'thumbnail_order_seen:' + thumbnail_order.join();
 
         //save data into database too
+        _this = $(this);
         var xmlhttp = new XMLHttpRequest(); // new HttpRequest instance
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == XMLHttpRequest.DONE) {
+              _this.off('submit');
+              // actually submit the form
+              console.log('submitting')
+              _this.submit();
+
+            }
+        }
         xmlhttp.open("POST", "/retarget/log");
         xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
         xmlhttp.send(JSON.stringify({

@@ -5,20 +5,20 @@ import os, pymongo, sys, random, time, csv, math
 
 ######  AMT CONFIGURATION PARAMETRS  ######
 
-SANDBOX = True# Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
+SANDBOX = False# Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 HIT_URL = "https://study.namwkim.org/retarget/thumbnail"  # Provide the URL that you want workers to sent sent to complete you task
 ##TEMPORARY COMMENT: batch 10 has 40 HITS
 NUMBER_OF_HITS = 1  # Number of different HITs posted for this task
 # HIT_SIZE = 3 #  NUMBER OF HITS x HIT_SIZE ~ IMAGE SIZE
-NUMBER_OF_ASSIGNMENTS = 9  # Number of tasks that DIFFERENT workers will be able to take for each HIT
+NUMBER_OF_ASSIGNMENTS = 10  # Number of tasks that DIFFERENT workers will be able to take for each HIT
 LIFETIME = 60 * 60 * 24 * 7  # How long that the task will stay visible if not taken by a worker (in seconds)
-REWARD = 0.1  # Base payment value for completing the task (in dollars)
+REWARD = 0.2  # Base payment value for completing the task (in dollars)
 DURATION = 60*45  # How long the worker will be able to work on a single task (in seconds)
 APPROVAL_DELAY = 60*60*24*7  # How long after the task is completed will the worker be automatically paid if not manually approved (in seconds)
 
 
 # HIT title (as it will appear on the public listing)
-TITLE = 'Graphic Design Evaluation'
+TITLE = 'Image Search Task with Caption Provided.'
 # Description of the HIT that workers will see when deciding to accept it or not
 DESCRIPTION = ("This HIT should take about 1 minutes to complete. In this HIT, you will be presented with an image caption and a series of candidate images. You will be asked to find an image that matches the given caption.")
 # Search terms for the HIT posting
