@@ -118,12 +118,17 @@ if __name__ == "__main__":
 						'clicks': clicks,
 						'survey': survey[0]
 					})
+    totalCount = 0
+    filteredCount = 0
 	for image, imageData in images.iteritems():
 		# 3) outlier removal
 		# calc stats
 		clickCounts = []
 		for log in imageData['logs']:
 			clickCounts.append(len(log['clicks']))
+
+        totalCount += len(clickCounts)
+
 		if not clickCounts:
 			print "ERROR: clickCounts is empty"
 			continue
@@ -139,7 +144,7 @@ if __name__ == "__main__":
 				print log['id'], " is removed as an outlier! (clickCount: ", val, ")"
 			else:
 				filtered.append(log)
-
+        filteredCount += len(filtered)
 		imageData['logs'] = filtered
 
 		print image , "' asmt size: ", len(imageData['logs'])
@@ -148,6 +153,9 @@ if __name__ == "__main__":
 		toCol.insert(imageData)
 
 	print len(images), " images saved."
+    print 'filteredCount', filteredCount
+    print 'totalCount', totalCount
+    print (100.0-filteredCount/totalCount*100.0), ' percent filtered'
 
 	# #collect survey data
 	# filtered 	= logs.find({'action':'survey'})
