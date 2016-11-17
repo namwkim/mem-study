@@ -514,7 +514,7 @@
                             <br> The HIT should take about 5 minutes to complete.
                         </p>
                         <br>
-                        <img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/bubble-db/study_overview.png">
+                        <img class="img-responsive center-block thumbnail" style="max-width:70%" src="/images/bubble-db-pilot/study_overview.png">
                         <br>
 
                         <div id="recaptcha" class="g-recaptcha" align="center" data-sitekey="6LcvMf8SAAAAAOAE34JZH6i7v_8lOrSD38mPkuGG"></div>
@@ -670,7 +670,7 @@
                 <h2><span id="tutorial-msg" class="label label-danger">Tutorial</span> Click and Describe the Image.</h2>
                 <div class="row">
                     <div class="col-md-8">
-                        <canvas id="canvas" width="500" height="500"></canvas>
+                        <canvas id="canvas" width="650" height="650"></canvas>
                     </div>
                     <div class="col-md-4">
                         <form id="describe-form" role="form">
