@@ -5,7 +5,7 @@ import sys
 
 ######  CONFIGURATION PARAMETRS  ######
 
-SANDBOX = False  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
+SANDBOX = False # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 
 # Your Amazon Web Services Access Key (private)
 AWS_ACCESS_KEY = '' # <-- TODO: Enter your access key here

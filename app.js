@@ -14,6 +14,7 @@ var gdesignRouter    = require('./routes/gdesign');
 var saliencyRouter    = require('./routes/saliency');
 var recallRouter    = require('./routes/recall');
 var codingRouter    = require('./routes/coding');
+var retargetRouter    = require('./routes/retarget');
 var doiRouter    = require('./routes/socialdoi/index');
 
 //var users = require('./routes/users');
@@ -24,6 +25,7 @@ var app = express();
 var mongo = require('mongoskin');
 var db = mongo.db("mongodb://localhost:27017/mem_study", {native_parser: true});
 var bubbledb = mongo.db("mongodb://localhost:27017/bubblestudy", {native_parser: true});
+var retargetdb = mongo.db("mongodb://localhost:27017/retargetstudy", {native_parser: true});
 var osiedb = mongo.db("mongodb://localhost:27017/osiestudy", {native_parser: true});
 var salicondb = mongo.db("mongodb://localhost:27017/saliconstudy", {native_parser: true});
 var websalydb = mongo.db("mongodb://localhost:27017/websalystudy", {native_parser: true});
@@ -58,7 +60,7 @@ app.use(function(req, res, next){
     req.websalydb = websalydb;
     req.recalldb = recalldb;
     req.saliencydb = saliencydb;
-
+    req.retargetdb = retargetdb;
     req.socialdoi = socialdoidb
     req.toObjectID = mongo.helper.toObjectID;
     next();
@@ -73,6 +75,7 @@ app.use('/salicon', saliconRouter);
 app.use('/recall', recallRouter);
 app.use('/gdesign', gdesignRouter);
 app.use('/saliency', saliencyRouter);
+app.use('/retarget', retargetRouter);
 app.use('/socialdoi', doiRouter.budgetRouter);
 //app.use('/users', users);
 

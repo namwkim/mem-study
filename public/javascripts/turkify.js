@@ -29,5 +29,5 @@ function turkify(form_selector){
 		if((submit_url=gup("turkSubmitTo"))!="") {
 	  		$(form_selector).attr('action', submit_url + '/mturk/externalSubmit');
 		}
-	}	
+	}
 }

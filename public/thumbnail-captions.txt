@@ -1,0 +1,13 @@
+economist_daily_chart_124.png: This image of Africa indicates how many use mobile phones to pay bills or send or receive money.  The countries of Algeria, Sudan, Kenya and Gabon seem to not do this.
+economist_daily_chart_521.png: The image describes the "space junk" that is located in our atmosphere.  The "space junk" includes fragmentation debris, spacecraft debris, mission-related debris as well as rocket bodies.
+vis564.png: This graph shows that workers don't get what they prefer.  There is a disconnect between leadership and workers.
+vis652.png: This chart shows big pharma charges unaffordable prices for medicines in India. The US charges $5,030 a month for a cancer medication, when the generic price is only $122 a month.
+vis697.png: This image is describing motorcycle accidents in the countries/cities of Europe with different statistics given.
+visMost143.png: The graph compares a chart of what college graduates loan and the percent of unemployment for the specified degree program.
+visMost187.png: This chart shows the average percent of infected individuals who die from various diseases, the leading percentage being 85% with untreated AIDS.
+visMost217.png: The following image describes the number of people using tweeter by sex. There are four categories including: followers, following, most days on twitter, and number of tweets.
+visMost271.png: The map shows the worlds top selling cars by country.  Top car brands include ford, Volkswagen, Toyota, Honda, Chevy, and others.
+visMost376.png: This graph shows the amount of revenue generated from the Star Wars movie throughout the galaxy.
+visMost77.png: This chart shows how to focus in the age of distraction. It lists different tips on how to focus better.
+visMost83.png: The graph describes which birth dates are most common. The darker the shading the more common the birth date is.
+whoB22_1.png: This is a chart describing deaths in women aged 15-44 years attributable to six leading risk factors. 

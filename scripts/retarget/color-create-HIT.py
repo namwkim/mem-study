@@ -1,28 +1,28 @@
 from boto.mturk.connection import MTurkConnection, MTurkRequestError
 from boto.mturk.question import ExternalQuestion
 from boto.mturk.qualification import LocaleRequirement, PercentAssignmentsApprovedRequirement, Qualifications, Requirement
-import os, pymongo, sys, random, time, csv
+import os, pymongo, sys, random, time, csv, math
 
 ######  AMT CONFIGURATION PARAMETRS  ######
 
-SANDBOX = True  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
-HIT_URL = "https://study.namwkim.org/gdesign"  # Provide the URL that you want workers to sent sent to complete you task
-NUMBER_OF_HITS = 20  # Number of different HITs posted for this task
-HIT_SIZE = 18 #  NUMBER OF HITS x HIT_SIZE ~ IMAGE SIZE
-NUMBER_OF_ASSIGNMENTS = 9  # Number of tasks that DIFFERENT workers will be able to take for each HIT
+SANDBOX = False# Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
+HIT_URL = "https://study.namwkim.org/retarget/color"  # Provide the URL that you want workers to sent sent to complete you task
+##TEMPORARY COMMENT: batch 10 has 40 HITS
+NUMBER_OF_HITS = 2  # Number of different HITs posted for this task
+# HIT_SIZE = 3 #  NUMBER OF HITS x HIT_SIZE ~ IMAGE SIZE
+NUMBER_OF_ASSIGNMENTS = 10  # Number of tasks that DIFFERENT workers will be able to take for each HIT
 LIFETIME = 60 * 60 * 24 * 7  # How long that the task will stay visible if not taken by a worker (in seconds)
-REWARD = 0.3  # Base payment value for completing the task (in dollars)
+REWARD = 0.25  # Base payment value for completing the task (in dollars)
 DURATION = 60*45  # How long the worker will be able to work on a single task (in seconds)
 APPROVAL_DELAY = 60*60*24*7  # How long after the task is completed will the worker be automatically paid if not manually approved (in seconds)
 
 
 # HIT title (as it will appear on the public listing)
-TITLE = 'Free-Viewing Images'
+TITLE = 'Color Theme Evaluation'
 # Description of the HIT that workers will see when deciding to accept it or not
-DESCRIPTION = ("This HIT should take about 3 minutes to complete. In this HIT, you will be presented with a series of images containing graphic designs. "+
-				"For each image, you will be asked to explore the image for 10 seconds. The image is heavily blurred so that you can only see a rough outline of the image. However, you can click to reveal small, circular areas of the image ('bubbles') to inspect the full details.")
+DESCRIPTION = ("This HIT should take about 3 minutes to complete. In this HIT, you will be presented with a series of poster images. For each poster, you will be asked to rate six color themes.")
 # Search terms for the HIT posting
-KEYWORDS = ['Easy', 'Graphic Design', 'Image', 'Click', 'Reveal']
+KEYWORDS = ['Easy', 'Color', 'Theme', 'Rating']
 
 
 # Your Amazon Web Services Access Key (private)
@@ -31,9 +31,6 @@ AWS_ACCESS_KEY = ''
 AWS_SECRET_KEY = ''
 # Your Amazon Web Services IAM User Name (private)
 
-######  BUBBLE CONFIGURATION PARAMETRS  ######
-BASE_URI = "/images/graphic/batch-3/"
-BASE_URI_BLUR = "/images/graphic/batch-3-blurred/"
 #######################################
 
 def create_blocklist(conn, qualtype, blockfile):
@@ -68,26 +65,9 @@ def create_hits(keyfile, blockfile):
 		mturk_url = 'mechanicalturk.amazonaws.com'
 		preview_url = 'https://mturk.com/mturk/preview?groupId='
 
-	# collect target image filenames
-	targets = []
-	for root, dirs, files in os.walk("../../public"+BASE_URI):
-		for file in files:
-			if file.startswith('.'):
-				continue
-			targets.append(file)
 
-	targets_blurred = []
-	for root, dirs, files in os.walk("../../public"+BASE_URI_BLUR):
-		for file in files:
-			if file.startswith('.'):
-				continue
-			targets_blurred.append(file)
-
-	# exit if the number of images do not match
-	if len(targets)!=len(targets_blurred):
-		print "target!=targets_blurred";
-		sys.exit(0)
-
+	# Calculate number of hits
+	print "NUMBER OF HITS:", NUMBER_OF_HITS
 	# Create External Question
 	q = ExternalQuestion(external_url=HIT_URL, frame_height=800)
 	conn = MTurkConnection(aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, host=mturk_url)
@@ -110,50 +90,25 @@ def create_hits(keyfile, blockfile):
 	quals.add(LocaleRequirement(comparator="EqualTo", locale="US"))
 	# TODO
 
+	# open db connection
+	client 	= pymongo.MongoClient('localhost', 27017)
+	db 		= client.retargetstudy
+	colorType	= db.colorType
+	colorType.delete_many({})
 	#Create HITs
-	hitIDs = []
+	# hitIDs = []
+	experiment = 1
 	for i in range(0, NUMBER_OF_HITS):
 		create_hit_rs = conn.create_hit(question=q, lifetime=LIFETIME, max_assignments=NUMBER_OF_ASSIGNMENTS, title=TITLE, keywords=KEYWORDS, reward=REWARD, duration=DURATION, approval_delay=APPROVAL_DELAY, description=DESCRIPTION, qualifications=quals)
 		print(preview_url + create_hit_rs[0].HITTypeId)
 		print("HIT ID: " + create_hit_rs[0].HITId)
-
 		# save HIT IDs
-		hitIDs.append(create_hit_rs[0].HITId);
+		# hitIDs.append();
+		colorType.insert_one({"hit_id": create_hit_rs[0].HITId, "type": experiment })
+		experiment+=1
 
-	# open db connection
-	client 	= pymongo.MongoClient('localhost', 27017)
-	db 		= client.gdesignstudy
-	images	= db.images
 
-	#remove existing documents
-	images.delete_many({})
 
-	# calculate the number of images for each HIT
-	# hitSize = len(targets)/len(hitIDs);
-
-	# shuffle
-
-	z = zip(targets, targets_blurred)
-	random.shuffle(z)
-	targets, targets_blurred = zip(*z)
-
-	hitIdx 	= 0
-	hitID 	= hitIDs[hitIdx]
-	count 	= 0
-	print "Image Size:", len(targets)
-	print("HIT ID: " + hitID)
-	for i in range(len(targets)):
-		count +=1
-		images.insert_one({"hit_id": hitID, "group": hitIdx, "img_url": BASE_URI+targets[i], "blur_img_url": BASE_URI_BLUR+targets_blurred[i]}) # insert an image into the db with HIT ID assigned
-		print (" - Image #"+str(i)+": "+(BASE_URI+targets[i]))
-		if count>=HIT_SIZE:
-			print("HIT SIZE: " + str(count));
-			count   = 0
-			hitIdx += 1
-			if hitIdx>=len(hitIDs):
-				break
-			hitID 	= hitIDs[hitIdx]
-			print("HIT ID: " + hitID)
 
 if __name__ == "__main__":
 	blockfile = None
