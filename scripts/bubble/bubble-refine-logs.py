@@ -92,6 +92,8 @@ if __name__ == "__main__":
 				if descMap.has_key(desc)==True:
 					print "duplicate description found"
 					continue
+                else:
+                    descMap[desc]=True
 
 				if images.has_key(imageName)==False:
 					images[imageName] = { 'image': imageName, 'logs': [] }

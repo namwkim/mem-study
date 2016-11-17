@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
 	hits = {}
    	totalMins    = 0.0
-    	totalWorkers = 0
+	totalWorkers = 0
 	for hitID, hitData in tempHits.iteritems():  # loop over hit
 		sortedLogs = sorted(hitData, key=lambda x: x['assignment_id'])
 		assignments = {}
