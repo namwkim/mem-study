@@ -108,7 +108,7 @@
                 targets: [],
                 blurred: []
             };
-            practiceImages.targets.push(base_url + "7l6lo8.jpg");
+            practiceImages.targets.push(base_url + "bubble-practice-1.png");
             //practiceImages.targets.push(base_url+"bubble-practice-2.jpg");
 
             practiceImages.blurred.push(base_url + "bubble-practice-1-blurred.png");
