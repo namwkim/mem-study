@@ -275,6 +275,7 @@
             // if (ratio > 1.0) {TODO: revert this for actual study
             //     ratio = 1.0;
             // }
+            console.log('ratio:' + ratio);
             return {
                 width: imgWidth * ratio,
                 height: imgHeight * ratio
