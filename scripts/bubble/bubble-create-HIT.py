@@ -10,7 +10,7 @@ HIT_URL = "https://study.namwkim.org/bubble"  # Provide the URL that you want wo
 ##TEMPORARY COMMENT: batch 10 has 40 HITS
 NUMBER_OF_HITS = 4  # Number of different HITs posted for this task
 HIT_SIZE = 3 #  NUMBER OF HITS x HIT_SIZE ~ IMAGE SIZE
-NUMBER_OF_ASSIGNMENTS = 6  # Number of tasks that DIFFERENT workers will be able to take for each HIT
+NUMBER_OF_ASSIGNMENTS = 9  # Number of tasks that DIFFERENT workers will be able to take for each HIT
 LIFETIME = 60 * 60 * 24 * 7  # How long that the task will stay visible if not taken by a worker (in seconds)
 REWARD = 0.5  # Base payment value for completing the task (in dollars)
 DURATION = 60*45  # How long the worker will be able to work on a single task (in seconds)
