@@ -8,7 +8,7 @@ if __name__ == "__main__":
     # open remote database
     client 	= pymongo.MongoClient('54.69.103.85', 27017)
     db 		= client[sys.argv[1]]
-    logs = db[sys.argv[2]].find({})
+    logs = db[sys.argv[2]].find({'action':'survey'})
     print logs.count()
 
     workers = dict()
