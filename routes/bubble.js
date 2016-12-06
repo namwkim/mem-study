@@ -158,7 +158,7 @@ router.get('/pagelogs', function(req, res) {
   console.log("pageSize = " + pageSize);
 
   if (dbName == null || dbName == '') {
-    dbName = "refinedLogs24_Dec"
+    dbName = "saliencyRefLogs"
   }
   console.log("dbName = " + dbName);
   // var lastID   = req.query.lastID;
@@ -201,7 +201,7 @@ router.get('/logs', function(req, res) {
     };
   }
   console.log(query);
-  db.collection('saliency32').find(query).sort({
+  db.collection('logs').find(query).sort({
     "_id": 1
   }).limit(pageSize).toArray(function(err, result) {
     if (err) {
