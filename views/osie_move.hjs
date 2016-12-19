@@ -585,7 +585,7 @@
               <br> * You need to have normal or corrected-to-normal vision. You can check your vision status here:
               <a href="http://colorvisiontesting.com/ishihara.htm" target="_blank" > test link </a>
             </p>
-            <img class="img-responsive center-block thumbnail" width="400" src="/images/osie-db-pilot/osie-study-overview-move.png">
+            <img class="img-responsive center-block thumbnail" width="400" src="/images/osie-db-pilot/osie-study-overview.png">
 
             <div id="recaptcha" class="g-recaptcha" align="center" data-sitekey="6LcvMf8SAAAAAOAE34JZH6i7v_8lOrSD38mPkuGG"></div>
             <br>
@@ -707,7 +707,7 @@
               <br>
               <br> We will start with a tutorial. Please make sense of how <span class="view_time">10</span> seconds feel like. Please <strong>click the button</strong> below when you are ready to begin.
             </p>
-            <img class="img-responsive center-block thumbnail" width="400" src="/images/osie-db-pilot/osie-study-overview-move.png">
+            <img class="img-responsive center-block thumbnail" width="400" src="/images/osie-db-pilot/osie-study-overview.png">
             <button id="practice-btn" type="button" class="btn btn-success btn-lg btn-block">
               <span class="glyphicon glyphicon-play"></span> Continue
             </button>
@@ -725,7 +725,7 @@
               <br> Please <strong>click the "Start" button</strong> below when you are ready to begin.
             </p>
             <br>
-            <img class="img-responsive center-block thumbnail" width="400" src="/images/osie-db-pilot/osie-study-overview-move.png">
+            <img class="img-responsive center-block thumbnail" width="400" src="/images/osie-db-pilot/osie-study-overview.png">
             <br>
             <button id="real-btn" type="button" class="btn btn-success btn-lg btn-block">
               <span class="glyphicon glyphicon-play"></span> Start
