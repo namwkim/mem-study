@@ -3,10 +3,10 @@ from itertools import tee, izip
 import numpy as np
 
 def pairwise(iterable):
-    "s -> (s0,s1), (s1,s2), (s2, s3), ..."
-    a, b = tee(iterable)
-    next(b, None)
-    return izip(a, b)
+	"s -> (s0,s1), (s1,s2), (s2, s3), ..."
+	a, b = tee(iterable)
+	next(b, None)
+	return izip(a, b)
 def getKey(log):
 	return log['hit_id']+'/'+log['assignment_id']+'/'+log['worker_id']
 def splitKey(key):
@@ -92,8 +92,8 @@ if __name__ == "__main__":
 				if descMap.has_key(desc)==True:
 					print "duplicate description found"
 					continue
-                else:
-                    descMap[desc]=True
+				else:
+					descMap[desc]=True
 
 				if images.has_key(imageName)==False:
 					images[imageName] = { 'image': imageName, 'logs': [] }
@@ -120,8 +120,8 @@ if __name__ == "__main__":
 						'clicks': clicks,
 						'survey': survey[0]
 					})
-    totalCount = 0
-    filteredCount = 0
+	totalCount = 0
+	filteredCount = 0
 	for image, imageData in images.iteritems():
 		# 3) outlier removal
 		# calc stats
@@ -129,7 +129,7 @@ if __name__ == "__main__":
 		for log in imageData['logs']:
 			clickCounts.append(len(log['clicks']))
 
-        totalCount += len(clickCounts)
+		totalCount += len(clickCounts)
 
 		if not clickCounts:
 			print "ERROR: clickCounts is empty"
@@ -146,7 +146,7 @@ if __name__ == "__main__":
 				print log['id'], " is removed as an outlier! (clickCount: ", val, ")"
 			else:
 				filtered.append(log)
-        filteredCount += len(filtered)
+		filteredCount += len(filtered)
 		imageData['logs'] = filtered
 
 		print image , "' asmt size: ", len(imageData['logs'])
@@ -155,9 +155,9 @@ if __name__ == "__main__":
 		toCol.insert(imageData)
 
 	print len(images), " images saved."
-    print 'filteredCount', filteredCount
-    print 'totalCount', totalCount
-    print (100.0-filteredCount/totalCount*100.0), ' percent filtered'
+	print 'filteredCount', filteredCount
+	print 'totalCount', totalCount
+	print ((totalCount-filteredCount)*1.0/totalCount*100.0), ' percent data points survived'
 
 	# #collect survey data
 	# filtered 	= logs.find({'action':'survey'})

@@ -80,19 +80,20 @@
       console.log(assignmentId);
       console.log(workerId);
       //HACK:
-      // BLUR_RADIUS = parseInt(gup("blur"));
-      // if ([10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80].indexOf(BLUR_RADIUS)==-1){
-      //   bootbox.alert("Blur radius should be one of 15, 25, 35, 45, 55.");
-      //   $("#intro").hide();
-      //   return;
-      // }
-      // view_time_in_sec = parseInt(gup("time"));
-      // VIEW_TIME = view_time_in_sec*1000;
+      BLUR_RADIUS = parseInt(gup("blur"));
+      if ([10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80].indexOf(BLUR_RADIUS)==-1){
+        bootbox.alert("Blur radius should be one of 15, 25, 35, 45, 55.");
+        $("#intro").hide();
+        return;
+      }
+      view_time_in_sec = parseInt(gup("time"));
+      VIEW_TIME = view_time_in_sec*1000;
+      BUBBLE_RADIUS = parseInt(gup("bubble"));
       //update time info
       $(".view_time").text(VIEW_TIME/1000);
       $(".hit_time").text(Math.ceil((VIEW_TIME/1000)*17/60));
 
-      b = gup("blur");
+
       if (assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE") { //preview mode
         $('#intro-start-button').hide(); //do not allow a worker to proceed
         $('#recaptcha').hide();
@@ -301,7 +302,7 @@
       var ratio = Math.min(canvasWidth / imgWidth, canvasHeight / imgHeight);
       return { width: imgWidth*ratio, height: imgHeight*ratio };
     }
-    
+
     function OnClickDrawMask(e) {
       var canvas = $("#canvas");
       var ctx = canvas[0].getContext('2d');
