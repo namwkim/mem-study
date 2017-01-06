@@ -112,6 +112,7 @@ if __name__ == "__main__":
                         'id': hitID+"/"+asmtID,
                         # 'diffs': diffs,
                         'desc': e,
+                        'time': (endTime - startTime).seconds/60.0,
                         'clicks': clicks,
                         'survey': survey[0]
                     })
@@ -119,6 +120,7 @@ if __name__ == "__main__":
 
     assignments = []
     filterRates = []
+    taskTimes = []
     for image, imageData in images.iteritems():
         # 3) outlier removal
         # calc stats
@@ -142,6 +144,7 @@ if __name__ == "__main__":
                 filtered.append(log)
             else:
                 remaining.append(log)
+                taskTimes.append(log['time'])
 
         imageData['logs'] = remaining
         filterRates.append(float(len(filtered))/len(remaining)*100.0)
@@ -153,7 +156,8 @@ if __name__ == "__main__":
     print '========= STATS =================================================='
     print 'DESC-CHAR (MEAN, STD):', "M={0:.2f}".format(np.mean(taskDescs)) +', '+\
         "SD={0:.2f}".format(np.std(taskDescs))
-    print 'AVG.TIME-MIN (MEAN, STD):', "M={0:.2f}".format(np.mean(taskTimes))+', '+\
+    print 'AVG.TIME-MIN (MEAN, MEDIAN, STD) (outlier removed):', "M={0:.2f}".format(np.mean(taskTimes))+', '+\
+        "MD={0:.2f}".format(np.median(taskTimes))+', '+\
         "SD={0:.2f}".format(np.std(taskTimes))
     print 'AVG.FILTERRATE-% (MEAN, STD):', "M={0:.2f}".format(np.mean(filterRates))+', '+\
         "SD={0:.2f}".format(np.std(filterRates))

@@ -177,6 +177,11 @@
         var unchosen = 	"#000000"; //""#606060";//white, faded.
         var green = "#00FF00";
 
+        var type = {{ type }};
+
+        if (gup("hitId")!=''){
+          type = gup("hitId");
+        }
 
         function getUrlObj() {
             var parameters = location.search.substring(1).split("&");
@@ -190,7 +195,7 @@
 
             // if (obj['thumb']) {
             //     thumb = obj['thumb'];
-            fillerdir = maindir + 'thumbnails' + {{ type }} + '/';
+            fillerdir = maindir + 'thumbnails' + type + '/';
             // }
 
             if (obj['numims']) {
@@ -660,7 +665,7 @@
                 action: 'submit',
                 data: {
                     study: 'thumbnail',
-                    experiment: {{ type }},
+                    experiment: type,
                     image_selections: imageSelections,
                     image_selection_sequence: seqOfImageSelections,
                     timestamp_sequence: seqOfTimestamps,
@@ -704,7 +709,7 @@
               action: 'start',
               data:{
                 study: 'thumbnail',
-                experiment: {{ type }}
+                experiment: type
               }
           }));
         }
