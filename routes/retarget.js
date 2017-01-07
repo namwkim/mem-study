@@ -39,7 +39,6 @@ router.get('/color', function(req, res) {
 						return console.log(new Date(), 'insert error', err);
 				}
         if (result.length>0) {
-					console.log(result);
 					console.log(req.query['hitId']+", " + result[0]['type']);
 					res.render('color', { title: 'Color Theme Evaluation', type: result[0]['type'] });
         }else{
