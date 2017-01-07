@@ -685,10 +685,10 @@
 
             if (gup('assignmentId') == "ASSIGNMENT_ID_NOT_AVAILABLE") {
                 // If we're previewing, disable the button and give it a helpful message
-                document.getElementById('doneButton').style.visibility = "hidden";
+                // document.getElementById('doneButton').style.visibility = "hidden";
                 document.getElementById('submitButton').disabled = true;
                 //document.getElementById('submitButton').value = "You must ACCEPT the HIT before you can submit the results.";
-                document.getElementById('doneButton').disabled = true;
+                // document.getElementById('doneButton').disabled = true;
                 //document.getElementById('doneButton').value = "You must ACCEPT the HIT before you can submit the results.";
                 preview = true;
             } else {
