@@ -1,5 +1,6 @@
 var express = require('express');
 var path = require('path');
+var fs = require("fs");
 //var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
@@ -21,19 +22,27 @@ var doiRouter    = require('./routes/socialdoi/index');
 
 var app = express();
 
-// mongodb settings
+// db authentication
+var auth = fs.readFileSync('auth.txt', "utf8").toString().split(',');
+auth[0] = auth[0].trim()
+auth[1] = auth[1].trim()
+
+var f = require('util').format;
+var urlTmpl = 'mongodb://%s:%s@localhost:27017/%s?authSource=admin'
+
+// mongodb connections
 var mongo = require('mongoskin');
-var db = mongo.db("mongodb://localhost:27017/mem_study", {native_parser: true});
-var bubbledb = mongo.db("mongodb://localhost:27017/bubblestudy", {native_parser: true});
-var retargetdb = mongo.db("mongodb://localhost:27017/retargetstudy", {native_parser: true});
-var osiedb = mongo.db("mongodb://localhost:27017/osiestudy", {native_parser: true});
-var salicondb = mongo.db("mongodb://localhost:27017/saliconstudy", {native_parser: true});
-var websalydb = mongo.db("mongodb://localhost:27017/websalystudy", {native_parser: true});
-var recalldb = mongo.db("mongodb://localhost:27017/recallstudy", {native_parser: true});
-var codingdb = mongo.db("mongodb://localhost:27017/coding", {native_parser: true});
-var socialdoidb = mongo.db("mongodb://localhost:27017/socialdoi", {native_parser: true});
-var gdesigndb = mongo.db("mongodb://localhost:27017/gdesignstudy", {native_parser: true});
-var saliencydb = mongo.db("mongodb://localhost:27017/saliency", {native_parser: true});
+var db = mongo.db(f(urlTmpl, auth[0], auth[1], 'mem_study'), {native_parser: true});
+var bubbledb = mongo.db(f(urlTmpl, auth[0], auth[1], 'bubblestudy'), {native_parser: true});
+var retargetdb = mongo.db(f(urlTmpl, auth[0], auth[1], 'retargetstudy'), {native_parser: true});
+var osiedb = mongo.db(f(urlTmpl, auth[0], auth[1], 'osiestudy'), {native_parser: true});
+var salicondb = mongo.db(f(urlTmpl, auth[0], auth[1], 'saliconstudy'), {native_parser: true});
+var websalydb = mongo.db(f(urlTmpl, auth[0], auth[1], 'websalystudy'), {native_parser: true});
+var recalldb = mongo.db(f(urlTmpl, auth[0], auth[1], 'recallstudy'), {native_parser: true});
+var codingdb = mongo.db(f(urlTmpl, auth[0], auth[1], 'coding'), {native_parser: true});
+var socialdoidb = mongo.db(f(urlTmpl, auth[0], auth[1], 'socialdoi'), {native_parser: true});
+var gdesigndb = mongo.db(f(urlTmpl, auth[0], auth[1], 'gdesignstudy'), {native_parser: true});
+var saliencydb = mongo.db(f(urlTmpl, auth[0], auth[1], 'saliency'), {native_parser: true});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

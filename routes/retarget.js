@@ -30,7 +30,7 @@ router.get('/', function(req, res) {
 });
 router.get('/color', function(req, res) {
 	var db 		= req.retargetdb;
-	console.log(req.query);
+	// console.log(req.query);
 	if (!req.query['hitId'] || req.query['hitId']=="TEST"){
 		res.render('color', { title: 'Color Theme Evaluation', type: 1 });
 	}else{
@@ -47,7 +47,7 @@ router.get('/color', function(req, res) {
 				}
 	    });
 
-	}
+}
 
 });
 router.get('/thumbnail', function(req, res) {
@@ -57,6 +57,8 @@ router.get('/thumbnail', function(req, res) {
 });
 router.post('/log', function(req, res){
 	var db 		= req.retargetdb;
+	console.log('db:');
+	console.log(db);
 	var newLog	= {};
   newLog.timestamp         = req.body.timestamp;
 	newLog.hit_id 		     = req.body.hitId;
@@ -68,6 +70,7 @@ router.post('/log', function(req, res){
         if (err) {
             return console.log(new Date(), 'insert error', err);
         }
+				console.log(result)
         if (result) {
             res.json({ code: 0, message: 'Successfully Created!', result: result[0]});
         }

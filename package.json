@@ -11,13 +11,13 @@
     "debug": "^2.1.0",
     "express": "^4.10.1",
     "hjs": "*",
-    "mongodb":"^2.2.19",
+    "mongodb": "^2.2.19",
     "mongoskin": "^2.1.0",
     "morgan": "^1.4.1",
-    "socket.io": "*",
+    "request": "*",
     "serve-favicon": "*",
+    "socket.io": "*",
     "supervisor": "*",
-    "underscore": "*",
-    "request": "*"
+    "underscore": "*"
   }
 }
