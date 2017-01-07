@@ -179,10 +179,13 @@
 
         var type = {{ type }};
 
-        if (gup("hitId")!=''){
-          type = gup("hitId");
+        if (gup("type")!=''){
+          type = parseInt(gup("type"));
         }
-
+        if (type==8){
+          type=type+'_pred';
+        }
+        console.log('type:'+type);
         function getUrlObj() {
             var parameters = location.search.substring(1).split("&");
             var obj = {};
