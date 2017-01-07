@@ -674,43 +674,39 @@
 
         }
 
-
-
-
-
-
-        // document.getElementById('assignmentId').value = gup('assignmentId');
-        //document.getElementById('catName').value = curCat.toUpperCase();
-        //document.getElementById('maxNum').value = maxSelected;
-        //
-        // Check if the worker is PREVIEWING the HIT or if they've ACCEPTED the HIT
-        //
-
-        if (gup('assignmentId') == "ASSIGNMENT_ID_NOT_AVAILABLE") {
-            // If we're previewing, disable the button and give it a helpful message
-            document.getElementById('doneButton').style.visibility = "hidden";
-            document.getElementById('submitButton').disabled = true;
-            //document.getElementById('submitButton').value = "You must ACCEPT the HIT before you can submit the results.";
-            document.getElementById('doneButton').disabled = true;
-            //document.getElementById('doneButton').value = "You must ACCEPT the HIT before you can submit the results.";
-            preview = true;
-        } else {
-            var xmlhttp = new XMLHttpRequest(); // new HttpRequest instance
-            xmlhttp.open("POST", "/retarget/log");
-            xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-            xmlhttp.send(JSON.stringify({
-                timestamp: $.now(),
-                hitId: gup("hitId"),
-                assignmentId: gup("assignmentId"),
-                workerId: gup("workerId"),
-                action: 'start',
-                data: {
-                    study: 'thumbnail',
-                    experiment: type
-                }
-            }));
-        }
         $(document).ready(function() {
+
+            // document.getElementById('assignmentId').value = gup('assignmentId');
+            //document.getElementById('catName').value = curCat.toUpperCase();
+            //document.getElementById('maxNum').value = maxSelected;
+            //
+            // Check if the worker is PREVIEWING the HIT or if they've ACCEPTED the HIT
+            //
+
+            if (gup('assignmentId') == "ASSIGNMENT_ID_NOT_AVAILABLE") {
+                // If we're previewing, disable the button and give it a helpful message
+                document.getElementById('doneButton').style.visibility = "hidden";
+                document.getElementById('submitButton').disabled = true;
+                //document.getElementById('submitButton').value = "You must ACCEPT the HIT before you can submit the results.";
+                document.getElementById('doneButton').disabled = true;
+                //document.getElementById('doneButton').value = "You must ACCEPT the HIT before you can submit the results.";
+                preview = true;
+            } else {
+                var xmlhttp = new XMLHttpRequest(); // new HttpRequest instance
+                xmlhttp.open("POST", "/retarget/log");
+                xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+                xmlhttp.send(JSON.stringify({
+                    timestamp: $.now(),
+                    hitId: gup("hitId"),
+                    assignmentId: gup("assignmentId"),
+                    workerId: gup("workerId"),
+                    action: 'start',
+                    data: {
+                        study: 'thumbnail',
+                        experiment: type
+                    }
+                }));
+            }
             getUrlObj();
             turkify("#mturk_form");
             console.log("action to : " + $("#mturk_form").attr("action"));
