@@ -586,11 +586,13 @@
 
             //alert('set to 1')
             var foundit = (cx == whereTarget[0]) && (cy == whereTarget[1]);
-            if (foundit && !preview) {
+
+            if (foundit) {
 
                 //drawImage(cx,cy, green);
-
-                document.getElementById('submitButton').disabled = false;
+                if (!preview){
+                  document.getElementById('submitButton').disabled = false;
+                }
                 //openModalWindow(filename);
 
                 drawImage(cx, cy, green);
