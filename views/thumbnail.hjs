@@ -27,11 +27,10 @@
             height: 600px;
             overflow-y: scroll;
         }
-
     </style>
 </head>
 
-<body onload="getUrlObj();">
+<body>
     <!-- This is the first function that get's executed -->
     <div class="ui container">
         <form id="mturk_form" name="mturk_form">
@@ -49,66 +48,62 @@
 
 
             <div class="ui segment">
-              <a class="ui red ribbon huge label">Find an image with a given caption.</a>
-              <div class="ui stackable three column grid">
-                <div class="row">
-                    <div class="sixteen wide column">
-                      <h3 class="ui red dividing header" style="margin:10px 0px 5px 0px;">Instructions</h3>
-                      <div class="ui ordered list" style="margin-top:5px;">
-                          <div class="item">Please wait until all images finish loading.</div>
-                          <div class="item">Scroll to find the graphic that matches the caption below. The thumbnails summarize each graphic.</div>
-                          <div class="item">Click on a thumbnail to see the full graphic.</div>
-                          <div class="item">Once you click on the correct graphic you will be able to submit.</div>
-                      </div>
-                    </div>
-                </div>
-                <div class="row" >
-                    <div class="sixteen wide column">
-                        <h3 class="ui red dividing header" style="margin:0px;">Find a graphic image that matches the caption provided.</h3>
-                        <button id="submitButton" style="margin-top:5px;" type="submit" class="fluid ui primary button"
-                            disabled="true">Submit</button>
-
-                    </div>
-                </div>
-                <div class="row" style="padding-top:0px;">
-                    <div class="sixteen wide column">
-                      <div id="loader" class="ui active inverted dimmer">
-                        <div class="ui text loader">Loading</div>
-                      </div>
-                      <div class="ui message" style="margin-top:0px;">
-                        <div class="ui small header">
-                          Image Caption
+                <a class="ui red ribbon huge label">Find an image with a given caption.</a>
+                <div class="ui stackable three column grid">
+                    <div class="row">
+                        <div class="sixteen wide column">
+                            <h3 class="ui red dividing header" style="margin:10px 0px 5px 0px;">Instructions</h3>
+                            <div class="ui ordered list" style="margin-top:5px;">
+                                <div class="item">Please wait until all images finish loading.</div>
+                                <div class="item">Scroll to find the graphic that matches the caption below. The thumbnails summarize each graphic.</div>
+                                <div class="item">Click on a thumbnail to see the full graphic.</div>
+                                <div class="item">Once you click on the correct graphic you will be able to submit.</div>
+                            </div>
                         </div>
-                        <p id="captionText">Loading...</p>
-                      </div>
-                      <div id="imagegrid" class="ui segment">
-                        <canvas id="myCanvas" width="600" height="600">
-                              Your browser does not support canvas. Sorry, you will not be able to complete this HIT.
-                          </canvas>
-                      </div>
+                    </div>
+                    <div class="row">
+                        <div class="sixteen wide column">
+                            <h3 class="ui red dividing header" style="margin:0px;">Find a graphic image that matches the caption provided.</h3>
+                            <button id="submitButton" style="margin-top:5px;" type="submit" class="fluid ui primary button" disabled="true">Submit</button>
+
+                        </div>
+                    </div>
+                    <div class="row" style="padding-top:0px;">
+                        <div class="sixteen wide column">
+                            <div id="loader" class="ui active inverted dimmer">
+                                <div class="ui text loader">Loading</div>
+                            </div>
+                            <div class="ui message" style="margin-top:0px;">
+                                <div class="ui small header">
+                                    Image Caption
+                                </div>
+                                <p id="captionText">Loading...</p>
+                            </div>
+                            <div id="imagegrid" class="ui segment">
+                                <canvas id="myCanvas" width="600" height="600">
+                                    Your browser does not support canvas. Sorry, you will not be able to complete this HIT.
+                                </canvas>
+                            </div>
+                        </div>
                     </div>
                 </div>
-              </div>
             </div>
-          </form>
-          <div class="ui message" style="margin-bottom:10px;">
+        </form>
+        <div class="ui message" style="margin-bottom:10px;">
             <div class="header">
-              Informed Consent.
+                Informed Consent.
             </div>
-            <p>By completing this HIT, you are participating in a study being performed by computer scientists in the MIT Computer Science and Artificial Intelligence Lab. If you have questions about this resarch, please contact namwkim@seas.harvard.edu. Your participation in this
-            research is voluntary. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.</p>
-          </div>
-      </div>
-    </body>
-
-
+            <p>By completing this HIT, you are participating in a study being performed by computer scientists in the MIT Computer Science and Artificial Intelligence Lab. If you have questions about this resarch, please contact namwkim@seas.harvard.edu.
+                Your participation in this research is voluntary. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal
+                information about you.</p>
+        </div>
+    </div>
     <!------------------ MAIN SCRIPT: ------------------>
     <script src="/javascripts/modal.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script src="/javascripts/turkify.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js"></script>
     <script type="text/javascript">
-
         //https://workersandbox.mturk.com/mturk/externalSubmit
         // https://www.mturk.com/mturk/externalSubmit
 
@@ -145,7 +140,7 @@
         var imagesX = 3;
         var imagesY = 20;
 
-        var numImages = imagesX*imagesY;
+        var numImages = imagesX * imagesY;
 
         var imageArr;
         var selected;
@@ -154,7 +149,7 @@
         var prevSelection = new Array();
 
         var inputIndex = 0;
-        var cellWidth = 290;//150;
+        var cellWidth = 290; //150;
         var cellHeight = 290; //200;
 
         var imageWidth = 270; //140
@@ -174,24 +169,25 @@
         var offset = 3;
 
         var chosen = "#CCCCCC";
-        var unchosen = 	"#000000"; //""#606060";//white, faded.
+        var unchosen = "#000000"; //""#606060";//white, faded.
         var green = "#00FF00";
 
         var type = {{ type }};
 
-        if (gup("type")!=''){
-          type = parseInt(gup("type"));
+        if (gup("type") != '') {
+            type = parseInt(gup("type"));
         }
-        if (type==8){
-          type=type+'_pred';
+        if (type == 8) {
+            type = type + '_pred';
         }
-        console.log('type:'+type);
+        console.log('type:' + type);
+
         function getUrlObj() {
             var parameters = location.search.substring(1).split("&");
             var obj = {};
-            for( var i = 0; i < parameters.length; ++i) {
+            for (var i = 0; i < parameters.length; ++i) {
                 var tmp = parameters[i].split("=");
-                obj[ tmp[0] ] = unescape( tmp[1] );
+                obj[tmp[0]] = unescape(tmp[1]);
             }
 
             //alert(Object.keys(obj))
@@ -202,8 +198,8 @@
             // }
 
             if (obj['numims']) {
-                imagesY = Math.round(obj['numims']/3.0);
-                numImages = imagesX*imagesY;
+                imagesY = Math.round(obj['numims'] / 3.0);
+                numImages = imagesX * imagesY;
             }
 
             getCaption();
@@ -214,14 +210,13 @@
             var curfile = '/thumbnail-captions.txt';
             //alert(curfile)
             var txtFile = new XMLHttpRequest();
-            txtFile.open("GET",curfile,false);
+            txtFile.open("GET", curfile);
 
-            txtFile.onreadystatechange = function()
-            {
+            txtFile.onreadystatechange = function() {
 
-                if (txtFile.readyState === 4) {  // document is ready to parse.
+                if (txtFile.readyState === 4) { // document is ready to parse.
 
-                    if (txtFile.status === 200 || txtFile.status == 0) {  // file is found
+                    if (txtFile.status === 200 || txtFile.status == 0) { // file is found
 
                         allText = txtFile.responseText;
                         lines = txtFile.responseText.split("\n");
@@ -248,20 +243,19 @@
         function loadFillers() {
 
             //var fillerfile = fillerdir.concat('filelist.txt');
-            var fillerfile = '/'+curCat + '.txt';
+            var fillerfile = '/' + curCat + '.txt';
             var txtFile = new XMLHttpRequest();
-            txtFile.open("GET",fillerfile,false);
+            txtFile.open("GET", fillerfile);
 
-            txtFile.onreadystatechange = function()
-            {
+            txtFile.onreadystatechange = function() {
                 //alert('inside function')
-                if (txtFile.readyState === 4) {  // document is ready to parse.
-                    if (txtFile.status === 200 || txtFile.status == 0) {  // file is found
+                if (txtFile.readyState === 4) { // document is ready to parse.
+                    if (txtFile.status === 200 || txtFile.status == 0) { // file is found
                         allText = txtFile.responseText;
                         lines = txtFile.responseText.split("\n");
                         //alert('lines:'+lines)
-                        for (var k=0;k<=lines.length-2;k++){
-                            fillerfilenames[k]=fillerdir+lines[k];
+                        for (var k = 0; k <= lines.length - 2; k++) {
+                            fillerfilenames[k] = fillerdir + lines[k];
                             //alert(filename[k]);
                         }
                         pickFillerImages();
@@ -279,14 +273,14 @@
 
             while (imagesSelected < numImages) {
                 var pic = fillerfilenames[Math.floor(Math.random() * fillerfilenames.length)];
-                if (fillerSubSet.indexOf(pic)>=0) { // already picked this
+                if (fillerSubSet.indexOf(pic) >= 0) { // already picked this
                     continue;
                 }
-                if (targetpath===pic) { // don't take target image
+                if (targetpath === pic) { // don't take target image
                     continue;
                 }
 
-                fillerSubSet[imagesSelected]=pic;
+                fillerSubSet[imagesSelected] = pic;
                 //alert(pic)
                 imagesSelected++;
             }
@@ -294,8 +288,8 @@
         }
 
         function setupQualificationImages() {
-            c.setAttribute("width",imagesX*cellWidth+2*offset);
-            c.setAttribute("height", imagesY*cellHeight+2*offset);
+            c.setAttribute("width", imagesX * cellWidth + 2 * offset);
+            c.setAttribute("height", imagesY * cellHeight + 2 * offset);
             c.addEventListener("click", mouseUp, false); // mouseUp
             //c.addEventListener("click",openModalWindow);
             //c.addEventListener("mousemove", mouseMove, false);
@@ -304,53 +298,57 @@
             selected = new Array();
             fillArr = new Array();
 
-            loaded=0;
-            nselected=0;
+            loaded = 0;
+            nselected = 0;
             //document.getElementById("progress").value = nselected;
 
-            for (var i = 0; i< imagesX; i++) {
+            for (var i = 0; i < imagesX; i++) {
                 imageArr[i] = new Array();
                 selected[i] = new Array();
                 fillArr[i] = new Array();
             }
 
-            for (var i = 0; i<imagesX; i++) {
-                for (var j =0; j < imagesY; j++) {
+            for (var i = 0; i < imagesX; i++) {
+                for (var j = 0; j < imagesY; j++) {
                     fillArr[i][j] = 0;
                 }
             }
 
             // ---------------- place the target image ----------------
             var targetPos = Math.floor(Math.random() * numImages);
-            var y = Math.floor(targetPos/imagesX);
-            var x = targetPos%imagesX;
+            var y = Math.floor(targetPos / imagesX);
+            var x = targetPos % imagesX;
             var img = new Image();
-            img.onload = function() {incLoad();}
+            img.onload = function() {
+                incLoad();
+            }
             img.src = fillerdir + curTarget;
             //alert(img.src)
             imageArr[x][y] = img;
-            whereTarget = [x,y];
+            whereTarget = [x, y];
             fillArr[x][y] = 1; // so no other images get put there
             // --------------------------------------------------------
 
 
             // load-in filler images
-            for (var i = 0; i< numImages; i++) {
-                var y = Math.floor(i/imagesX);
-                var x = i%imagesX;
+            for (var i = 0; i < numImages; i++) {
+                var y = Math.floor(i / imagesX);
+                var x = i % imagesX;
 
                 selected[x][y] = 0;
 
-                if (fillArr[x][y]==0) {
+                if (fillArr[x][y] == 0) {
 
                     var img = new Image();
-                    img.onload = function() {incLoad();}
+                    img.onload = function() {
+                        incLoad();
+                    }
 
                     img.src = fillerSubSet[i];
 
 
                     imageArr[x][y] = img;
-                    fillArr[x][y]=1;
+                    fillArr[x][y] = 1;
                 }
 
             }
@@ -395,20 +393,20 @@
             var imagesSelected = 0;
             while (imagesSelected < numImages) {
                 var pic = filenames[Math.floor(Math.random() * filenames.length)];
-                if (imageSubSet.indexOf(pic)>=0) {
+                if (imageSubSet.indexOf(pic) >= 0) {
                     continue;
                 }
-                imageSubSet[imagesSelected]=pic;
+                imageSubSet[imagesSelected] = pic;
                 //alert(pic)
                 imagesSelected++;
             }
-            document.getElementById('seqOfAllImages').value = 'seqOfAllImages:'+imageSubSet.join();
+            document.getElementById('seqOfAllImages').value = 'seqOfAllImages:' + imageSubSet.join();
             onLoad();
         }
 
-        function onLoad(){
-            c.setAttribute("width",imagesX*cellWidth+2*offset);
-            c.setAttribute("height", imagesY*cellHeight+2*offset);
+        function onLoad() {
+            c.setAttribute("width", imagesX * cellWidth + 2 * offset);
+            c.setAttribute("height", imagesY * cellHeight + 2 * offset);
             c.addEventListener("click", mouseUp, false);
             //c.addEventListener("mousemove", mouseMove, false);
 
@@ -419,9 +417,9 @@
         }
 
         function drawAll() {
-            for (var i = 0; i<imagesX; i++) {
-                for (var j =0; j < imagesY; j++) {
-                    drawImage(i,j, unchosen);
+            for (var i = 0; i < imagesX; i++) {
+                for (var j = 0; j < imagesY; j++) {
+                    drawImage(i, j, unchosen);
                 }
             }
         }
@@ -431,19 +429,21 @@
             imageArr = new Array();
             selected = new Array();
 
-            loaded=0;
-            nselected=0;
+            loaded = 0;
+            nselected = 0;
             //document.getElementById("progress").value = nselected;
 
-            for (var i = 0; i< imagesX; i++) {
+            for (var i = 0; i < imagesX; i++) {
                 imageArr[i] = new Array();
                 selected[i] = new Array();
             }
-            for (var i = 0; i< numImages; i++) {
-                var y = Math.floor(i/imagesX);
-                var x = i%imagesX;
+            for (var i = 0; i < numImages; i++) {
+                var y = Math.floor(i / imagesX);
+                var x = i % imagesX;
                 var img = new Image();
-                img.onload = function() {incLoad();}
+                img.onload = function() {
+                    incLoad();
+                }
 
                 img.src = imageSubSet[i];
                 //img.onclick = function() {alert('clicked!');}
@@ -467,7 +467,7 @@
         }
 
         function drawImage(i, j, color) {
-            var cx = i*cellWidth; // + offset;
+            var cx = i * cellWidth; // + offset;
             var cy = j * cellHeight; // + offset;
 
             var srcWidth = imageArr[i][j].width;
@@ -475,11 +475,11 @@
 
             // want to rescale image so that the longest dimension fits inside cell
             var ratio = Math.min(imageWidth / srcWidth, imageHeight / srcHeight);
-            var rescWidth = srcWidth*ratio;
-            var rescHeight = srcHeight*ratio;
+            var rescWidth = srcWidth * ratio;
+            var rescHeight = srcHeight * ratio;
 
-            var shiftX = (cellWidth-rescWidth)/2 - 10;
-            var shiftY = (cellHeight-rescHeight)/2 - 10;
+            var shiftX = (cellWidth - rescWidth) / 2 - 10;
+            var shiftY = (cellHeight - rescHeight) / 2 - 10;
 
             // note: cx+(cellWidth/2) - (imageWidth/2) will shift origin of image (top left corner) to corner of cell
 
@@ -496,19 +496,19 @@
             //	ctx.fillRect(cx+1, cy+1, cellWidth-2, cellHeight-2);
             //	ctx.globalAlpha = 1;
             //}
-            ctx.shadowBlur=20;
-            ctx.shadowColor=color;
-            ctx.drawImage(imageArr[i][j], cx+(cellWidth/2) - (imageWidth/2) + shiftX,
-                          cy+(cellHeight/2) - (imageHeight/2) + shiftY, rescWidth, rescHeight);
-                          //ctx.stroke();
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = color;
+            ctx.drawImage(imageArr[i][j], cx + (cellWidth / 2) - (imageWidth / 2) + shiftX,
+                cy + (cellHeight / 2) - (imageHeight / 2) + shiftY, rescWidth, rescHeight);
+            //ctx.stroke();
 
         }
 
         function drawGrid() {
-            for (var i = 0; i<imagesX; i++) {
-                for(var j = 0; j < imagesY; j++) {
-                    var cx = i * cellWidth ;
-                    var cy = j * cellHeight ;
+            for (var i = 0; i < imagesX; i++) {
+                for (var j = 0; j < imagesY; j++) {
+                    var cx = i * cellWidth;
+                    var cy = j * cellHeight;
                     ctx.strokeRect(cx, cy, cellWidth, cellHeight);
 
                     ctx.stroke();
@@ -554,10 +554,10 @@
             e.stopPropagation();
 
             var mx = e.layerX;
-            var cx = Math.floor((mx)/cellWidth);
+            var cx = Math.floor((mx) / cellWidth);
             var my = e.layerY;
-            var cy = Math.floor((my - offset)/cellHeight);
-            if (!(cx >= 0 && cx <imagesX && cy >=0 && cy<imagesY)) {
+            var cy = Math.floor((my - offset) / cellHeight);
+            if (!(cx >= 0 && cx < imagesX && cy >= 0 && cy < imagesY)) {
                 return;
             }
 
@@ -572,7 +572,7 @@
 
             //if (nselected < maxSelected) { // haven't run out of number of allowable clicks
 
-            if(prevSelection.length>0){
+            if (prevSelection.length > 0) {
                 //drawImage(prevSelection[0],prevSelection[1],unchosen); // deselect previous selection
             }
 
@@ -582,10 +582,10 @@
             //document.getElementById("progress").value = nselected;
 
 
-            prevSelection = [cx,cy]; // put down current selection as previous selection
+            prevSelection = [cx, cy]; // put down current selection as previous selection
 
             //alert('set to 1')
-            var foundit = (cx==whereTarget[0]) && (cy==whereTarget[1]);
+            var foundit = (cx == whereTarget[0]) && (cy == whereTarget[1]);
             if (foundit && !preview) {
 
                 //drawImage(cx,cy, green);
@@ -593,7 +593,7 @@
                 document.getElementById('submitButton').disabled = false;
                 //openModalWindow(filename);
 
-                drawImage(cx,cy, green);
+                drawImage(cx, cy, green);
                 //setTimeout(function() {
                 openModalSuccessWindow();
                 //           });
@@ -602,9 +602,6 @@
             } else {
                 openModalWindow(filename);
             }
-
-
-
         }
 
         //
@@ -620,21 +617,19 @@
         //     return results[1];
         // }
 
-        function decode(strToDecode)
-        {
+        function decode(strToDecode) {
             var encoded = strToDecode;
-            return unescape(encoded.replace(/\+/g,  " "));
+            return unescape(encoded.replace(/\+/g, " "));
         }
 
-        function getChoices(e)
-        {
+        function getChoices(e) {
             console.log("getChoices")
-            // this code prevents form from actually being submitted
+                // this code prevents form from actually being submitted
             e.preventDefault();
             e.returnValue = false;
             var k = 0;
-            for (var i = 0; i<imagesX; i++) {
-                for(var j = 0; j < imagesY; j++) {
+            for (var i = 0; i < imagesX; i++) {
+                for (var j = 0; j < imagesY; j++) {
                     if (selected[i][j] == 1) {
                         imageSelections[k] = imageArr[i][j].src;
                         k++;
@@ -642,19 +637,19 @@
                 }
             }
             //alert(imageSelections.join());
-            document.getElementById('imageSelections').value = 'imageSelections:'+imageSelections.join();
-            document.getElementById('seqOfImageSelections').value = 'seqOfImageSelections:'+seqOfImageSelections.join();
-            document.getElementById('seqOfTimestamps').value = 'seqOfTimestamps:'+seqOfTimestamps.join();
+            document.getElementById('imageSelections').value = 'imageSelections:' + imageSelections.join();
+            document.getElementById('seqOfImageSelections').value = 'seqOfImageSelections:' + seqOfImageSelections.join();
+            document.getElementById('seqOfTimestamps').value = 'seqOfTimestamps:' + seqOfTimestamps.join();
 
             //save data into database too
             _this = $(this);
             var xmlhttp = new XMLHttpRequest(); // new HttpRequest instance
             xmlhttp.onreadystatechange = function() {
                 if (xmlhttp.readyState == XMLHttpRequest.DONE) {
-                  _this.off('submit');
-                  // actually submit the form
-                  console.log('submitting')
-                  _this.submit();
+                    _this.off('submit');
+                    // actually submit the form
+                    console.log('submitting')
+                    _this.submit();
 
                 }
             }
@@ -691,8 +686,7 @@
         // Check if the worker is PREVIEWING the HIT or if they've ACCEPTED the HIT
         //
 
-        if (gup('assignmentId') == "ASSIGNMENT_ID_NOT_AVAILABLE")
-        {
+        if (gup('assignmentId') == "ASSIGNMENT_ID_NOT_AVAILABLE") {
             // If we're previewing, disable the button and give it a helpful message
             document.getElementById('doneButton').style.visibility = "hidden";
             document.getElementById('submitButton').disabled = true;
@@ -700,26 +694,27 @@
             document.getElementById('doneButton').disabled = true;
             //document.getElementById('doneButton').value = "You must ACCEPT the HIT before you can submit the results.";
             preview = true;
-        }else{
-          var xmlhttp = new XMLHttpRequest(); // new HttpRequest instance
-          xmlhttp.open("POST", "/retarget/log");
-          xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-          xmlhttp.send(JSON.stringify({
-              timestamp: $.now(),
-              hitId: gup("hitId"),
-              assignmentId: gup("assignmentId"),
-              workerId: gup("workerId"),
-              action: 'start',
-              data:{
-                study: 'thumbnail',
-                experiment: type
-              }
-          }));
+        } else {
+            var xmlhttp = new XMLHttpRequest(); // new HttpRequest instance
+            xmlhttp.open("POST", "/retarget/log");
+            xmlhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xmlhttp.send(JSON.stringify({
+                timestamp: $.now(),
+                hitId: gup("hitId"),
+                assignmentId: gup("assignmentId"),
+                workerId: gup("workerId"),
+                action: 'start',
+                data: {
+                    study: 'thumbnail',
+                    experiment: type
+                }
+            }));
         }
         $(document).ready(function() {
-          turkify("#mturk_form");
-          console.log("action to : " + $("#mturk_form").attr("action"));
-          $("#mturk_form").submit(getChoices);
+            getUrlObj();
+            turkify("#mturk_form");
+            console.log("action to : " + $("#mturk_form").attr("action"));
+            $("#mturk_form").submit(getChoices);
         });
         //else {
         //  var form = document.getElementById('mturk_form');
@@ -727,9 +722,8 @@
         //      form.action = "https://workersandbox.mturk.com/mturk/externalSubmit";
         //   }
         //}
+    </script>
 
-
-        </script>
-
+</body>
 
 </html>
