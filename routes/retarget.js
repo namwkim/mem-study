@@ -56,8 +56,6 @@ router.get('/thumbnail', function(req, res) {
 });
 router.post('/log', function(req, res){
 	var db 		= req.retargetdb;
-	console.log('db:');
-	console.log(db);
 	var newLog	= {};
   newLog.timestamp         = req.body.timestamp;
 	newLog.hit_id 		     = req.body.hitId;
