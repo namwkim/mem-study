@@ -88,7 +88,7 @@ def create_hits(keyfile, blockfile):
 	# print 'QualType:', qualtype[0].QualificationTypeId
 	quals.add(Requirement(qualification_type_id = qualtype[0].QualificationTypeId, comparator="DoesNotExist"))
 	# demographic qualifications
-	# quals.add(PercentAssignmentsApprovedRequirement(comparator="GreaterThan", integer_value="95"))
+	quals.add(PercentAssignmentsApprovedRequirement(comparator="GreaterThan", integer_value="95"))
 	quals.add(LocaleRequirement(comparator="EqualTo", locale="US"))
 	# TODO
 
