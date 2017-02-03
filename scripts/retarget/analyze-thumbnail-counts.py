@@ -24,26 +24,29 @@ from math import sqrt
 def extract_cond(col):
     images = col.split(':')
     images = ''.join(images[1:])
+    if len(images)==0:
+        return False
     images = images.split(',')
     cond =  images[0].split('/')[5]
     return cond
 if __name__ == "__main__":
     # fromdb()
-    with open('thumbnail.csv', 'rb') as csvfile:
+    with open('thumbnail-jan-26.csv', 'rb') as csvfile:
         reader = csv.reader(csvfile)
         header = next(reader)
         print header
         count = 0
         experiment = {
             'thumbnails0':[],
-            'thumbnails8':[]
+            'thumbnails8_pred':[]
         }
 
         for row in reader:
             # print row
             count+=1
             cond = extract_cond(row[8])
-
+            if cond==False:
+                continue;
             # condition = images[0].split('/')[5]
             # print 'condition', condition
             images = row[8].split(':')

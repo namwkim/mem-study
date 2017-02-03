@@ -24,32 +24,37 @@ from math import sqrt
 def extract_cond(col):
     images = col.split(':')
     images = ''.join(images[1:])
+    if len(images)==0:
+        return False
     images = images.split(',')
     cond =  images[0].split('/')[5]
     return cond
 if __name__ == "__main__":
     # fromdb()
-    with open('thumbnail.csv', 'rb') as csvfile:
+    with open('thumbnail-jan-26.csv', 'rb') as csvfile:
         reader = csv.reader(csvfile)
         header = next(reader)
-        print header
+        # print header
         count = 0
         experiment = {
             'thumbnails0':[],
-            'thumbnails8':[]
+            'thumbnails8_pred':[]
         }
 
         for row in reader:
             # print row
             count+=1
+            # print 'row8:',row[8]
             cond = extract_cond(row[8])
+            if cond==False:
+                continue;
             # condition = images[0].split('/')[5]
             # print 'condition', condition
-            print cond, row[4], row[6], row[7]
-            start = datetime.strptime(row[6], '%a %b %d %H:%M:%S PDT %Y')
-            end = datetime.strptime(row[7], '%a %b %d %H:%M:%S PDT %Y')
+            # print cond, row[4], row[6], row[7]
+            start = datetime.strptime(row[6], '%a %b %d %H:%M:%S PST %Y')
+            end = datetime.strptime(row[7], '%a %b %d %H:%M:%S PST %Y')
             diff = (end-start).total_seconds()
-            print diff
+            # print diff
             experiment[cond].append(diff)
 
         finaldata = []

@@ -237,71 +237,61 @@
           <textarea style="display: none" id="strokes21" name="strokes21" value=""></textarea>
           <textarea style="display: none" id="strokes22" name="strokes22" value=""></textarea>
           <textarea style="display: none" id="strokes23" name="strokes23" value=""></textarea>
-          <table border="0" height="100%" width="100%">
-              <tbody>
-                  <tr>
-                      <td>
-                          <p>
-                          </p>
-                          <div id="flashContent">
-                              <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="750" height="620" id="impdraw" align="middle">
-                                  <param name="movie" value="impdraw7.swf">
+          <div id="flashContent">
+              <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="750" height="620" id="impdraw" align="middle">
+                  <param name="movie" value="impdraw7.swf">
 
-                                  <param name="quality" value="high">
-                                  <param name="bgcolor" value="#ffffff">
-                                  <param name="play" value="true">
-                                  <param name="loop" value="true">
-                                  <param name="wmode" value="window">
-                                  <param name="scale" value="showall">
-                                  <param name="menu" value="true">
-                                  <param name="devicefont" value="false">
-                                  <param name="salign" value="">
-                                  <param name="allowScriptAccess" value="always">
-                                  <param name="flashvars" id="flvar" value="testVar=abc">
+                  <param name="quality" value="high">
+                  <param name="bgcolor" value="#ffffff">
+                  <param name="play" value="true">
+                  <param name="loop" value="true">
+                  <param name="wmode" value="window">
+                  <param name="scale" value="showall">
+                  <param name="menu" value="true">
+                  <param name="devicefont" value="false">
+                  <param name="salign" value="">
+                  <param name="allowScriptAccess" value="always">
+                  <param name="flashvars" id="flvar" value="testVar=abc">
 
 
 
-                                  <!--[if !IE]>-->
-                                  <object type="application/x-shockwave-flash" data="/images/annotate-examples/impdraw7.swf.download" width="750" height="620" id="flashapp">
-                                      <param name="movie" value="impdraw7.swf">
-                                      <param name="quality" value="high">
-                                      <param name="bgcolor" value="#ffffff">
-                                      <param name="play" value="true">
-                                      <param name="loop" value="true">
-                                      <param name="wmode" value="window">
-                                      <param name="scale" value="showall">
-                                      <param name="menu" value="true">
-                                      <param name="devicefont" value="false">
-                                      <param name="salign" value="">
-                                      <param name="allowScriptAccess" value="always">
-                                      <script language="Javascript">
-                                          document.write('<param name="FlashVars" value="imagetime=60&filename=' + gup('url') + '&assignmentid=' + gup('assignmentId') + '" />')
-                                      </script>
-                                      <param name="FlashVars" value="imagetime=60&amp;filename=input-gd_t1_3.txt&amp;assignmentid=asdf">
-                                      <!--<![endif]-->
-                                      <a href="http://www.adobe.com/go/getflash">
-                                          <img src="/images/annotate-examples/get_flash_player.gif" alt="Get Adobe Flash player">
-                                      </a>
-                                      <!--[if !IE]>-->
-                                  </object>
-                                  <!--<![endif]-->
-                              </object>
-                          </div>
+                  <!--[if !IE]>-->
+                  <object type="application/x-shockwave-flash" data="/images/annotate-examples/impdraw7.swf.download" width="750" height="620" id="flashapp">
+                      <param name="movie" value="impdraw7.swf">
+                      <param name="quality" value="high">
+                      <param name="bgcolor" value="#ffffff">
+                      <param name="play" value="true">
+                      <param name="loop" value="true">
+                      <param name="wmode" value="window">
+                      <param name="scale" value="showall">
+                      <param name="menu" value="true">
+                      <param name="devicefont" value="false">
+                      <param name="salign" value="">
+                      <param name="allowScriptAccess" value="always">
+                      <script language="Javascript">
+                          document.write('<param name="FlashVars" value="imagetime=60&filename=' + gup('url') + '&assignmentid=' + gup('assignmentId') + '" />')
+                      </script>
+                      <param name="FlashVars" value="imagetime=60&amp;filename=input-gd_t1_3.txt&amp;assignmentid=asdf">
+                      <!--<![endif]-->
+                      <a href="http://www.adobe.com/go/getflash">
+                          <img src="/images/annotate-examples/get_flash_player.gif" alt="Get Adobe Flash player">
+                      </a>
+                      <!--[if !IE]>-->
+                  </object>
+                  <!--<![endif]-->
+              </object>
+          </div>
 
-                          <div class="ui divider"></div>
-                          <div class="ui form">
-                            <div class="field">
-                              <label>Please provide any comments or suggestions you may have below, we appreciate your input! (optional)</label>
-                              <textarea name="comment" rows="3"></textarea>
-                            </div>
-                          </div>
+          <div class="ui divider"></div>
+          <div class="ui form">
+            <div class="field">
+              <label>Please provide any comments or suggestions you may have below, we appreciate your input! (optional)</label>
+              <textarea name="comment" rows="3"></textarea>
+            </div>
+          </div>
 
-                          <br>
-                          <button id="submitButton" class="ui fluid primary button" type="submit" name="Submit">Submit Results</button>
-                      </td>
-                  </tr>
-              </tbody>
-          </table>
+          <br>
+          <button id="submitButton" class="ui fluid primary button" type="submit" name="Submit">Submit Results</button>
         </div>
     </form>
 
