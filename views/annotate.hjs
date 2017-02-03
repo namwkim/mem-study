@@ -1,0 +1,342 @@
+<!-- saved from url=(0101)http://www.cs.toronto.edu/~donovan/mturk/test/drawgdimp.shtml?url=input-gd_t1_3.txt&assignmentId=asdf -->
+<html class="gr__cs_toronto_edu" data-type="freemium">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <!-- the following font is for the modals -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.css">
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css"> -->
+    <script language="Javascript">
+        //
+        // This method Gets URL Parameters (GUP)
+        //
+        function gup(name) {
+            var regexS = "[\\?&]" + name + "=([^&#]*)";
+            var regex = new RegExp(regexS);
+            var tmpURL = window.location.href;
+            var results = regex.exec(tmpURL);
+            if (results == null)
+                return "";
+            else
+                return results[1];
+        }
+
+        //
+        // This method decodes the query parameters that were URL-encoded
+        //
+        function decode(strToDecode) {
+            var encoded = strToDecode;
+            return unescape(encoded.replace(/\+/g, " "));
+        }
+
+        function setStrokeInfo(imgNum, info) {
+            document.getElementById('strokes' + imgNum).value = info;
+
+        }
+
+
+        function getFlashMovie(movieName) {
+            var isIE = navigator.appName.indexOf("Microsoft") != -1;
+            return (isIE) ? window[movieName] : document[movieName];
+        }
+
+        function modFlashMovie() {
+
+            alert('here')
+                //getFlashMovie('impdraw').sendTextToFlash('test1');
+            document.getElementById('impdraw').loadImageList(gup('url'));
+            document.getElementById('impdraw').startDrawing();
+
+        }
+
+        function getImageTime() {
+            return '60';
+        }
+    </script>
+
+
+
+</head>
+
+<body>
+  <div class="ui container">
+
+    <!-- <form id="mturk_form" method="POST" action="http://www.mturk.com/mturk/externalSubmit"> -->
+    <form id="mturk_form" name="mturk_form">
+        <h1 class="ui header" style="margin-top:10px;">Mark the most important regions in a graphic design
+          <div id="preview-msg" class="sub header">You are currently in the Preview mode.</div>
+        </h1>
+
+        <div class="ui red segment">
+
+        <h2 class="ui header">Instructions</h2>
+        <p>
+            Your task is to draw the most important regions(either graphics or text blocks) for a set of <strong>20 images</strong>. However, you DO NOT need to be very precise. We are only looking for a rough indication of the most important regions. You also don't need to mark
+            every region, just those which appear important. Please look at the example images below.
+        </p>
+        <p>You are only given a maximum of <strong>60 seconds for each image</strong>, so don't worry about drawing precisely. Draw the most important regions first then move to the less important regions. If you run out of time, just go to the next image.
+            <b>Duplicate images have been added randomly.</b> If the results are too inconsistent, the hit will be rejected.
+
+        </p>
+
+
+        <p>
+
+            If you want to show a region as more important than another, you can draw on the region a second time (or third, fourth, etc.) to indicate a greater importance. The more red you draw, the more important the region.
+        </p>
+
+
+
+
+        <p>
+            Tools: The <i>Regular Stroke</i> only paints along the stroke. The <i>Fill Stroke</i> will fill in the region within the stroke. The <i>Polygon Fill</i> lets you draw straight lines around the object. This is useful for text blocks. Click
+            on the blue circle to end the region. There are also 3 practice images which you can use to get comfortable with the tools.
+        </p>
+        <div class="ui red basic label">
+           The tools are at the bottom of this page.
+         </div>
+
+        <h3>Evaluation Criteria</h3>
+        <ul>
+            <li>Importance can be different for different people, all that's needed is an honest answer. However, &nbsp;</li>
+
+            <li><b>Please do not draw randomly.</b> Duplicate images have been added. If your results are consistently very different from other users, or the duplicates are very different, the hit will not be accepted. </li>
+
+            <li><b>Please draw something. </b> If you draw nothing on more than one image, the hit will not be accepted. If you accidentally skip an image, the hit may still be accepted.</li>
+
+        </ul>
+        <div class="ui divider"></div>
+        <p>The following questions will only be used to break down responses by age/gender.
+        </p>
+        <div class="ui form">
+          <div class="fields">
+            <div class="field">
+              <label>Age</label>
+              <input type="text" name="age" maxlength="10">
+            </div>
+            <div class="field">
+              <label>Known color vision problems (for example, red-green color blindness):</label>
+              <textarea name="colordef" rows="1"></textarea>
+            </div>
+          </div>
+          <div class="inline fields">
+            <label for="fruit">Gender:</label>
+            <div class="field">
+              <div class="ui radio checkbox">
+                <input type="radio" name="sex" value="male" checked="" tabindex="0" class="hidden">
+                <label>Male</label>
+              </div>
+            </div>
+            <div class="field">
+              <div class="ui radio checkbox">
+                <input type="radio" name="sex" value="female" tabindex="0" class="hidden">
+                <label>Female</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        </div>
+        <div class="ui teal segment">
+          <h2 class="ui header">Examples</h2>
+          <table>
+              <tbody>
+                  <tr>
+                      <td>
+                          Original
+                      </td>
+                      <td>
+                          Important Regions Drawn in Red
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <img src="/images/annotate-examples/example1_orig.jpg" width="300">
+                      </td>
+                      <td>
+                          <img src="/images/annotate-examples/example1.jpg" width="300">
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <img src="/images/annotate-examples/example2_orig.jpg" width="300">
+                      </td>
+                      <td>
+                          <img src="/images/annotate-examples/example2.jpg" width="300">
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <img src="/images/annotate-examples/example4_orig.jpg" width="300">
+                      </td>
+                      <td>
+                          <img src="/images/annotate-examples/example4.jpg" width="300">
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <img src="/images/annotate-examples/example6_orig.jpg" width="300">
+                      </td>
+                      <td>
+                          <img src="/images/annotate-examples/example6.jpg" width="300">
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <img src="/images/annotate-examples/example7_orig.jpg" width="300">
+                      </td>
+                      <td>
+                          <img src="/images/annotate-examples/example7_2.jpg" width="300">
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <img src="/images/annotate-examples/example10_orig.jpg" width="300">
+                      </td>
+                      <td>
+                          <img src="/images/annotate-examples/example10.jpg" width="300">
+                      </td>
+                  </tr>
+                  <tr>
+                      <td>
+                          <img src="/images/annotate-examples/example11_orig.jpg" width="300">
+                      </td>
+                      <td>
+                          <img src="/images/annotate-examples/example11.jpg" width="300">
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+        </div>
+        <div class="ui purple segment">
+          <h2 class="ui header">Press 'Start' when you are ready to begin.</h2>
+          <input type="hidden" id="assignmentId" name="assignmentId" value="asdf">
+          <textarea style="display: none" id="ip_addr" name="ip_addr" value="128.103.233.178"></textarea>
+          <textarea style="display: none" id="strokes0" name="strokes0" value=""></textarea>
+          <textarea style="display: none" id="strokes1" name="strokes1" value=""></textarea>
+          <textarea style="display: none" id="strokes2" name="strokes2" value=""></textarea>
+          <textarea style="display: none" id="strokes3" name="strokes3" value=""></textarea>
+          <textarea style="display: none" id="strokes4" name="strokes4" value=""></textarea>
+          <textarea style="display: none" id="strokes5" name="strokes5" value=""></textarea>
+          <textarea style="display: none" id="strokes6" name="strokes6" value=""></textarea>
+          <textarea style="display: none" id="strokes7" name="strokes7" value=""></textarea>
+          <textarea style="display: none" id="strokes8" name="strokes8" value=""></textarea>
+          <textarea style="display: none" id="strokes9" name="strokes9" value=""></textarea>
+          <textarea style="display: none" id="strokes10" name="strokes10" value=""></textarea>
+          <textarea style="display: none" id="strokes11" name="strokes11" value=""></textarea>
+          <textarea style="display: none" id="strokes12" name="strokes12" value=""></textarea>
+          <textarea style="display: none" id="strokes13" name="strokes13" value=""></textarea>
+          <textarea style="display: none" id="strokes14" name="strokes14" value=""></textarea>
+          <textarea style="display: none" id="strokes15" name="strokes15" value=""></textarea>
+          <textarea style="display: none" id="strokes16" name="strokes16" value=""></textarea>
+          <textarea style="display: none" id="strokes17" name="strokes17" value=""></textarea>
+          <textarea style="display: none" id="strokes18" name="strokes18" value=""></textarea>
+          <textarea style="display: none" id="strokes19" name="strokes19" value=""></textarea>
+          <textarea style="display: none" id="strokes20" name="strokes20" value=""></textarea>
+          <textarea style="display: none" id="strokes21" name="strokes21" value=""></textarea>
+          <textarea style="display: none" id="strokes22" name="strokes22" value=""></textarea>
+          <textarea style="display: none" id="strokes23" name="strokes23" value=""></textarea>
+          <table border="0" height="100%" width="100%">
+              <tbody>
+                  <tr>
+                      <td>
+                          <p>
+                          </p>
+                          <div id="flashContent">
+                              <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="750" height="620" id="impdraw" align="middle">
+                                  <param name="movie" value="impdraw7.swf">
+
+                                  <param name="quality" value="high">
+                                  <param name="bgcolor" value="#ffffff">
+                                  <param name="play" value="true">
+                                  <param name="loop" value="true">
+                                  <param name="wmode" value="window">
+                                  <param name="scale" value="showall">
+                                  <param name="menu" value="true">
+                                  <param name="devicefont" value="false">
+                                  <param name="salign" value="">
+                                  <param name="allowScriptAccess" value="always">
+                                  <param name="flashvars" id="flvar" value="testVar=abc">
+
+
+
+                                  <!--[if !IE]>-->
+                                  <object type="application/x-shockwave-flash" data="/images/annotate-examples/impdraw7.swf.download" width="750" height="620" id="flashapp">
+                                      <param name="movie" value="impdraw7.swf">
+                                      <param name="quality" value="high">
+                                      <param name="bgcolor" value="#ffffff">
+                                      <param name="play" value="true">
+                                      <param name="loop" value="true">
+                                      <param name="wmode" value="window">
+                                      <param name="scale" value="showall">
+                                      <param name="menu" value="true">
+                                      <param name="devicefont" value="false">
+                                      <param name="salign" value="">
+                                      <param name="allowScriptAccess" value="always">
+                                      <script language="Javascript">
+                                          document.write('<param name="FlashVars" value="imagetime=60&filename=' + gup('url') + '&assignmentid=' + gup('assignmentId') + '" />')
+                                      </script>
+                                      <param name="FlashVars" value="imagetime=60&amp;filename=input-gd_t1_3.txt&amp;assignmentid=asdf">
+                                      <!--<![endif]-->
+                                      <a href="http://www.adobe.com/go/getflash">
+                                          <img src="/images/annotate-examples/get_flash_player.gif" alt="Get Adobe Flash player">
+                                      </a>
+                                      <!--[if !IE]>-->
+                                  </object>
+                                  <!--<![endif]-->
+                              </object>
+                          </div>
+
+                          <div class="ui divider"></div>
+                          <div class="ui form">
+                            <div class="field">
+                              <label>Please provide any comments or suggestions you may have below, we appreciate your input! (optional)</label>
+                              <textarea name="comment" rows="3"></textarea>
+                            </div>
+                          </div>
+
+                          <br>
+                          <button id="submitButton" class="ui fluid primary button" type="submit" name="Submit">Submit Results</button>
+                      </td>
+                  </tr>
+              </tbody>
+          </table>
+        </div>
+    </form>
+
+
+
+
+  </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="/javascripts/turkify.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js"></script>
+    <script language="Javascript">
+        $(document).ready(function() {
+          document.getElementById('assignmentId').value = gup('assignmentId');
+
+          //
+          // Check if the worker is PREVIEWING the HIT or if they've ACCEPTED the HIT
+          //
+          if (gup('assignmentId') == "ASSIGNMENT_ID_NOT_AVAILABLE"|| gup('assignmentId')=='') {
+              // If we're previewing, disable the button and give it a helpful message
+              document.getElementById('submitButton').disabled = true;
+              document.getElementById('submitButton').value = "You must ACCEPT the HIT before you can do the full HIT or submit.";
+              $('#preview-msg').show();
+              console.log('Preview-Mode');
+          } else {
+              $('#preview-msg').hide();
+              // var form = document.getElementById('mturk_form');
+              // if (document.referrer && (document.referrer.indexOf('workersandbox') != -1)) {
+              //     form.action = "http://www.mturk.com/mturk/externalSubmit";
+              // }
+              turkify("#mturk_form");
+              console.log('Study-Mode');
+          }
+        })
+    </script>
+
+</body>
+
+</html>

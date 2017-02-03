@@ -28,6 +28,12 @@ router.get('/', function(req, res) {
 	}
 
 });
+router.get('/annotate', function(req, res) {
+	var db 		= req.retargetdb;
+	console.log(req.query);
+	res.render('annotate');
+});
+
 router.get('/color', function(req, res) {
 	var db 		= req.retargetdb;
 	// console.log(req.query);
