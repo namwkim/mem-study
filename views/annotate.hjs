@@ -315,7 +315,7 @@
     <script language="Javascript">
         $(document).ready(function() {
           document.getElementById('assignmentId').value = gup('assignmentId');
-
+          $('.ui.radio.checkbox').checkbox();
           //
           // Check if the worker is PREVIEWING the HIT or if they've ACCEPTED the HIT
           //
