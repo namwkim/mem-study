@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="stylesheets/modal.css">
+    <link rel="stylesheet" href="/stylesheets/modal.css">
     <!-- the following font is for the modals -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
@@ -113,16 +113,19 @@
 
                             <h3 class="ui red dividing header" style="margin:10px 0px 5px 0px;">Instructions</h3>
                             <!-- <div class="ui header">Instruction</div> -->
-                            Your job is to <strong>rate different designs</strong>, made for each poster (right) that needs to be redesigned to a new size.
+                            We need to make a condensed version of the design on the right. Your job is to rate some design variants. A bad design should get a score of 1, an excellent design should get a score of 5. Designs that look the same should get the same score.
+
+                            <!-- Your job is to <strong>rate different designs</strong>, made for each poster (right) that needs to be redesigned to a new size. -->
                             <br><br>
-                            <strong>How to rate:</strong>
+                            <strong>What makes a good design?</strong>
                             <div class="ui bulleted list" style="margin-top:5px;">
 
-                                <div class="item">The main parts of the design should be present in the redesign. Key information should not be missing.</div>
-                                <div class="item">The style of the design should be as similar as possible to the original. The new design should not be distorted.</div>
-                                <div class="item">A bad design should receive a score of 1.</div>
-                                <div class="item">An excellent design should receive a score of 5.</div>
+                                <div class="item">The most important elements from the original design should be included (even though we might not be able to fit them all)</div>
+                                <div class="item">The design should be legible and not too distorted</div>
+                                <!-- <div class="item">A bad design should receive a score of 1.</div> -->
+                                <!-- <div class="item">An excellent design should receive a score of 5.</div> -->
                             </div>
+                            Please complete the task with care so that we can allow you to complete similar tasks in the future.<br>
                             When you are done rating all six variants, click the <strong>Done button</strong>, which will appear at the bottom of the page. The <strong>Submit button</strong> will appear when you have completed all the pages.
 
                         </div>
@@ -358,9 +361,9 @@
 <!-----------------------------END HTML BODY-------------------------------------->
 
 <!-----------------------------BEGIN SCRIPT AND FUNCTIONS-------------------------------------->
-<script src="javascripts/modal.js"></script>
+<script src="/javascripts/modal.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<script src="javascripts/turkify.js"></script>
+<script src="/javascripts/turkify.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.4/semantic.min.js"></script>
 <script type="text/javascript">
     // -----------------------------BEGIN VARIABLE DECLARATIONS-----------------------------
@@ -393,7 +396,7 @@
     var fileNamesOrder = []; // during init will be populated with a permuted set of filenames
     var fineNamesSeen = []; // added to after each page; should be same as fileNamesOrder at the end
 
-    var maindir = "https://people.csail.mit.edu/zoya/Auto_retargeting/"; // where to find all the images
+    var maindir = "https://people.csail.mit.edu/zoya/Auto_retargeting_new/"; // where to find all the images
 
     // validationFiles:
     // These files will be added to the sequence of files shown to participants
@@ -497,6 +500,7 @@
     // given a filename to use on this page, display the original design
     // and choose the order in which to display the thumbnails/redesigns
     function loadFiles(filename) {
+        var imagetypesOrder = [];
         document.getElementById("mainim").src = maindir + "Orig/" + filename;
 
         // permute the types of thumbnails
@@ -510,6 +514,7 @@
         } // v3 contains a mix of landscape/portrait designs
 
         fineNamesSeen.push(filename); // keep track of progress (which images were shown to participants)
+        thumbnail_order.push(imagetypesOrder);
 
     }
 
@@ -527,7 +532,7 @@
                 }
             }
         }
-        thumbnail_order.push(imagetypesOrder); // keep track of the order in which thumbnails were shown per page
+        // thumbnail_order.push(imagetypesOrder); // keep track of the order in which thumbnails were shown per page
         scores_all.push(scores); // the ratings given to each thumbnail
 
         //alert(scores.toString());
@@ -739,11 +744,13 @@
       if (gup("nfiles")!=''){
         nfiles = parseInt(gup("nfiles"));
       }
-      if (experiment==1){
-        imagetypes = ["Resized", "Edge_energy", "GT_imp", "GT_imp_crop", "GT_imp_straight", "Jumbled"];
-      }else {
-        imagetypes = ["Resized","Edge_energy","Pred_imp","Pred_imp_crop","Pred_imp_straight","Jumbled"];
-      }
+      // if (experiment==1){
+      //   imagetypes = ["Resized", "Edge_energy", "GT_imp", "GT_imp_crop", "GT_imp_straight", "Jumbled"];
+      // }else {
+      //   imagetypes = ["Resized","Edge_energy","Pred_imp","Pred_imp_crop","Pred_imp_straight","Jumbled"];
+      // }
+      imagetypes = ["BS_imp_straight","DG_imp_straight","Judd_imp_straight","GT_imp_straight","Pred_imp_straight","Jumbled"];
+
       if (gup('assignmentId') == "ASSIGNMENT_ID_NOT_AVAILABLE") {
           // If we're previewing, disable the button
           document.getElementById("doneButton").disabled = true;
