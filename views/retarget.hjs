@@ -668,16 +668,16 @@
         var xmlhttp = new XMLHttpRequest(); // new HttpRequest instance
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == XMLHttpRequest.DONE) {
-              // _this.off('submit');
+              _this.off('submit');
               // actually submit the form
               console.log('submitting');
               submitted=true;
-              console.log(gup("turkSubmitTo"))
-              if (gup("turkSubmitTo")!=""){
-                  _this.submit();
-              }else{
-                openModalSuccessWindow("Done. Thanks for your participation.")
-              }
+              _this.submit();
+              // if (gup("turkSubmitTo")!=""){
+              //
+              // }else{
+              //   openModalSuccessWindow("Done. Thanks for your participation.")
+              // }
 
             }
         }
@@ -701,7 +701,7 @@
         //alert(document.getElementById('scores_final').value)
         //alert(document.getElementById('file_names_seen').value)
         //alert(document.getElementById('thumbnail_order_seen').value)
-        return false;
+        return true;
 
     }
 
@@ -750,7 +750,7 @@
         imagetypes = ["BS_imp_straight","DG_imp_straight","Judd_imp_straight","GT_imp_straight","Pred_imp_straight","Jumbled"];
       }else {
         imagetypes = ["Resized","Edge_energy","Pred_imp","Pred_imp_crop","Pred_imp_straight","Jumbled"];
-      }  
+      }
 
       if (gup('assignmentId') == "ASSIGNMENT_ID_NOT_AVAILABLE") {
           // If we're previewing, disable the button
