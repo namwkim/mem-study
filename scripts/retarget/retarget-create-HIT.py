@@ -5,7 +5,7 @@ import os, pymongo, sys, random, time, csv, math
 
 ######  AMT CONFIGURATION PARAMETRS  ######
 
-SANDBOX = True# Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
+SANDBOX = False# Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 HIT_URL = "https://study.namwkim.org/retarget"  # Provide the URL that you want workers to sent sent to complete you task
 ##TEMPORARY COMMENT: batch 10 has 40 HITS
 NUMBER_OF_HITS = 1  # Number of different HITs posted for this task
@@ -84,10 +84,10 @@ def create_hits(keyfile, blockfile):
 	# Create Qualifications
 	quals = Qualifications()
 	# check to see if workers have the qualification only assigned for workers from previous HITs
-	# quals.add(Requirement(qualification_type_id = qualtype[0].QualificationTypeId, comparator="DoesNotExist"))
-	# # demographic qualifications
-	# quals.add(PercentAssignmentsApprovedRequirement(comparator="GreaterThan", integer_value="95"))
-	# quals.add(LocaleRequirement(comparator="EqualTo", locale="US"))
+	quals.add(Requirement(qualification_type_id = qualtype[0].QualificationTypeId, comparator="DoesNotExist"))
+	# demographic qualifications
+	quals.add(PercentAssignmentsApprovedRequirement(comparator="GreaterThan", integer_value="95"))
+	quals.add(LocaleRequirement(comparator="EqualTo", locale="US"))
 	# TODO
 
 	create_hit_rs = conn.create_hit(question=q, lifetime=LIFETIME, max_assignments=NUMBER_OF_ASSIGNMENTS, title=TITLE, keywords=KEYWORDS, reward=REWARD, duration=DURATION, approval_delay=APPROVAL_DELAY, description=DESCRIPTION, qualifications=quals)
