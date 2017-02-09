@@ -84,10 +84,10 @@ def create_hits(keyfile, blockfile):
 	# Create Qualifications
 	quals = Qualifications()
 	# check to see if workers have the qualification only assigned for workers from previous HITs
-	quals.add(Requirement(qualification_type_id = qualtype[0].QualificationTypeId, comparator="DoesNotExist"))
-	# demographic qualifications
-	quals.add(PercentAssignmentsApprovedRequirement(comparator="GreaterThan", integer_value="95"))
-	quals.add(LocaleRequirement(comparator="EqualTo", locale="US"))
+	# quals.add(Requirement(qualification_type_id = qualtype[0].QualificationTypeId, comparator="DoesNotExist"))
+	# # demographic qualifications
+	# quals.add(PercentAssignmentsApprovedRequirement(comparator="GreaterThan", integer_value="95"))
+	# quals.add(LocaleRequirement(comparator="EqualTo", locale="US"))
 	# TODO
 
 	create_hit_rs = conn.create_hit(question=q, lifetime=LIFETIME, max_assignments=NUMBER_OF_ASSIGNMENTS, title=TITLE, keywords=KEYWORDS, reward=REWARD, duration=DURATION, approval_delay=APPROVAL_DELAY, description=DESCRIPTION, qualifications=quals)
