@@ -125,7 +125,9 @@
                                 <!-- <div class="item">A bad design should receive a score of 1.</div> -->
                                 <!-- <div class="item">An excellent design should receive a score of 5.</div> -->
                             </div>
-                            Please complete the task with care so that we can allow you to complete similar tasks in the future.<br>
+                            Please complete the task with care so that we can allow you to complete similar tasks in the future.
+                            <br><br>
+
                             When you are done rating all six variants, click the <strong>Done button</strong>, which will appear at the bottom of the page. The <strong>Submit button</strong> will appear when you have completed all the pages.
 
                         </div>
@@ -744,12 +746,11 @@
       if (gup("nfiles")!=''){
         nfiles = parseInt(gup("nfiles"));
       }
-      // if (experiment==1){
-      //   imagetypes = ["Resized", "Edge_energy", "GT_imp", "GT_imp_crop", "GT_imp_straight", "Jumbled"];
-      // }else {
-      //   imagetypes = ["Resized","Edge_energy","Pred_imp","Pred_imp_crop","Pred_imp_straight","Jumbled"];
-      // }
-      imagetypes = ["BS_imp_straight","DG_imp_straight","Judd_imp_straight","GT_imp_straight","Pred_imp_straight","Jumbled"];
+      if (experiment==1){
+        imagetypes = ["BS_imp_straight","DG_imp_straight","Judd_imp_straight","GT_imp_straight","Pred_imp_straight","Jumbled"];
+      }else {
+        imagetypes = ["Resized","Edge_energy","Pred_imp","Pred_imp_crop","Pred_imp_straight","Jumbled"];
+      }  
 
       if (gup('assignmentId') == "ASSIGNMENT_ID_NOT_AVAILABLE") {
           // If we're previewing, disable the button

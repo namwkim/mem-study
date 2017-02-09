@@ -9,23 +9,24 @@ var router  = express.Router();
 router.get('/', function(req, res) {
 	var db 		= req.retargetdb;
 	console.log(req.query);
-	if (!req.query['hitId'] || req.query['hitId']=="TEST"){
-		res.render('retarget', { title: 'Retargeted Design Evaluation', type: 1 });
-	}else{
-		db.collection('retargetType').find({'hit_id':req.query['hitId']}).toArray(function(err, result){
-				if (err) {
-						return console.log(new Date(), 'insert error', err);
-				}
-        if (result.length>0) {
-					console.log(result);
-					console.log(req.query['hitId']+", " + result[0]['type']);
-					res.render('retarget', { title: 'Retargeted Design Evaluation', type: result[0]['type'] });
-        }else{
-					res.render('retarget', { title: 'Retargeted Design Evaluation', type: 1 });
-				}
-	    });
-
-	}
+	res.render('retarget', { title: 'Retargeted Design Evaluation', type: 1 });
+	// if (!req.query['hitId'] || req.query['hitId']=="TEST"){
+	// 	res.render('retarget', { title: 'Retargeted Design Evaluation', type: 1 });
+	// }else{
+	// 	db.collection('retargetType').find({'hit_id':req.query['hitId']}).toArray(function(err, result){
+	// 			if (err) {
+	// 					return console.log(new Date(), 'insert error', err);
+	// 			}
+  //       if (result.length>0) {
+	// 				console.log(result);
+	// 				console.log(req.query['hitId']+", " + result[0]['type']);
+	// 				res.render('retarget', { title: 'Retargeted Design Evaluation', type: result[0]['type'] });
+  //       }else{
+	// 				res.render('retarget', { title: 'Retargeted Design Evaluation', type: 1 });
+	// 			}
+	//     });
+	//
+	// }
 
 });
 router.get('/annotate', function(req, res) {

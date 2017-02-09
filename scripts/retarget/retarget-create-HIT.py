@@ -8,7 +8,7 @@ import os, pymongo, sys, random, time, csv, math
 SANDBOX = False# Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 HIT_URL = "https://study.namwkim.org/retarget"  # Provide the URL that you want workers to sent sent to complete you task
 ##TEMPORARY COMMENT: batch 10 has 40 HITS
-NUMBER_OF_HITS = 2  # Number of different HITs posted for this task
+NUMBER_OF_HITS = 1  # Number of different HITs posted for this task
 # HIT_SIZE = 3 #  NUMBER OF HITS x HIT_SIZE ~ IMAGE SIZE
 NUMBER_OF_ASSIGNMENTS = 10  # Number of tasks that DIFFERENT workers will be able to take for each HIT
 LIFETIME = 60 * 60 * 24 * 7  # How long that the task will stay visible if not taken by a worker (in seconds)
@@ -90,22 +90,26 @@ def create_hits(keyfile, blockfile):
 	quals.add(LocaleRequirement(comparator="EqualTo", locale="US"))
 	# TODO
 
+	create_hit_rs = conn.create_hit(question=q, lifetime=LIFETIME, max_assignments=NUMBER_OF_ASSIGNMENTS, title=TITLE, keywords=KEYWORDS, reward=REWARD, duration=DURATION, approval_delay=APPROVAL_DELAY, description=DESCRIPTION, qualifications=quals)
+	print(preview_url + create_hit_rs[0].HITTypeId)
+	print("HIT ID: " + create_hit_rs[0].HITId)
+
 	# open db connection
-	client 	= pymongo.MongoClient('localhost', 27017)
-	db 		= client.retargetstudy
-	retargetType	= db.retargetType
-	retargetType.delete_many({})
-	#Create HITs
-	# hitIDs = []
-	experiment = 1
-	for i in range(0, NUMBER_OF_HITS):
-		create_hit_rs = conn.create_hit(question=q, lifetime=LIFETIME, max_assignments=NUMBER_OF_ASSIGNMENTS, title=TITLE, keywords=KEYWORDS, reward=REWARD, duration=DURATION, approval_delay=APPROVAL_DELAY, description=DESCRIPTION, qualifications=quals)
-		print(preview_url + create_hit_rs[0].HITTypeId)
-		print("HIT ID: " + create_hit_rs[0].HITId)
-		# save HIT IDs
-		# hitIDs.append();
-		retargetType.insert_one({"hit_id": create_hit_rs[0].HITId, "type": experiment })
-		experiment+=1
+	# client 	= pymongo.MongoClient('localhost', 27017)
+	# db 		= client.retargetstudy
+	# retargetType	= db.retargetType
+	# retargetType.delete_many({})
+	# #Create HITs
+	# # hitIDs = []
+	# experiment = 1
+	# for i in range(0, NUMBER_OF_HITS):
+	# 	create_hit_rs = conn.create_hit(question=q, lifetime=LIFETIME, max_assignments=NUMBER_OF_ASSIGNMENTS, title=TITLE, keywords=KEYWORDS, reward=REWARD, duration=DURATION, approval_delay=APPROVAL_DELAY, description=DESCRIPTION, qualifications=quals)
+	# 	print(preview_url + create_hit_rs[0].HITTypeId)
+	# 	print("HIT ID: " + create_hit_rs[0].HITId)
+	# 	# save HIT IDs
+	# 	# hitIDs.append();
+	# 	retargetType.insert_one({"hit_id": create_hit_rs[0].HITId, "type": experiment })
+	# 	experiment+=1
 
 
 
