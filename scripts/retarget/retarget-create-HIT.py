@@ -6,7 +6,7 @@ import os, pymongo, sys, random, time, csv, math
 ######  AMT CONFIGURATION PARAMETRS  ######
 
 SANDBOX = False# Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
-HIT_URL = "https://study.namwkim.org/retarget?condition=1"  # Provide the URL that you want workers to sent sent to complete you task
+HIT_URL = "https://study.namwkim.org/retarget?condition=2"  # Provide the URL that you want workers to sent sent to complete you task
 ##TEMPORARY COMMENT: batch 10 has 40 HITS
 NUMBER_OF_HITS = 1  # Number of different HITs posted for this task
 # HIT_SIZE = 3 #  NUMBER OF HITS x HIT_SIZE ~ IMAGE SIZE
