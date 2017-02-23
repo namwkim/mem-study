@@ -781,6 +781,7 @@
       console.log('experiment condition:', experiment);
       console.log('imagetypes:', imagetypes);
       console.log('nfiles:', nfiles);
+      console.log('maindir:', maindir);
       loadFilenames();
     });
     //else {
