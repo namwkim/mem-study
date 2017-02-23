@@ -747,9 +747,11 @@
         nfiles = parseInt(gup("nfiles"));
       }
       if (experiment==1){
-        imagetypes = ["BS_imp_straight","DG_imp_straight","Judd_imp_straight","GT_imp_straight","Pred_imp_straight","Jumbled"];
+        imagetypes = ["BS_imp_crop","DG_imp_crop","Judd_imp_crop","GT_imp_crop","Pred_imp_crop","Jumbled"];
+        maindir = "https://people.csail.mit.edu/zoya/Auto_retargeting_new/";
       }else {
-        imagetypes = ["Resized","Edge_energy","Pred_imp","Pred_imp_crop","Pred_imp_straight","Jumbled"];
+        imagetypes = ["BS_imp_crop","DG_imp_crop","Judd_imp_crop","GT_imp_crop","Pred_imp_crop","Jumbled"];
+        maindir = "https://people.csail.mit.edu/zoya/Auto_retargeting_banner/";
       }
 
       if (gup('assignmentId') == "ASSIGNMENT_ID_NOT_AVAILABLE") {
