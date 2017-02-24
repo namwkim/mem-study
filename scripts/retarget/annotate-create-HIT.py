@@ -71,7 +71,8 @@ def create_hits(keyfile, blockfile):
 
 	#Create HITs
 	for i in range(0, NUMBER_OF_HITS):
-		hit_url = HIT_URL
+		hit_url = HIT_URL+str(i)
+		print 'hit_url-',hit_url		
 		# Create External Question
 		q = ExternalQuestion(external_url=hit_url)#, frame_height=800)
 		conn = MTurkConnection(aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, host=mturk_url)
