@@ -21,7 +21,7 @@ APPROVAL_DELAY = 60*60*24*7  # How long after the task is completed will the wor
 TITLE = 'Marking important regions in a graphic design'
 #TODO: update time
 # Description of the HIT that workers will see when deciding to accept it or not
-DESCRIPTION = ("This HIT should take at most 10 minutes to complete. In this HIT, you will be presented with a series of images. You will be asked to mark the important regions in each graphic design image.")
+DESCRIPTION = ("This HIT should take around 5 minutes to complete. In this HIT, you will be presented with a series of images. You will be asked to mark the important regions in each graphic design image.")
 # Search terms for the HIT posting
 KEYWORDS = ['Easy', 'Mark', 'Region', 'Image', 'Graphic Design']
 
