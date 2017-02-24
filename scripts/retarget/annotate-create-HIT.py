@@ -65,9 +65,8 @@ def create_hits(keyfile, blockfile):
 		mturk_url = 'mechanicalturk.amazonaws.com'
 		preview_url = 'https://mturk.com/mturk/preview?groupId='
 
-	# Calculate number of hits
-	print "NUMBER OF HITS:", NUMBER_OF_HITS
 
+	conn = MTurkConnection(aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, host=mturk_url)
 
 	# Create a block list
 	qname = "Nam Wook Kim - Qualification to Prevent Retakes ("+time.strftime("%S-%M-%H-%d-%m-%Y")+")"
@@ -88,14 +87,16 @@ def create_hits(keyfile, blockfile):
 	quals.add(PercentAssignmentsApprovedRequirement(comparator="GreaterThan", integer_value="95"))
 	quals.add(LocaleRequirement(comparator="EqualTo", locale="US"))
 
-	
+	# Calculate number of hits
+	print "NUMBER OF HITS:", NUMBER_OF_HITS
+
 	#Create HITs
 	for i in range(0, NUMBER_OF_HITS):
 		hit_url = HIT_URL+str(i)
 		print 'hit_url-',hit_url
 		# Create External Question
 		q = ExternalQuestion(external_url=hit_url, frame_height=800)
-		conn = MTurkConnection(aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, host=mturk_url)
+
 		# create hit
 		create_hit_rs = conn.create_hit(question=q, lifetime=LIFETIME, max_assignments=NUMBER_OF_ASSIGNMENTS, title=TITLE, keywords=KEYWORDS, reward=REWARD, duration=DURATION, approval_delay=APPROVAL_DELAY, description=DESCRIPTION, qualifications=quals)
 		print(preview_url + create_hit_rs[0].HITTypeId)
