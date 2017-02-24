@@ -69,6 +69,26 @@ def create_hits(keyfile, blockfile):
 	print "NUMBER OF HITS:", NUMBER_OF_HITS
 
 
+	# Create a block list
+	qname = "Nam Wook Kim - Qualification to Prevent Retakes ("+time.strftime("%S-%M-%H-%d-%m-%Y")+")"
+	qualtype = conn.create_qualification_type(name=qname,
+		description="This qualification is for people who have worked for me on this task before.",
+		status = 'Active',
+		keywords="Worked for me before",
+		auto_granted = False)
+
+	create_blocklist(conn, qualtype, blockfile) # Assign qualifications to prevent workers from previous HITs
+	# print qualtype[0]
+	# Create Qualifications
+	quals = Qualifications()
+	# check to see if workers have the qualification only assigned for workers from previous HITs
+	# print 'QualType:', qualtype[0].QualificationTypeId
+	quals.add(Requirement(qualification_type_id = qualtype[0].QualificationTypeId, comparator="DoesNotExist"))
+	# demographic qualifications
+	quals.add(PercentAssignmentsApprovedRequirement(comparator="GreaterThan", integer_value="95"))
+	quals.add(LocaleRequirement(comparator="EqualTo", locale="US"))
+
+	
 	#Create HITs
 	for i in range(0, NUMBER_OF_HITS):
 		hit_url = HIT_URL+str(i)
@@ -76,26 +96,6 @@ def create_hits(keyfile, blockfile):
 		# Create External Question
 		q = ExternalQuestion(external_url=hit_url, frame_height=800)
 		conn = MTurkConnection(aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_KEY, host=mturk_url)
-
-		# Create a block list
-		qname = "Nam Wook Kim - Qualification to Prevent Retakes ("+time.strftime("%S-%M-%H-%d-%m-%Y")+")"
-		qualtype = conn.create_qualification_type(name=qname,
-			description="This qualification is for people who have worked for me on this task before.",
-			status = 'Active',
-			keywords="Worked for me before",
-			auto_granted = False)
-
-		create_blocklist(conn, qualtype, blockfile) # Assign qualifications to prevent workers from previous HITs
-		# print qualtype[0]
-		# Create Qualifications
-		quals = Qualifications()
-		# check to see if workers have the qualification only assigned for workers from previous HITs
-		# print 'QualType:', qualtype[0].QualificationTypeId
-		quals.add(Requirement(qualification_type_id = qualtype[0].QualificationTypeId, comparator="DoesNotExist"))
-		# demographic qualifications
-		quals.add(PercentAssignmentsApprovedRequirement(comparator="GreaterThan", integer_value="95"))
-		quals.add(LocaleRequirement(comparator="EqualTo", locale="US"))
-
 		# create hit
 		create_hit_rs = conn.create_hit(question=q, lifetime=LIFETIME, max_assignments=NUMBER_OF_ASSIGNMENTS, title=TITLE, keywords=KEYWORDS, reward=REWARD, duration=DURATION, approval_delay=APPROVAL_DELAY, description=DESCRIPTION, qualifications=quals)
 		print(preview_url + create_hit_rs[0].HITTypeId)
