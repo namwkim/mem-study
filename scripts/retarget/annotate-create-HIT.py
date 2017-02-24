@@ -5,7 +5,7 @@ import os, sys, random, time, csv, math
 
 ######  AMT CONFIGURATION PARAMETRS  ######
 
-SANDBOX = True# Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
+SANDBOX = False# Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 HIT_URL = "https://study.namwkim.org/retarget/annotate?url=hit"  # Provide the URL that you want workers to sent sent to complete you task
 ##TEMPORARY COMMENT: batch 10 has 40 HITS
 NUMBER_OF_HITS = 24  # Number of different HITs posted for this task
