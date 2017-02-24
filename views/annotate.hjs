@@ -71,10 +71,10 @@
 
         <h2 class="ui header">Instructions</h2>
         <p>
-            Your task is to draw the most important regions(either graphics or text blocks) for a set of <strong>20 images</strong>. However, you DO NOT need to be very precise. We are only looking for a rough indication of the most important regions. You also don't need to mark
+            Your task is to draw the most important regions(either graphics or text blocks) for a set of <strong>12 images</strong>. However, you DO NOT need to be very precise. We are only looking for a rough indication of the most important regions. You also don't need to mark
             every region, just those which appear important. Please look at the example images below.
         </p>
-        <p>You are only given a maximum of <strong>60 seconds for each image</strong>, so don't worry about drawing precisely. Draw the most important regions first then move to the less important regions. If you run out of time, just go to the next image.
+        <p>You are only given <strong>a maximum of 60 seconds for each image</strong>, so don't worry about drawing precisely. Draw the most important regions first then move to the less important regions. If you run out of time, just go to the next image.
             <b>Duplicate images have been added randomly.</b> If the results are too inconsistent, the hit will be rejected.
 
         </p>
@@ -271,7 +271,7 @@
                       <script language="Javascript">
                           document.write('<param name="FlashVars" value="imagetime=60&filename=' + gup('url') + '&assignmentid=' + gup('assignmentId') + '" />')
                       </script>
-                      <param name="FlashVars" value="imagetime=60&amp;filename=input-gd_t1_3.txt&amp;assignmentid=asdf">
+                      <!-- <param name="FlashVars" value="imagetime=60&amp;filename=input-gd_t1_3.txt&amp;assignmentid=asdf"> -->
                       <!--<![endif]-->
                       <a href="http://www.adobe.com/go/getflash">
                           <img src="/images/annotate-examples/get_flash_player.gif" alt="Get Adobe Flash player">
