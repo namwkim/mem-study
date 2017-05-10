@@ -126,7 +126,7 @@ def create_hits(keyfile, blockfile):
 	images	= db.images
 
 	#remove existing documents
-	images.remove({})
+	images.delete_many({})
 
 	# calculate the number of images for each HIT
 	hitSize = len(targets)/len(hitIDs);
@@ -142,7 +142,7 @@ def create_hits(keyfile, blockfile):
 	print("HIT ID: " + hitID)
 	for i in range(len(targets)):
 		count +=1
-		images.insert({"hit_id": hitID, "group": hitIdx, "img_url": BASE_URI+targets[i], "blur_img_url": BASE_URI_BLUR+targets_blurred[i]}) # insert an image into the db with HIT ID assigned
+		images.insert_one({"hit_id": hitID, "group": hitIdx, "img_url": BASE_URI+targets[i], "blur_img_url": BASE_URI_BLUR+targets_blurred[i]}) # insert an image into the db with HIT ID assigned
 		print (" - Image #"+str(count)+": "+(BASE_URI+targets[i]))
 		if count>=hitSize:
 			count   = 0
