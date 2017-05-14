@@ -3,8 +3,16 @@ import os, pymongo, sys, datetime, csv
 
 def export2csv(collection, csvout):#, filterList):
 	# open log database
-	client 	= pymongo.MongoClient('54.69.103.85', 27017)
+	# open log database
+	dbauth = csv.reader(open('../../auth.txt', 'r')).next()
+	dbauth[0] = dbauth[0].strip()
+	dbauth[1] = dbauth[1].strip()
+
+	dburl = 'mongodb://'+dbauth[0]+':'+dbauth[1]+'@54.69.103.85:27017/?authSource=admin'
+
+	client = pymongo.MongoClient(dburl)
 	db 		= client.osiestudy
+	
 	logs 	= db[collection]
 
 	with open(csvout, 'wb') as clickfile:

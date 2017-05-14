@@ -30,10 +30,15 @@ if __name__ == "__main__":
 		sys.exit(0)
 
 	# open log database
-	client 	= pymongo.MongoClient('54.69.103.85', 27017)
-	# client = pymongo.MongoClient('localhost', 27017)
+	dbauth = csv.reader(open('../../auth.txt', 'r')).next()
+	dbauth[0] = dbauth[0].strip()
+	dbauth[1] = dbauth[1].strip()
 
-	db = client.osiestudy
+	dburl = 'mongodb://'+dbauth[0]+':'+dbauth[1]+'@54.69.103.85:27017/?authSource=admin'
+
+	client = pymongo.MongoClient(dburl)
+	db 		= client.osiestudy
+
 	fromCol = db[sys.argv[1]]
 	toCol = db[sys.argv[2]]
 	toCol.remove({})
