@@ -23,7 +23,7 @@
             STUDY = 4,
             DEBRIEF = 5;
         var MIN_DESC = 150,
-            RADIUS_PIXEL = 32; // IMG_WIDTH = 700, IMG_HEIGHT=700;
+            RADIUS_PIXEL = 16; // IMG_WIDTH = 700, IMG_HEIGHT=700;
         var stage = INTRO;
         var formSelector = "#mturk-form";
         var images = null;

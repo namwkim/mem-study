@@ -97,9 +97,15 @@ if __name__ == "__main__":
 			# for workerID, workerData in asmtData.iteritems():
 			print asmtID, ' len: ', len(asmtData)
 
+			# start = filter(lambda x: x['action'] == "start-experiment", asmtData)
+			# clicks = filter(lambda x: x['action'] == "click" and x['data']['is_practice'] == "false", asmtData)
+			# survey = filter(lambda x: x['action'] == "survey", asmtData)
+
 			start = filter(lambda x: x['action'] == "start-experiment", asmtData)
-			clicks = filter(lambda x: x['action'] == "click" and x['data']['is_practice'] == "false", asmtData)
+			clicks = filter(lambda x: x['action'] == "click" and x['data']['is_practice'] == "false" and x['data'].has_key('image'), asmtData)
 			survey = filter(lambda x: x['action'] == "survey", asmtData)
+			noclicks = filter(lambda x: x['action'] == "click" and x['data']['is_practice'] == "false" and x['data'].has_key('image')==False, asmtData)
+			print asmtID, "'s invalid click count:", len(noclicks)
 
 			for imageName, imageClicks in itertools.groupby(clicks, key=lambda x: x['data']['image']):
 				imageName = imageName.split("/")[-1].split(".")[0]
