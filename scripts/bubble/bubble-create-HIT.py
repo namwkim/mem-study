@@ -125,7 +125,14 @@ def create_hits(keyfile, blockfile):
 		hitIDs.append(create_hit_rs[0].HITId);
 
 	# open db connection
-	client 	= pymongo.MongoClient('localhost', 27017)
+	dbauth = csv.reader(open('../../auth.txt', 'r')).next()
+	dbauth[0] = dbauth[0].strip()
+	dbauth[1] = dbauth[1].strip()
+
+	dburl = 'mongodb://'+dbauth[0]+':'+dbauth[1]+'@localhost:27017/?authSource=admin'
+
+	client = pymongo.MongoClient(dburl)
+
 	db 		= client.bubblestudy
 	images	= db.images
 
