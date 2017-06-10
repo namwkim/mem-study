@@ -14,7 +14,13 @@ def splitKey(key):
 	return {'hit_id': splited[0], 'assignment_id':splited[1], 'worker_id':splited[2] }
 if __name__ == "__main__":
 	# open log database
-	client 	= pymongo.MongoClient('54.69.103.85', 27017)
+	dbauth = csv.reader(open('../../auth.txt', 'r')).next()
+	dbauth[0] = dbauth[0].strip()
+	dbauth[1] = dbauth[1].strip()
+
+	dburl = 'mongodb://'+dbauth[0]+':'+dbauth[1]+'@54.69.103.85:27017/?authSource=admin'
+
+	client = pymongo.MongoClient(dburl)
 	# client 	= pymongo.MongoClient('localhost', 27017)
 	db 		= client.bubblestudy
 	fromCol = db[sys.argv[1]]
