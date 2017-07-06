@@ -12,6 +12,12 @@ router.get('/', function(req, res) {
     title: 'BubbleView Experiment'
   });
 });
+router.get('/freeview', function(req, res) {
+  console.log(req.params);
+  res.render('bubble_freeview', {
+    title: 'BubbleView Experiment'
+  });
+});
 
 router.get('/admin', function(req, res) {
   console.log(req.params);

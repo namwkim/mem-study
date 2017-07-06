@@ -1,6 +1,6 @@
 
 % load all images
-numBatches = 10;
+numBatches = 7;
 for i=1:numBatches
     i
     images = dir(sprintf('../batch-%d/*.png', i));

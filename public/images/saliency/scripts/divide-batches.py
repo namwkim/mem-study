@@ -11,7 +11,7 @@ for root, dirs, files in os.walk(source_dir):
         images.append(file)
 
 batchIdx    = 1
-batchSize   = 123 #123
+batchSize   = 175 #123
 
 totalNum = len(images)
 currIdx   = 1

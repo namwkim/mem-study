@@ -81,7 +81,7 @@ for i=1:imgCnt
     img = char(imgNames(i));%image filename
     
     % set filenames
-    s = struct('filename', img, 'impath', strcat('targets/',img), 'userdata',[]);
+    s = struct('filename', img, 'impath', strcat('../../public/images/bubble-db-pilot/targets_nov/',img), 'userdata',[]);
     
     % set click data
     userdata = data(img);
