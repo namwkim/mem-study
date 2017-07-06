@@ -26,7 +26,7 @@
       DEBRIEF = 5;
     var MIN_DESC = 150,
       // BLUR_RADIUS = 70,
-      BUBBLE_RADIUS = 30; // IMG_WIDTH = 700, IMG_HEIGHT=700;
+      BUBBLE_RADIUS = 32; // IMG_WIDTH = 700, IMG_HEIGHT=700;
     var WAIT_TIME = 2000,
         VIEW_TIME = 10000;
 
@@ -88,7 +88,7 @@
       // }
       // view_time_in_sec = parseInt(gup("time"));
       // VIEW_TIME = view_time_in_sec*1000;
-      BUBBLE_RADIUS = parseInt(gup("bubble"));
+      // BUBBLE_RADIUS = parseInt(gup("bubble"));
       //update time info
       $(".view_time").text(VIEW_TIME/1000);
       $(".hit_time").text(Math.ceil((VIEW_TIME/1000)*25/60));
@@ -524,7 +524,7 @@
           <div class="col-md-12">
             <h2>BubbleView Study</h2>
             <p class="text-justify">
-              In this HIT you will be presented with a series of images containing natural scences and asked to explore the images freely by clicking to reveal anywhere you want to look.
+              In this HIT you will be presented with a series of images containing graphs and diagrams and asked to explore the images freely by clicking to reveal anywhere you want to look.
               <br>
               <br> The HIT should take about <strong><span class="hit_time">3</span> minutes</strong> to complete.
               <br>
@@ -641,7 +641,7 @@
           <div class="col-md-12">
             <h2>BubbleView Study Instruction</h2>
             <p class="text-justify">
-              Welcome! In this HIT you will be presented with a series of images containing natural scences.
+              Welcome! In this HIT you will be presented with a series of images containing graphs and diagrams.
               <br>
               <br>
               <!--You will be paid <strong>$0.40</strong> for participating in this study which is expected to last about <strong>3 minutes</strong>.
