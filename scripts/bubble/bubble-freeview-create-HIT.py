@@ -33,7 +33,7 @@ AWS_SECRET_KEY = ''
 # Your Amazon Web Services IAM User Name (private)
 
 ######  BUBBLE CONFIGURATION PARAMETRS  ######
-BASE_URI = "/images/saliency/batch-1"
+BASE_URI = "/images/saliency/batch-1/"
 BASE_URI_BLUR = "/images/saliency/batch-1-blurred/"
 #######################################
 
