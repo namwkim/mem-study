@@ -13,7 +13,7 @@ if __name__ == "__main__":
                 continue
             sources.append(file)
 
-    sampled = random.sample(sources, 25)
+    sampled = random.sample(sources, 30)
     print sampled
     targets = [];
     for file in sampled:
