@@ -44,9 +44,12 @@ def add_asignments(keyfile, numAsmt):
 
 		# Update Hit
 		hit = conn.get_hit(hit_id=hit.HITId)[0];
+		if hit.expired==False:
+			conn.extend_hit(hit_id=hit.HITId, assignments_increment=numAsmt)
+			
 		# print hit.expired
 		# print "HIT " + hit.HITId + "(Status: "+hit.HITStatus+")"
-            	conn.extend_hit(hit_id=hit.HITId, assignments_increment=numAsmt)
+
 
 if __name__ == "__main__":
 	import time
