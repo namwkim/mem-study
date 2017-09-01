@@ -29,7 +29,7 @@
       BUBBLE_RADIUS = 32; // IMG_WIDTH = 700, IMG_HEIGHT=700;
     var WAIT_TIME = 2000,
         VIEW_TIME = 10000;
-
+        
     var stage = INTRO;
     var formSelector = "#mturk-form";
     var images = null;
@@ -91,7 +91,7 @@
       // BUBBLE_RADIUS = parseInt(gup("bubble"));
       //update time info
       $(".view_time").text(VIEW_TIME/1000);
-      $(".hit_time").text(Math.ceil((VIEW_TIME/1000)*25/60));
+
 
 
       if (assignmentId == "ASSIGNMENT_ID_NOT_AVAILABLE") { //preview mode
@@ -115,6 +115,7 @@
           });
         }
         //set experimental parameters
+        $(".hit_time").text(Math.ceil((VIEW_TIME/1000)*res.targets.length/60));
 
         console.log("bubble_radius: " + BUBBLE_RADIUS);
         // console.log("blur_radius: " + BLUR_RADIUS);
