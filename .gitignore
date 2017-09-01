@@ -4,3 +4,4 @@ public/bower_components/
 *.out
 *.log
 auth.txt
+*.m~
