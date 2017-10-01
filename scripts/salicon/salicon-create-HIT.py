@@ -5,7 +5,7 @@ import os, pymongo, sys, random, time, csv
 
 ######  AMT CONFIGURATION PARAMETRS  ######
 
-SANDBOX = False  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
+SANDBOX = True  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 HIT_URL = "https://study.namwkim.org/salicon"  # Provide the URL that you want workers to sent sent to complete you task
 
 NUMBER_OF_HITS = 3  # Number of different HITs posted for this task
@@ -120,8 +120,16 @@ def create_hits(keyfile, blockfile):
 		# save HIT IDs
 		hitIDs.append(create_hit_rs[0].HITId);
 
+
 	# open db connection
-	client 	= pymongo.MongoClient('localhost', 27017)
+	dbauth = csv.reader(open('../../auth.txt', 'r')).next()
+	dbauth[0] = dbauth[0].strip()
+	dbauth[1] = dbauth[1].strip()
+
+	dburl = 'mongodb://'+dbauth[0]+':'+dbauth[1]+'@localhost:27017/?authSource=admin'
+
+	client = pymongo.MongoClient(dburl)
+
 	db 		= client.saliconstudy
 	images	= db.images
 
