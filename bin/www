@@ -1,24 +1,24 @@
 #!/usr/bin/env node
 
-var debug = require('debug')('mem-study');
+// var debug = require('debug')('mem-study');
 var app = require('../app');
-var fs = require('fs');
-var https = require('https');
+// var fs = require('fs');
+// var https = require('https');
 var http = require('http');
 // ssl certificates
-var key = fs.readFileSync('./bin/privkey.pem');
-var cert = fs.readFileSync('./bin/fullchain.pem');
+// var key = fs.readFileSync('./bin/privkey.pem');
+// var cert = fs.readFileSync('./bin/fullchain.pem');
 // console.log(cert)
-var https_options = {
-    key: key,
-    cert: cert
-};
+// var https_options = {
+//     key: key,
+//     cert: cert
+// };
 
 // app.set('port', process.env.PORT || 8888);
 //console.log(app)
 var server = http.createServer(app).listen(4000);
 console.log('Express http server listening on port ' + server.address().port);
-server = https.createServer(https_options, app).listen(4001);
+// server = https.createServer(https_options, app).listen(4001);
 console.log('Express https server listening on port ' + server.address().port);
 
 // var server = app.listen(app.get('port'), function() {
