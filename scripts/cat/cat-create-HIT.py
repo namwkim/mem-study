@@ -8,8 +8,8 @@ import os, pymongo, sys, random, time, csv
 SANDBOX = True  # Select whether to post to the sandbox (using fake money), or live MTurk site (using REAL money)
 HIT_URL = "https://study.namwkim.org/osie"  # Provide the URL that you want workers to sent sent to complete you task
 
-NUMBER_OF_HITS = 5  # Number of different HITs posted for this task
-NUMBER_OF_ASSIGNMENTS = 15  # Number of tasks that DIFFERENT workers will be able to take for each HIT
+NUMBER_OF_HITS = 3  # Number of different HITs posted for this task
+NUMBER_OF_ASSIGNMENTS = 10  # Number of tasks that DIFFERENT workers will be able to take for each HIT
 LIFETIME = 60 * 60 * 24 * 7  # How long that the task will stay visible if not taken by a worker (in seconds)
 REWARD = 0.3  # Base payment value for completing the task (in dollars)
 DURATION = 60*45  # How long the worker will be able to work on a single task (in seconds)
@@ -52,14 +52,11 @@ def create_blocklist(conn, qualtype, blockfile):
 			print ("# of workerers participated before: ", len(workers))
 
 def create_hits(keyfile, blockfile):
+
 	# read a keyfile
 	with open(keyfile, 'r') as f:
-		reader = csv.reader(f)
-		next(reader)
-		row = next(reader)
-		
-		AWS_ACCESS_KEY = row[0].strip()
-		AWS_SECRET_KEY = row[1].strip()
+		AWS_ACCESS_KEY = f.readline().split('=')[1].rstrip('\r\n')
+		AWS_SECRET_KEY = f.readline().split('=')[1].rstrip('\r\n')
 
 	print (AWS_ACCESS_KEY)
 	print (AWS_SECRET_KEY)
@@ -88,7 +85,7 @@ def create_hits(keyfile, blockfile):
 
 	# exit if the number of images do not match
 	if len(targets)!=len(targets_blurred):
-		print ("target!=targets_blurred")
+		print("target!=targets_blurred")
 		sys.exit(0)
 
 	# Create External Question
@@ -121,7 +118,7 @@ def create_hits(keyfile, blockfile):
 		print("HIT ID: " + create_hit_rs[0].HITId)
 
 		# save HIT IDs
-		hitIDs.append(create_hit_rs[0].HITId)
+		hitIDs.append(create_hit_rs[0].HITId);
 
 	# open db connection
 	dbauth = csv.reader(open('../../auth.txt', 'r')).next()
@@ -138,7 +135,7 @@ def create_hits(keyfile, blockfile):
 	images.delete_many({})
 
 	# calculate the number of images for each HIT
-	hitSize = len(targets)/len(hitIDs)
+	hitSize = len(targets)/len(hitIDs);
 
 	# shuffle
 	z = zip(targets, targets_blurred)
@@ -163,12 +160,12 @@ def create_hits(keyfile, blockfile):
 
 	# for image in images.find():
 	# 	print image
-	print("HIT SIZE: " + str(hitSize))
+	print("HIT SIZE: " + str(hitSize));
 
 if __name__ == "__main__":
 	blockfile = None
 	if len(sys.argv) < 3:
-		print ("block list is not provided")
+		print("block list is not provided")
 	else:
 		blockfile = sys.argv[2]
 	create_hits(sys.argv[1], blockfile)
